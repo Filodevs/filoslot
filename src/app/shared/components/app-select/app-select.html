@@ -1,0 +1,14 @@
+<div>
+  @if(label()) {
+  <span class="block text-sm font-medium mb-2"> {{ label() }} </span>
+  }
+
+  <p-select
+    [options]="options()"
+    [formControl]="control()"
+    optionLabel="name"
+    optionValue="id"
+    [placeholder]="placeholder()"
+    class="w-full"
+  />
+</div>
