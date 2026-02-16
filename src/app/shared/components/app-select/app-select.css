@@ -1,0 +1,32 @@
+:host ::ng-deep .p-select {
+  background: var(--color-surface) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:host ::ng-deep .p-select-label {
+  color: white !important;
+}
+
+/* El icono de la flecha */
+:host ::ng-deep .p-select-dropdown {
+  color: white !important;
+}
+
+:host ::ng-deep .p-select-overlay {
+  background: var(--color-surface) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+:host ::ng-deep .p-select-option {
+  color: white !important;
+  transition: background 0.2s;
+}
+
+:host ::ng-deep .p-select-option:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+:host ::ng-deep .p-select-option.p-highlight {
+  background: var(--color-primary) !important;
+  color: white !important;
+}

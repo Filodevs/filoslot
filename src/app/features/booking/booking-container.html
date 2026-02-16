@@ -1,0 +1,16 @@
+<div class="flex flex-col gap-4">
+  <app-select
+    [options]="resources()"
+    labelField="name"
+    placeholder="Seleccione un recurso"
+    class="w-full md:w-56"
+  />
+
+  <app-date-selector (dateChange)="selectDate($event)" />
+
+  <app-slot-picker
+    [slots]="slots()"
+    [resources]="resources()"
+    (changeSlot)="slotSelected($event)"
+  />
+</div>

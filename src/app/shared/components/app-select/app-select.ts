@@ -13,6 +13,7 @@ export interface SelectOption<T = string> {
   selector: 'app-select',
   imports: [CommonModule, SelectModule, ReactiveFormsModule],
   templateUrl: './app-select.html',
+  styleUrl: './app-select.css',
 })
 export class AppSelect<T = string> {
   options = input<SelectOption<T>[]>([]);
