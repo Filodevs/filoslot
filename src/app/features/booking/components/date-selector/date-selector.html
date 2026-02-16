@@ -1,0 +1,13 @@
+<article class="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
+  @for (day of days(); track day.fullDate) {
+  <button
+    class="flex flex-col items-center min-w-17.5 p-3 rounded-2xl border border-white/10 bg-surface transition-all"
+    [ngClass]="{ 'bg-primary!': isSelected(day.fullDate) }"
+    (click)="selectDate(day.fullDate)"
+  >
+    <span class="text-[10px] opacity-60">{{ day.dayName }}</span>
+    <span class="text-lg font-bold">{{ day.dayNumber }}</span>
+    <span class="text-[10px] opacity-60">{{ day.month }}</span>
+  </button>
+  }
+</article>
