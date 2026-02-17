@@ -1,0 +1,33 @@
+<article class="flex flex-col gap-6 pt-2">
+  <section class="bg-white/5 p-4 rounded-2xl border border-white/5 flex flex-col gap-2">
+    <span class="text-xs text-slate-400 uppercase font-bold">Resumen de Cita</span>
+
+    <p class="text-sm text-white">
+      {{ config.data.resourceName }} - {{ config.data.date | date:'dd MMM' }} a las {{
+      config.data.slotTime }}
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <input
+      pInputText
+      [(ngModel)]="userName"
+      placeholder="Tu nombre"
+      class="bg-surface! border-white/10! p-3! rounded-xl!"
+    />
+
+    <input
+      pInputText
+      [(ngModel)]="phone"
+      placeholder="WhatsApp"
+      class="bg-surface! border-white/10! p-3! rounded-xl!"
+    />
+  </section>
+
+  <button
+    (click)="confirm()"
+    class="w-full bg-primary! text-white font-bold py-4 rounded-2xl shadow-lg shadow-primary/20"
+  >
+    Confirmar Turno
+  </button>
+</article>

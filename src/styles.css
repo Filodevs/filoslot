@@ -15,9 +15,46 @@
 
 html,
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-family-sans);
   background-color: var(--color-background);
   color: white;
   margin: 0;
   padding: 0;
+}
+
+.app-dialog.p-dialog {
+  background: var(--color-surface);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 60px rgba(2, 6, 23, 0.65);
+}
+
+.app-dialog .p-dialog-header {
+  background: transparent;
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.app-dialog .p-dialog-content {
+  background: transparent;
+  color: white;
+}
+
+.app-dialog .p-dialog-header-icon {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.app-dialog .p-dialog-header-icon:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.app-dialog .p-inputtext {
+  background: var(--color-surface);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.app-dialog .p-inputtext::placeholder {
+  color: rgba(255, 255, 255, 0.45);
 }

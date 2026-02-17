@@ -1,0 +1,15 @@
+:host ::ng-deep .p-dialog-header {
+  background: var(--color-surface) !important;
+  color: white !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1.5rem !important;
+}
+
+:host ::ng-deep .p-dialog-content {
+  background: var(--color-surface) !important;
+  padding: 0 1.5rem 1.5rem 1.5rem !important;
+}
+
+:host ::ng-deep .p-dialog-header-icons .p-dialog-header-icon {
+  color: white !important;
+}
