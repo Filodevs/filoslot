@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 
@@ -24,6 +25,7 @@ import { SlotPicker } from './components/slot-picker/slot-picker';
 })
 export class BookingContainer {
   private readonly dialog = inject(Dialog);
+  private destroyRef = inject(DestroyRef);
 
   businessData = signal<BusinessData>({
     name: 'FiloSlot Barber',
@@ -120,6 +122,7 @@ export class BookingContainer {
           },
         },
       )
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((result) => {
         if (!result) return;
         console.log('Booking confirmed for slot:', this.selectedSlot(), result);
