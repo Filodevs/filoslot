@@ -4,7 +4,7 @@
   <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
     @for (slot of slots(); track slot.id) {
     <button
-      class="flex flex-col items-center p-3 bg-primary rounded-md transition-all disabled:opacity-40 disabled:pointer-events-none disabled:grayscale"
+      class="flex flex-col items-center p-3 bg-primary rounded-md transition-all duration-300 ease-out hover:scale-105 cursor-pointer disabled:opacity-40 disabled:pointer-events-none disabled:grayscale disabled:cursor-not-allowed"
       [disabled]="slot.status === 'BOOKED'"
       (click)="selectSlot(slot)"
     >

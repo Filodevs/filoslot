@@ -12,7 +12,6 @@ interface DayOption {
   selector: 'app-date-selector',
   imports: [CommonModule],
   templateUrl: './date-selector.html',
-  styleUrl: './date-selector.css',
 })
 export class DateSelector {
   dateSelected = signal(new Date(2026, 1, 16));
