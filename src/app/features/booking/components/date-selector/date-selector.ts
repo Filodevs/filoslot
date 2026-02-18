@@ -37,9 +37,13 @@ export class DateSelector {
       date.setDate(start.getDate() + i);
       days.push({
         fullDate: date,
-        dayName: date.toLocaleDateString('es-ES', { weekday: 'short' }).toUpperCase(),
+        dayName: date
+          .toLocaleDateString('es-ES', { weekday: 'short' })
+          .toUpperCase(),
         dayNumber: date.getDate(),
-        month: date.toLocaleDateString('es-ES', { month: 'short' }).toUpperCase(),
+        month: date
+          .toLocaleDateString('es-ES', { month: 'short' })
+          .toUpperCase(),
       });
     }
     return days;

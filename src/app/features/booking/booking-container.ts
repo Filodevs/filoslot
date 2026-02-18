@@ -20,7 +20,14 @@ import { SlotPicker } from './components/slot-picker/slot-picker';
 
 @Component({
   selector: 'app-booking-container',
-  imports: [CommonModule, DynamicDialogModule, BusinessInfo, AppSelect, SlotPicker, DateSelector],
+  imports: [
+    CommonModule,
+    DynamicDialogModule,
+    BusinessInfo,
+    AppSelect,
+    SlotPicker,
+    DateSelector,
+  ],
   templateUrl: './booking-container.html',
 })
 export class BookingContainer {
@@ -111,17 +118,18 @@ export class BookingContainer {
     });
 
     this.dialog
-      .open<AppointmentConfirmDialog, AppointmentConfirmDialogData, AppointmentConfirmDialogResult>(
+      .open<
         AppointmentConfirmDialog,
-        {
-          header: 'Confirmar turno',
-          data: {
-            resourceName: this.resourceSelected()?.name ?? 'Recurso',
-            date: slot.startTime,
-            slotTime,
-          },
+        AppointmentConfirmDialogData,
+        AppointmentConfirmDialogResult
+      >(AppointmentConfirmDialog, {
+        header: 'Confirmar turno',
+        data: {
+          resourceName: this.resourceSelected()?.name ?? 'Recurso',
+          date: slot.startTime,
+          slotTime,
         },
-      )
+      })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((result) => {
         if (!result) return;
