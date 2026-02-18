@@ -57,6 +57,7 @@ export class BookingContainer implements OnInit {
   resourceSelected = signal<IResource | null>(null);
   dateSelected = signal(new Date());
   selectedSlot = signal<ISlot | null>(null);
+  slotsLoading = signal(false);
 
   resourceControl = new FormControl<string>('');
 
@@ -66,7 +67,17 @@ export class BookingContainer implements OnInit {
     this._getAvailableSlots();
   }
 
-  openConfirmation(slot: ISlot) {
+  selectResource(resourceId: string): void {
+    const resource =
+      this.resources().find((res) => res.id === resourceId) ?? null;
+
+    if (!resource) return;
+
+    this.resourceSelected.set(resource);
+    this._getAvailableSlots();
+  }
+
+  openConfirmation(slot: ISlot): void {
     this.selectedSlot.set(slot);
 
     const slotTime = slot.startTime.toLocaleTimeString([], {
@@ -123,20 +134,24 @@ export class BookingContainer implements OnInit {
 
     if (!resourceId || !date) return;
 
+    this.slotsLoading.set(true);
+
     this.appointmentService
       .getAvailableSlots(resourceId, date)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (slots) => {
           this.slots.set(slots);
+          this.slotsLoading.set(false);
         },
         error: (err) => {
           console.error('Error fetching available slots:', err);
+          this.slotsLoading.set(false);
         },
       });
   }
 
-  private _save(userData: AppointmentConfirmDialogResult, slot: ISlot) {
+  private _save(userData: AppointmentConfirmDialogResult, slot: ISlot): void {
     const payload: IBookingDataDTO = {
       userName: userData.name,
       phone: userData.phone,

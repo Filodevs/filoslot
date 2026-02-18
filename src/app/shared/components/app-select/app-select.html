@@ -4,11 +4,12 @@
   }
 
   <p-select
+    class="w-full"
     [options]="options()"
     [formControl]="control()"
     optionLabel="name"
     optionValue="id"
     [placeholder]="placeholder()"
-    class="w-full"
+    (onChange)="selectionChange.emit($event.value)"
   />
 </div>

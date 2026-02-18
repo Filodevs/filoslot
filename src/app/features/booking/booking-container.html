@@ -11,6 +11,7 @@
       labelField="name"
       placeholder="Seleccione un recurso"
       [control]="resourceControl"
+      (selectionChange)="selectResource($event)"
     />
   </div>
 
@@ -19,6 +20,7 @@
   <app-slot-picker
     [slots]="slots()"
     [resources]="resources()"
+    [loading]="slotsLoading()"
     (changeSlot)="openConfirmation($event)"
   />
 </div>
