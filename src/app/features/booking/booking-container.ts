@@ -5,6 +5,7 @@ import { FormControl } from '@angular/forms';
 
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 
+import { Business } from '../../core/services/business';
 import { Dialog } from '../../core/services/ui/dialog';
 import { IBookingDataDTO } from '../../models/appointment';
 import { IBusinessData } from '../../models/businessData';
@@ -39,18 +40,10 @@ export class BookingContainer implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly appointmentService = inject(Appointment);
   private readonly resourceService = inject(Resource);
+  private readonly businessService = inject(Business);
 
-  businessData = signal<IBusinessData>({
-    name: 'FiloSlot Barber',
-    address: '123 Razor Street, Downtown',
-    rating: 4.9,
-    reviews: 120,
-    services: [
-      { name: 'Corte Premium', price: 25 },
-      { name: 'Barba & Ritual', price: 15 },
-      { name: 'Combo FiloSlot', price: 35 },
-    ],
-  });
+  businessData = signal<IBusinessData | null>(null);
+  businessLoading = signal(false);
   slots = signal<ISlot[]>([]);
   resources = signal<IResource[]>([]);
 
@@ -107,7 +100,26 @@ export class BookingContainer implements OnInit {
   }
 
   ngOnInit(): void {
+    this._getBusinessData();
     this._getResources();
+  }
+
+  private _getBusinessData(): void {
+    this.businessLoading.set(true);
+
+    this.businessService
+      .getBusinessData()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.businessData.set(data);
+          this.businessLoading.set(false);
+        },
+        error: (err) => {
+          console.error('Error fetching business data:', err);
+          this.businessLoading.set(false);
+        },
+      });
   }
 
   private _getResources(): void {
