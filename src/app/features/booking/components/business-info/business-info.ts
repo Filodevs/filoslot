@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
 
-import { BusinessData } from '../../../../models/businessData';
+import { IBusinessData } from '../../../../models/businessData';
 
 @Component({
   selector: 'app-business-info',
@@ -9,5 +9,5 @@ import { BusinessData } from '../../../../models/businessData';
   templateUrl: './business-info.html',
 })
 export class BusinessInfo {
-  businessData = input.required<BusinessData>();
+  businessData = input.required<IBusinessData>();
 }

@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 
-import { Resource } from '../../../../models/resource';
-import { Slot } from '../../../../models/slot';
+import { IResource } from '../../../../models/resource';
+import { ISlot } from '../../../../models/slot';
 
 @Component({
   selector: 'app-slot-picker',
@@ -11,12 +11,12 @@ import { Slot } from '../../../../models/slot';
   styleUrl: './slot-picker.css',
 })
 export class SlotPicker {
-  slots = input.required<Slot[]>();
-  resources = input.required<Resource[]>();
+  slots = input.required<ISlot[]>();
+  resources = input.required<IResource[]>();
 
-  changeSlot = output<Slot>();
+  changeSlot = output<ISlot>();
 
-  selectSlot(slot: Slot): void {
+  selectSlot(slot: ISlot): void {
     if (slot.status !== 'AVAILABLE') return;
 
     this.changeSlot.emit(slot);

@@ -1,4 +1,4 @@
-export interface BusinessData {
+export interface IBusinessData {
   name: string;
   address: string;
   rating: number;

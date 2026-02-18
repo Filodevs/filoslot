@@ -14,7 +14,7 @@ interface DayOption {
   templateUrl: './date-selector.html',
 })
 export class DateSelector {
-  dateSelected = signal(new Date(2026, 1, 16));
+  dateSelected = signal(new Date());
   days = signal<DayOption[]>(this._generateDays());
 
   dateChange = output<Date>();
