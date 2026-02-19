@@ -7,6 +7,7 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog';
 
 import { Business } from '../../core/services/business';
 import { Dialog } from '../../core/services/ui/dialog';
+import { Notification } from '../../core/services/ui/notification';
 import { IBookingDataDTO } from '../../models/appointment';
 import { IBusinessData } from '../../models/businessData';
 import { IResource } from '../../models/resource';
@@ -37,6 +38,7 @@ import { Resource } from './services/resources/resource';
 })
 export class BookingContainer implements OnInit {
   private readonly dialog = inject(Dialog);
+  private readonly notificationService = inject(Notification);
   private readonly destroyRef = inject(DestroyRef);
   private readonly appointmentService = inject(Appointment);
   private readonly resourceService = inject(Resource);
@@ -176,13 +178,29 @@ export class BookingContainer implements OnInit {
       .createAppointment(payload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (res) => {
-          //TODO: Update slot status to BOOKED in the UI
-          //TODO: Show success message to user
-          console.log('Reserva confirmada con éxito!', res.id);
+        next: () => {
+          this.slots.update((slots) =>
+            slots.map((s) =>
+              s.id === slot.id ? { ...s, status: 'BOOKED' as const } : s,
+            ),
+          );
+
+          this.notificationService.showSuccess(
+            'Turno reservado',
+            `Tu turno para el ${slot.startTime.toLocaleDateString()} a las ${slot.startTime.toLocaleTimeString(
+              [],
+              {
+                hour: '2-digit',
+                minute: '2-digit',
+              },
+            )} ha sido reservado exitosamente.`,
+          );
         },
-        error: (err) => {
-          console.error('Error creating appointment:', err);
+        error: () => {
+          this.notificationService.showError(
+            'Error al reservar',
+            'Hubo un error al reservar tu turno. Por favor, intenta nuevamente.',
+          );
         },
       });
   }

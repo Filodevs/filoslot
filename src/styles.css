@@ -22,6 +22,8 @@ body {
   padding: 0;
 }
 
+/* DIALOG */
+
 .app-dialog.p-dialog {
   background: var(--color-surface);
   color: white;
@@ -57,4 +59,31 @@ body {
 
 .app-dialog .p-inputtext::placeholder {
   color: rgba(255, 255, 255, 0.45);
+}
+
+/* TOAST */
+
+.custom-toast .p-toast-message {
+  background: #1e1e2e !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+.custom-toast .p-toast-summary {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+.custom-toast .p-toast-detail {
+  color: #a1a1aa !important;
+  font-size: 0.9rem !important;
+}
+
+.custom-toast .p-toast-message-icon {
+  color: #818cf8 !important;
+}
+
+.custom-toast .p-toast-icon-close {
+  color: #52525b !important;
 }
