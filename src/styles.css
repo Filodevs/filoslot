@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
-@import 'tailwindcss';
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
+@import 'tailwindcss';
+@import 'primeicons/primeicons.css';
 
 @theme {
   --color-background: #020617;
@@ -13,13 +14,32 @@
   --font-weight-heading: 800;
 }
 
+:root {
+  --color-primary: #6366f1;
+  --color-surface: #0f172a;
+}
+
 html,
 body {
   font-family: var(--font-family-sans);
-  background-color: var(--color-background);
+  background-color: #030712;
+  background-image:
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.1) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.1) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: #f8fafc;
   color: white;
   margin: 0;
   padding: 0;
+}
+
+main > div {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
 /* DIALOG */

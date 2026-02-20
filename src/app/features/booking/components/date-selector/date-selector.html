@@ -1,7 +1,7 @@
 <article class="flex gap-3 overflow-x-auto pb-4 no-scrollbar">
   @for (day of days(); track day.fullDate) {
   <button
-    class="flex flex-col items-center min-w-17.5 p-3 rounded-md border border-white/10 bg-surface transition-all duration-300 ease-out hover:scale-105 cursor-pointer"
+    class="flex flex-col items-center min-w-17.5 md:w-27 p-3 rounded-md border border-white/10 bg-surface transition-all duration-300 ease-out hover:scale-105 cursor-pointer"
     [ngClass]="{ 'bg-primary!': isSelected(day.fullDate) }"
     (click)="selectDate(day.fullDate)"
   >
