@@ -1,0 +1,91 @@
+<div class="flex flex-col gap-4">
+  <header class="p-4 flex justify-between items-end rounded-lg bg-primary">
+    <section>
+      <h2 class="text-3xl font-black text-white italic tracking-tighter">
+        CONFIGURACIÓN
+      </h2>
+
+      <p class="text-sm">Define tus servicios y disponibilidad horaria.</p>
+    </section>
+
+    <!-- TODO: EXTRAER BOTÓN -->
+    <p-button
+      label="Guardar Configuración"
+      icon="pi pi-save"
+      severity="primary"
+      [rounded]="true"
+    ></p-button>
+  </header>
+
+  <div class="grid-container">
+    <aside class="services-panel">
+      <div class="glass-card">
+        <div class="card-header">
+          <h2 class="text-lg font-bold text-white">Mis Servicios</h2>
+          <p-button
+            icon="pi pi-plus"
+            [text]="true"
+            severity="secondary"
+            pTooltip="Añadir servicio"
+          ></p-button>
+        </div>
+
+        <div class="services-list">
+          <div class="service-item group">
+            <div class="service-info">
+              <span class="service-name">Corte de Cabello</span>
+              <span class="service-meta">$25.00 • 30 min</span>
+            </div>
+            <div class="service-actions">
+              <i class="pi pi-pencil"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="slots-panel">
+      <div class="glass-card">
+        <h2 class="text-lg font-bold text-white mb-6">
+          Disponibilidad Semanal
+        </h2>
+
+        <div class="days-container">
+          @for (day of ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes',
+          'Sábado', 'Domingo']; track day) {
+          <div class="day-row">
+            <span class="day-label">{{ day }}</span>
+
+            <div class="time-inputs">
+              <p-inputMask
+                class="time-mask"
+                mask="99:99"
+                placeholder="09:00"
+              ></p-inputMask>
+              <span class="separator">a</span>
+              <p-inputMask
+                class="time-mask"
+                mask="99:99"
+                placeholder="18:00"
+              ></p-inputMask>
+            </div>
+
+            <div class="interval-input">
+              <p-inputNumber
+                class="interval-picker"
+                suffix=" min"
+                [showButtons]="true"
+                [min]="15"
+                [step]="15"
+                placeholder="Slot"
+              ></p-inputNumber>
+            </div>
+
+            <p-inputSwitch pTooltip="Activar/Desactivar día"></p-inputSwitch>
+          </div>
+          }
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

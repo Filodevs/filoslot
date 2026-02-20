@@ -15,6 +15,13 @@ export const routes: Routes = [
           ),
       },
       { path: '', redirectTo: 'booking', pathMatch: 'full' },
+      {
+        path: 'admin',
+        loadComponent: () =>
+          import('./features/admin/resources/resources').then(
+            (m) => m.Resources,
+          ),
+      },
     ],
   },
 ];
