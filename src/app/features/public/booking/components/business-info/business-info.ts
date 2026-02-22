@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, input } from '@angular/core';
 
-import { IBusinessData } from '../../../../models/businessData';
-import { AppSkeleton } from '../../../../shared/components/app-skeleton/app-skeleton';
+import { IBusinessData } from '../../../../../models/businessData';
+import { AppSkeleton } from '../../../../../shared/components/app-skeleton/app-skeleton';
 
 @Component({
   selector: 'app-business-info',

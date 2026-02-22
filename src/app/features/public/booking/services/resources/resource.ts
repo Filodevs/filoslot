@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import { delay, Observable, of } from 'rxjs';
 
-import { IResource } from '../../../../models/resource';
+import { IResource } from '../../../../../models/resource';
 import { RESOURCE_MOCK } from '../../__mocks__/resource';
 
 @Injectable({ providedIn: 'root' })

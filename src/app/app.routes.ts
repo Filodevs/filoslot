@@ -8,20 +8,16 @@ export const routes: Routes = [
     component: MainLayout,
     children: [
       {
-        path: 'booking',
-        loadComponent: () =>
-          import('./features/booking/booking-container').then(
-            (m) => m.BookingContainer,
-          ),
+        path: '',
+        loadChildren: () =>
+          import('./features/public/public.routes').then(r => r.PUBLIC_ROUTES)
       },
-      { path: '', redirectTo: 'booking', pathMatch: 'full' },
       {
         path: 'admin',
-        loadComponent: () =>
-          import('./features/admin/resources/resources').then(
-            (m) => m.Resources,
-          ),
-      },
-    ],
+        loadChildren: () =>
+          import('./features/admin/admin.routes').then(r => r.ADMIN_ROUTES)
+      }
+    ] 
   },
+  { path: '**', redirectTo: '' }
 ];

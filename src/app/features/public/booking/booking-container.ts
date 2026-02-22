@@ -5,14 +5,14 @@ import { FormControl } from '@angular/forms';
 
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 
-import { Business } from '../../core/services/business';
-import { Dialog } from '../../core/services/ui/dialog';
-import { Notification } from '../../core/services/ui/notification';
-import { IBookingDataDTO } from '../../models/appointment';
-import { IBusinessData } from '../../models/businessData';
-import { IResource } from '../../models/resource';
-import { ISlot } from '../../models/slot';
-import { AppSelect } from '../../shared/components/app-select/app-select';
+import { Business } from '../../../core/services/business';
+import { Dialog } from '../../../core/services/ui/dialog';
+import { Notification } from '../../../core/services/ui/notification';
+import { IBookingDataDTO } from '../../../models/appointment';
+import { IBusinessData } from '../../../models/businessData';
+import { IResource } from '../../../models/resource';
+import { ISlot } from '../../../models/slot';
+import { AppSelect } from '../../../shared/components/app-select/app-select';
 import {
   AppointmentConfirmDialog,
   AppointmentConfirmDialogData,
@@ -21,7 +21,7 @@ import {
 import { BusinessInfo } from './components/business-info/business-info';
 import { DateSelector } from './components/date-selector/date-selector';
 import { SlotPicker } from './components/slot-picker/slot-picker';
-import { Appointment } from './services/appoinment/appointment';
+import { Appointment } from './services/appointment/appointment';
 import { Resource } from './services/resources/resource';
 
 @Component({

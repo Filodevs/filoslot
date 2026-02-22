@@ -1,4 +1,4 @@
-import { IResource } from '../../../models/resource';
+import { IResource } from '../../../../models/resource';
 
 export const RESOURCE_MOCK: IResource[] = [
   { id: '1', name: 'Jorge Beltrán', role: 'Barbero Senior' },

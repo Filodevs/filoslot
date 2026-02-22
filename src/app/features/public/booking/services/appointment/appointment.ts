@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 
 import { delay, Observable, of } from 'rxjs';
 
-import { IBookingDataDTO } from '../../../../models/appointment';
-import { ISlot } from '../../../../models/slot';
+import { IBookingDataDTO } from '../../../../../models/appointment';
+import { ISlot } from '../../../../../models/slot';
 
 @Injectable({ providedIn: 'root' })
 export class Appointment {
