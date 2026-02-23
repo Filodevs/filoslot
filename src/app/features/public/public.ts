@@ -8,5 +8,4 @@ import { RouterModule } from '@angular/router';
   styleUrl: './public.css',
 })
 export class Public {
-
 }

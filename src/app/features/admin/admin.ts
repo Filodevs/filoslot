@@ -1,6 +1,5 @@
-import { RouterModule } from '@angular/router';
 import { Component } from '@angular/core';
-
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-admin',
@@ -8,6 +7,4 @@ import { Component } from '@angular/core';
   templateUrl: './admin.html',
   styleUrl: './admin.css',
 })
-export class Admin {
-
-}
+export class Admin {}
