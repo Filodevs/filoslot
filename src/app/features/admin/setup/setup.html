@@ -78,19 +78,19 @@
         >
       </button>
 
-      @if (isActive(section.key)) {
-      <div class="border-t border-white/7 p-5 animate-[fadeSlide_0.15s_ease]">
-        @switch (section.key) { @case ('info') {
-        <app-business-info (completed)="markCompleted($event)" />
-        } @case ('services') {
-        <app-services (completed)="markCompleted($event)" />
-        } @case ('resources') {
-        <p class="text-white/45 text-sm">// app-setup-resources</p>
-        } @case ('availability') {
-        <p class="text-white/45 text-sm">// app-setup-availability</p>
-        } }
+      <div class="card-body" [class.card-body--open]="isActive(section.key)">
+        <div class="border-t border-white/7 p-5">
+          @switch (section.key) { @case ('info') {
+          <app-business-info (completed)="markCompleted($event)" />
+          } @case ('services') {
+          <app-services (completed)="markCompleted($event)" />
+          } @case ('resources') {
+          <p class="text-white/45 text-sm">// app-setup-resources</p>
+          } @case ('availability') {
+          <p class="text-white/45 text-sm">// app-setup-availability</p>
+          } }
+        </div>
       </div>
-      }
     </article>
     }
   </section>
