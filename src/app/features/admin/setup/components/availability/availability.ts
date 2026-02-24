@@ -1,9 +1,11 @@
-import { Component, computed, inject, output, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { Component, computed, output, signal } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';
 
+import { IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
+import { AppToggle } from '../../../../../shared/components/app-toggle/app-toggle';
 import { Section } from '../../setup.d';
 
 export interface DaySchedule {
@@ -14,21 +16,13 @@ export interface DaySchedule {
   end: string;
 }
 
-interface Resource {
-  id: string;
-  name: string;
-}
-
 @Component({
   selector: 'app-availability',
-  imports: [ReactiveFormsModule, SelectModule, AppButton],
+  imports: [ReactiveFormsModule, SelectModule, AppButton, AppToggle],
   templateUrl: './availability.html',
   styleUrl: './availability.css',
 })
 export class Availability {
-  private fb = inject(FormBuilder);
-  completed = output<Section>();
-
   readonly intervals = [
     { label: '15 minutos', value: 15 },
     { label: '30 minutos', value: 30 },
@@ -46,12 +40,12 @@ export class Availability {
     { key: 'sun', label: 'DOM', enabled: false, start: '09:00', end: '14:00' },
   ];
 
-  readonly resources = signal<Resource[]>([
-    { id: '1', name: 'Jorge Beltrán' },
-    { id: '2', name: 'Carlos M.' },
+  readonly resources = signal<IResource[]>([
+    { id: '1', name: 'Jorge Beltrán', role: 'Barbero' },
+    { id: '2', name: 'Carlos M.', role: 'Barbero' },
   ]);
 
-  selectedResource = signal<Resource>(this.resources()[0]);
+  selectedResource = signal<IResource>(this.resources()[0]);
 
   scheduleMap = signal<Map<string, DaySchedule[]>>(
     new Map(
@@ -66,7 +60,6 @@ export class Availability {
     new Map(this.resources().map((r) => [r.id, 30])),
   );
 
-  // Schedule del recurso seleccionado actualmente
   currentSchedule = computed(
     () => this.scheduleMap().get(this.selectedResource().id) ?? [],
   );
@@ -75,7 +68,9 @@ export class Availability {
     () => this.intervalMap().get(this.selectedResource().id) ?? 30,
   );
 
-  selectResource(resource: Resource): void {
+  completed = output<Section>();
+
+  selectResource(resource: IResource): void {
     this.selectedResource.set(resource);
   }
 

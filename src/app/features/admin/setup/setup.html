@@ -51,44 +51,48 @@
         (click)="setActive(section.key)"
       >
         <span
-          class="w-9 h-9 hidden md:grid rounded-sm place-items-center text-base shrink-0"
+          class="w-9 h-9 grid rounded-sm place-items-center text-base shrink-0"
           [class]="section.iconBg"
         >
           {{ section.icon }}
         </span>
 
-        <div class="flex-1 flex flex-col gap-0.5">
+        <section class="flex-1 flex flex-col gap-0.5">
           <span class="text-sm font-bold">{{ section.label }}</span>
           <span class="text-[0.7rem] text-white/45"
             >{{ section.subtitle }}</span
           >
-        </div>
+        </section>
 
-        <span
-          class="text-sm font-bold px-2.5 py-1 rounded-full"
-          [class]="getBadgeClass(section.key)"
-        >
-          {{ isCompleted(section.key) ? 'Listo ✓' : 'Pendiente' }}
-        </span>
+        <section class="flex gap-2 items-center">
+          <span
+            class="text-xs font-bold px-2.5 py-1 rounded-full"
+            [class]="getBadgeClass(section.key)"
+          >
+            {{ isCompleted(section.key) ? 'Listo ✓' : 'Pendiente' }}
+          </span>
 
-        <span
-          class="text-[0.7rem] text-white/45 shrink-0 transition-transform duration-200"
-          [class.rotate-180]="isActive(section.key)"
-          >▼</span
-        >
+          <span
+            class="text-[0.7rem] text-white/45 shrink-0 transition-transform duration-200"
+            [class.rotate-180]="isActive(section.key)"
+            >▼</span
+          >
+        </section>
       </button>
 
       <div class="card-body" [class.card-body--open]="isActive(section.key)">
-        <div class="border-t border-white/7 p-5">
-          @switch (section.key) { @case ('info') {
-          <app-business-info (completed)="markCompleted($event)" />
-          } @case ('services') {
-          <app-services (completed)="markCompleted($event)" />
-          } @case ('resources') {
-          <app-resources (completed)="markCompleted($event)" />
-          } @case ('availability') {
-          <app-availability (completed)="markCompleted($event)" />
-          } }
+        <div>
+          <section class="border-t border-white/7 p-5">
+            @switch (section.key) { @case ('info') {
+            <app-business-info (completed)="markCompleted($event)" />
+            } @case ('services') {
+            <app-services (completed)="markCompleted($event)" />
+            } @case ('resources') {
+            <app-resources (completed)="markCompleted($event)" />
+            } @case ('availability') {
+            <app-availability (completed)="markCompleted($event)" />
+            } }
+          </section>
         </div>
       </div>
     </article>
