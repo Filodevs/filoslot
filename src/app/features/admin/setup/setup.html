@@ -85,9 +85,9 @@
           } @case ('services') {
           <app-services (completed)="markCompleted($event)" />
           } @case ('resources') {
-          <p class="text-white/45 text-sm">// app-setup-resources</p>
+          <app-resources (completed)="markCompleted($event)" />
           } @case ('availability') {
-          <p class="text-white/45 text-sm">// app-setup-availability</p>
+          <app-availability (completed)="markCompleted($event)" />
           } }
         </div>
       </div>

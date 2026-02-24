@@ -13,6 +13,8 @@ interface Service {
   duration: number;
 }
 
+// AGREGAR TARGETA DE CONFIRMACION PARA LA ELIMINACION DE SERVICIOS
+
 @Component({
   selector: 'app-services',
   imports: [ReactiveFormsModule, InputTextModule, InputNumberModule],

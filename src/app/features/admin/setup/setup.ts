@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 
+import { Availability } from './components/availability/availability';
 import { BusinessInfo } from './components/business-info/business-info';
+import { Resources } from './components/resources/resources';
 import { Services } from './components/services/services';
 
 export type Section = 'info' | 'services' | 'resources' | 'availability';
@@ -18,7 +20,7 @@ interface SectionConfig {
 @Component({
   selector: 'app-setup',
   standalone: true,
-  imports: [CommonModule, BusinessInfo, Services],
+  imports: [CommonModule, BusinessInfo, Services, Resources, Availability],
   templateUrl: './setup.html',
   styleUrl: './setup.css',
 })
