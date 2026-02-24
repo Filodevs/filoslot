@@ -1,0 +1,24 @@
+<div class="flex flex-col gap-1.5">
+  @if (label()) {
+  <label
+    for=""
+    class="text-[0.7rem] font-bold text-white/45 uppercase tracking-widest"
+  >
+    {{ label() }}
+  </label>
+  }
+
+  <input
+    pInputText
+    [type]="type()"
+    [placeholder]="placeholder()"
+    [formControl]="control()"
+    [class.invalid]="isInvalid"
+  />
+
+  @if (isInvalid && activeError) {
+  <span class="text-sm text-red-400 flex items-center gap-1">
+    ⚠ {{ activeError }}
+  </span>
+  }
+</div>

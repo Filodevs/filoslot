@@ -5,17 +5,8 @@ import { Availability } from './components/availability/availability';
 import { BusinessInfo } from './components/business-info/business-info';
 import { Resources } from './components/resources/resources';
 import { Services } from './components/services/services';
-
-export type Section = 'info' | 'services' | 'resources' | 'availability';
-
-interface SectionConfig {
-  key: Section;
-  label: string;
-  shortLabel: string;
-  icon: string;
-  iconBg: string;
-  subtitle: string;
-}
+import { SECTIONS } from './constants';
+import { Section, SectionConfig } from './setup.d';
 
 @Component({
   selector: 'app-setup',
@@ -25,45 +16,12 @@ interface SectionConfig {
   styleUrl: './setup.css',
 })
 export class Setup {
+  readonly sections: SectionConfig[] = SECTIONS;
+
   activeSection = signal<Section | null>('info');
   completedSections = signal<Set<Section>>(new Set());
 
-  readonly sections: SectionConfig[] = [
-    {
-      key: 'info',
-      label: 'Información del negocio',
-      shortLabel: 'Info',
-      icon: '🏪',
-      iconBg: 'bg-indigo-500/15',
-      subtitle: 'Nombre, dirección y contacto',
-    },
-    {
-      key: 'services',
-      label: 'Servicios',
-      shortLabel: 'Servicios',
-      icon: '✂️',
-      iconBg: 'bg-cyan-400/10',
-      subtitle: 'Catálogo y precios',
-    },
-    {
-      key: 'resources',
-      label: 'Recursos / Personal',
-      shortLabel: 'Recursos',
-      icon: '👤',
-      iconBg: 'bg-violet-500/15',
-      subtitle: 'Tu equipo de trabajo',
-    },
-    {
-      key: 'availability',
-      label: 'Semana Maestra',
-      shortLabel: 'Horarios',
-      icon: '📅',
-      iconBg: 'bg-indigo-500/15',
-      subtitle: 'Horarios por recurso',
-    },
-  ];
-
-  readonly allCompleted = computed(
+  allCompleted = computed(
     () => this.completedSections().size === this.sections.length,
   );
 

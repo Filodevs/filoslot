@@ -7,7 +7,6 @@
   color: white !important;
 }
 
-/* El icono de la flecha */
 :host ::ng-deep .p-select-dropdown {
   color: white !important;
 }

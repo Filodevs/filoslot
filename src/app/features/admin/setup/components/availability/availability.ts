@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';
 
-import { Section } from '../../setup';
+import { Section } from '../../setup.d';
 
 export interface DaySchedule {
   key: string;

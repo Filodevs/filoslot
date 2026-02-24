@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { InputTextModule } from 'primeng/inputtext';
 
-import { Section } from '../../setup';
+import { Section } from '../../setup.d';
 
 interface Resource {
   id: string;

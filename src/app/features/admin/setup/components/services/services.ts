@@ -1,35 +1,21 @@
 import { Component, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputTextModule } from 'primeng/inputtext';
-
-import { Section } from '../../setup';
-
-interface Service {
-  id: string;
-  name: string;
-  price: number;
-  duration: number;
-}
-
-// AGREGAR TARGETA DE CONFIRMACION PARA LA ELIMINACION DE SERVICIOS
+import { IService } from '../../../../../models/service';
+import { AppInput } from '../../../../../shared/components/app-input/app-input';
+import { AppInputNumber } from '../../../../../shared/components/app-input-number/app-input-number';
+import { Section } from '../../setup.d';
 
 @Component({
   selector: 'app-services',
-  imports: [ReactiveFormsModule, InputTextModule, InputNumberModule],
+  imports: [ReactiveFormsModule, AppInput, AppInputNumber],
   templateUrl: './services.html',
   styleUrl: './services.css',
 })
 export class Services {
   readonly fb = inject(FormBuilder);
 
-  services = signal<Service[]>([
-    { id: '1', name: 'Corte Premium', price: 25, duration: 30 },
-    { id: '2', name: 'Barba & Ritual', price: 15, duration: 45 },
-    { id: '3', name: 'Combo FiloSlot', price: 35, duration: 60 },
-  ]);
-
+  services = signal<IService[]>([]);
   showForm = signal(false);
   editingId = signal<string | null>(null);
 
@@ -41,27 +27,13 @@ export class Services {
 
   completed = output<Section>();
 
-  get nameInvalid() {
-    return this.form.get('name')?.invalid && this.form.get('name')?.touched;
-  }
-
-  get priceInvalid() {
-    return this.form.get('price')?.invalid && this.form.get('price')?.touched;
-  }
-
-  get durationInvalid() {
-    return (
-      this.form.get('duration')?.invalid && this.form.get('duration')?.touched
-    );
-  }
-
   openForm(): void {
     this.editingId.set(null);
     this.form.reset({ duration: 30 });
     this.showForm.set(true);
   }
 
-  editService(service: Service): void {
+  editService(service: IService): void {
     this.editingId.set(service.id);
     this.form.patchValue(service);
     this.showForm.set(true);
@@ -94,7 +66,7 @@ export class Services {
         ),
       );
     } else {
-      const newService: Service = {
+      const newService: IService = {
         id: crypto.randomUUID(),
         name: name!,
         price: price!,
