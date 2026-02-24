@@ -3,12 +3,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ButtonModule } from 'primeng/button';
 
+import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
 import { Section } from '../../setup.d';
 
 @Component({
   selector: 'app-business-info',
-  imports: [ReactiveFormsModule, ButtonModule, AppInput],
+  imports: [ReactiveFormsModule, ButtonModule, AppInput, AppButton],
   templateUrl: './business-info.html',
   styleUrl: './business-info.css',
 })

@@ -2,13 +2,14 @@ import { Component, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { IService } from '../../../../../models/service';
+import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
 import { AppInputNumber } from '../../../../../shared/components/app-input-number/app-input-number';
 import { Section } from '../../setup.d';
 
 @Component({
   selector: 'app-services',
-  imports: [ReactiveFormsModule, AppInput, AppInputNumber],
+  imports: [ReactiveFormsModule, AppInput, AppInputNumber, AppButton],
   templateUrl: './services.html',
   styleUrl: './services.css',
 })

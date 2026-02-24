@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
 import { SelectModule } from 'primeng/select';
 
+import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { Section } from '../../setup.d';
 
 export interface DaySchedule {
@@ -20,7 +21,7 @@ interface Resource {
 
 @Component({
   selector: 'app-availability',
-  imports: [ReactiveFormsModule, SelectModule],
+  imports: [ReactiveFormsModule, SelectModule, AppButton],
   templateUrl: './availability.html',
   styleUrl: './availability.css',
 })

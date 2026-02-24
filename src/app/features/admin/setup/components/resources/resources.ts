@@ -2,13 +2,14 @@ import { Component, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { IResource } from '../../../../../models/resource';
+import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
 import { Section } from '../../setup.d';
 import { AVATAR_COLORS } from './constants';
 
 @Component({
   selector: 'app-resources',
-  imports: [ReactiveFormsModule, AppInput],
+  imports: [ReactiveFormsModule, AppInput, AppButton],
   templateUrl: './resources.html',
   styleUrl: './resources.css',
 })

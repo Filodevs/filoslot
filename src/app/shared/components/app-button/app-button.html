@@ -1,0 +1,5 @@
+<button [type]="type()" [class]="classes" [disabled]="disabled()">
+  @if (label()) { {{ label() }} } @else {
+  <ng-content />
+  }
+</button>
