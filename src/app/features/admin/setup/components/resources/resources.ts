@@ -1,53 +1,22 @@
 import { Component, inject, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
-import { InputTextModule } from 'primeng/inputtext';
-
+import { IResource } from '../../../../../models/resource';
+import { AppInput } from '../../../../../shared/components/app-input/app-input';
 import { Section } from '../../setup.d';
-
-interface Resource {
-  id: string;
-  name: string;
-  role: string;
-  initials: string;
-  color: string;
-}
-
-const AVATAR_COLORS = [
-  'from-indigo-500 to-violet-500',
-  'from-cyan-500 to-blue-500',
-  'from-violet-500 to-pink-500',
-  'from-emerald-500 to-cyan-500',
-  'from-orange-500 to-pink-500',
-];
+import { AVATAR_COLORS } from './constants';
 
 @Component({
   selector: 'app-resources',
-  imports: [ReactiveFormsModule, InputTextModule],
+  imports: [ReactiveFormsModule, AppInput],
   templateUrl: './resources.html',
   styleUrl: './resources.css',
 })
 export class Resources {
   private readonly fb = inject(FormBuilder);
+  private readonly colorMap = new Map<string, string>();
 
-  completed = output<Section>();
-
-  resources = signal<Resource[]>([
-    {
-      id: '1',
-      name: 'Jorge Beltrán',
-      role: 'Barbero Senior',
-      initials: 'JB',
-      color: AVATAR_COLORS[0],
-    },
-    {
-      id: '2',
-      name: 'Carlos M.',
-      role: 'Estilista',
-      initials: 'CM',
-      color: AVATAR_COLORS[1],
-    },
-  ]);
+  resources = signal<IResource[]>([]);
 
   showForm = signal(false);
   editingId = signal<string | null>(null);
@@ -57,11 +26,25 @@ export class Resources {
     role: ['', Validators.required],
   });
 
-  get nameInvalid() {
-    return this.form.get('name')?.invalid && this.form.get('name')?.touched;
+  completed = output<Section>();
+
+  getInitials(name: string): string {
+    return name
+      .split(' ')
+      .slice(0, 2)
+      .map((w) => w[0])
+      .join('')
+      .toUpperCase();
   }
-  get roleInvalid() {
-    return this.form.get('role')?.invalid && this.form.get('role')?.touched;
+
+  getColor(id: string): string {
+    if (!this.colorMap.has(id)) {
+      const color =
+        AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
+      this.colorMap.set(id, color);
+    }
+
+    return this.colorMap.get(id)!;
   }
 
   openForm(): void {
@@ -70,7 +53,7 @@ export class Resources {
     this.showForm.set(true);
   }
 
-  editResource(resource: Resource): void {
+  editResource(resource: IResource): void {
     this.editingId.set(resource.id);
     this.form.patchValue({ name: resource.name, role: resource.role });
     this.showForm.set(true);
@@ -83,6 +66,7 @@ export class Resources {
   }
 
   deleteResource(id: string): void {
+    this.colorMap.delete(id);
     this.resources.update((list) => list.filter((r) => r.id !== id));
   }
 
@@ -97,23 +81,14 @@ export class Resources {
     if (this.editingId()) {
       this.resources.update((list) =>
         list.map((r) =>
-          r.id === this.editingId()
-            ? {
-                ...r,
-                name: name!,
-                role: role!,
-                initials: this.getInitials(name!),
-              }
-            : r,
+          r.id === this.editingId() ? { ...r, name: name!, role: role! } : r,
         ),
       );
     } else {
-      const newResource: Resource = {
+      const newResource: IResource = {
         id: crypto.randomUUID(),
         name: name!,
         role: role!,
-        initials: this.getInitials(name!),
-        color: this.getColor(this.resources().length),
       };
       this.resources.update((list) => [...list, newResource]);
     }
@@ -125,18 +100,5 @@ export class Resources {
     if (this.resources().length === 0) return;
     // TODO: llamar al servicio HTTP
     this.completed.emit('resources');
-  }
-
-  private getInitials(name: string): string {
-    return name
-      .split(' ')
-      .slice(0, 2)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase();
-  }
-
-  private getColor(index: number): string {
-    return AVATAR_COLORS[index % AVATAR_COLORS.length];
   }
 }
