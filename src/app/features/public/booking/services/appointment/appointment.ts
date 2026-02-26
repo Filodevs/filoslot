@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { delay, Observable, of } from 'rxjs';
 
 import { IBookingDataDTO } from '../../../../../models/appointment';
-import { ISlot } from '../../../../../models/slot';
+import { ISlot, SlotStatus } from '../../../../../models/slot';
 
 @Injectable({ providedIn: 'root' })
 export class Appointment {
@@ -19,7 +19,8 @@ export class Appointment {
         id: `${resourceId}-${slotDate.getTime()}`,
         startTime: slotDate,
         endTime: new Date(slotDate.getTime() + 60 * 60 * 1000),
-        status: startHour + i !== 12 ? 'AVAILABLE' : 'BOOKED',
+        status: startHour + i !== 12 ? SlotStatus.available : SlotStatus.booked,
+        resourceId,
       });
     }
 

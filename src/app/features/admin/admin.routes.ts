@@ -13,6 +13,11 @@ export const ADMIN_ROUTES: Routes = [
         pathMatch: 'full',
       },
       {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./dashboard/dashboard').then((c) => c.Dashboard),
+      },
+      {
         path: 'setup',
         loadComponent: () => import('./setup/setup').then((c) => c.Setup),
       },

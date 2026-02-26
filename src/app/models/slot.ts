@@ -3,6 +3,11 @@ export interface ISlot {
   startTime: Date;
   endTime: Date;
   status: SlotStatus;
+  resourceId: string;
 }
 
-export type SlotStatus = 'AVAILABLE' | 'BOOKED';
+export enum SlotStatus {
+  available = 'available',
+  booked = 'booked',
+  unavailable = 'unavailable',
+}

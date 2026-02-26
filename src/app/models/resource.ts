@@ -1,5 +1,8 @@
+import { IAppointment } from './appointment';
+
 export interface IResource {
   id: string;
   name: string;
   role: string;
+  appointments?: IAppointment[];
 }

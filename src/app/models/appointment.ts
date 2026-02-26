@@ -1,9 +1,18 @@
 export interface IAppointment {
   id: string;
-  resourceId: string;
+  clientName: string;
   startTime: Date;
   endTime: Date;
-  status: 'AVAILABLE' | 'BOOKED';
+  duration: number;
+  status: AppointmentStatus;
+  resourceId: string;
+  serviceId: string;
+}
+
+export enum AppointmentStatus {
+  pending = 'pending',
+  completed = 'completed',
+  canceled = 'canceled',
 }
 
 export interface IBookingDataDTO {

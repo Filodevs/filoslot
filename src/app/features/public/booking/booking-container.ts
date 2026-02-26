@@ -11,7 +11,8 @@ import { Notification } from '../../../core/services/ui/notification';
 import { IBookingDataDTO } from '../../../models/appointment';
 import { IBusinessData } from '../../../models/businessData';
 import { IResource } from '../../../models/resource';
-import { ISlot } from '../../../models/slot';
+import { ISlot, SlotStatus } from '../../../models/slot';
+import { AppDateSelector } from '../../../shared/components/app-date-selector/app-date-selector';
 import { AppSelect } from '../../../shared/components/app-select/app-select';
 import {
   AppointmentConfirmDialog,
@@ -19,7 +20,6 @@ import {
   AppointmentConfirmDialogResult,
 } from './components/appointment-confirm-dialog/appointment-confirm-dialog';
 import { BusinessInfo } from './components/business-info/business-info';
-import { DateSelector } from './components/date-selector/date-selector';
 import { SlotPicker } from './components/slot-picker/slot-picker';
 import { Appointment } from './services/appointment/appointment';
 import { Resource } from './services/resources/resource';
@@ -32,7 +32,7 @@ import { Resource } from './services/resources/resource';
     BusinessInfo,
     AppSelect,
     SlotPicker,
-    DateSelector,
+    AppDateSelector,
   ],
   templateUrl: './booking-container.html',
 })
@@ -181,7 +181,7 @@ export class BookingContainer implements OnInit {
         next: () => {
           this.slots.update((slots) =>
             slots.map((s) =>
-              s.id === slot.id ? { ...s, status: 'BOOKED' as const } : s,
+              s.id === slot.id ? { ...s, status: SlotStatus.booked } : s,
             ),
           );
 

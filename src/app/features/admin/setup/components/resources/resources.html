@@ -14,9 +14,9 @@
       >
         <section
           class="w-12 h-12 rounded-full grid place-items-center bg-linear-to-br font-bold text-base text-white shrink-0"
-          [class]="getColor(resource.id)"
+          [class]="resource.id | avatarColor"
         >
-          {{ getInitials(resource.name) }}
+          {{ resource.name | initials }}
         </section>
 
         <section class="flex flex-col gap-0.5 w-full min-w-0">
@@ -32,7 +32,7 @@
             (click)="editResource(resource)"
             class="w-8 h-8 rounded-lg border border-white/10 grid place-items-center text-white/45 text-xs hover:border-indigo-500/60 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all duration-150 min-h-11 min-w-11"
           >
-            ✏️
+            <i class="pi pi-pencil"></i>
           </button>
 
           <button
@@ -40,7 +40,7 @@
             (click)="deleteResource(resource.id)"
             class="w-8 h-8 rounded-lg border border-white/10 grid place-items-center text-white/45 text-xs hover:border-red-500/50 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 min-h-11 min-w-11"
           >
-            🗑
+            <i class="pi pi-trash"></i>
           </button>
         </section>
       </div>

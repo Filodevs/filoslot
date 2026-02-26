@@ -4,18 +4,26 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
+import { AvatarColorPipe } from '../../../../../shared/pipes/avatar-color.pipe';
+import { InitialsPipe } from '../../../../../shared/pipes/initials.pipe';
+import { AvatarColorService } from '../../../../../shared/services/avatar-color.service';
 import { Section } from '../../setup.d';
-import { AVATAR_COLORS } from './constants';
 
 @Component({
   selector: 'app-resources',
-  imports: [ReactiveFormsModule, AppInput, AppButton],
+  imports: [
+    ReactiveFormsModule,
+    AppInput,
+    AppButton,
+    InitialsPipe,
+    AvatarColorPipe,
+  ],
   templateUrl: './resources.html',
   styleUrl: './resources.css',
 })
 export class Resources {
   private readonly fb = inject(FormBuilder);
-  private readonly colorMap = new Map<string, string>();
+  private readonly avatarColorService = inject(AvatarColorService);
 
   resources = signal<IResource[]>([]);
 
@@ -28,25 +36,6 @@ export class Resources {
   });
 
   completed = output<Section>();
-
-  getInitials(name: string): string {
-    return name
-      .split(' ')
-      .slice(0, 2)
-      .map((w) => w[0])
-      .join('')
-      .toUpperCase();
-  }
-
-  getColor(id: string): string {
-    if (!this.colorMap.has(id)) {
-      const color =
-        AVATAR_COLORS[Math.floor(Math.random() * AVATAR_COLORS.length)];
-      this.colorMap.set(id, color);
-    }
-
-    return this.colorMap.get(id)!;
-  }
 
   openForm(): void {
     this.editingId.set(null);
@@ -67,7 +56,7 @@ export class Resources {
   }
 
   deleteResource(id: string): void {
-    this.colorMap.delete(id);
+    this.avatarColorService.removeColor(id);
     this.resources.update((list) => list.filter((r) => r.id !== id));
   }
 
