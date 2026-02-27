@@ -1,0 +1,30 @@
+<button
+  (click)="onSelect()"
+  class="flex items-center gap-3 p-4 rounded-sm border text-left transition-all duration-150 min-h-11 w-full"
+  [class]="selected()
+            ? 'bg-indigo-500/15 border-indigo-500/50'
+            : 'bg-slate-900/60 border-white/7 hover:border-white/20'"
+>
+  <section class="w-9 h-9 grid place-items-center shrink-0">
+    <span
+      class="w-2 h-2 rounded-full"
+      [class]="selected() ? 'bg-cyan-400' : 'bg-cyan-400/40'"
+    ></span>
+  </section>
+
+  <section class="flex-1 min-w-0">
+    <p class="text-sm font-bold">{{ service().name }}</p>
+    <p class="text-[0.65rem] text-white/45">
+      <i class="pi pi-clock text-[0.6rem] mr-0.5"></i>
+      {{ service().duration }} min
+    </p>
+  </section>
+
+  <span class="text-sm font-extrabold text-cyan-400 shrink-0">
+    ${{ service().price }}
+  </span>
+
+  @if (selected()) {
+  <i class="pi pi-check-circle text-indigo-400 text-sm shrink-0"></i>
+  }
+</button>

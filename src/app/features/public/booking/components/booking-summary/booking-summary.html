@@ -1,0 +1,35 @@
+<article
+  class="bg-indigo-500/10 border border-indigo-500/25 rounded-2xl p-4 mb-4 animate-[fadeSlide_0.2s_ease]"
+>
+  <p
+    class="text-[0.65rem] font-bold text-indigo-400 uppercase tracking-widest mb-3"
+  >
+    Resumen de tu reserva
+  </p>
+
+  <div class="flex flex-col gap-2">
+    <section class="flex justify-between text-xs">
+      <span class="text-white/45">Servicio</span>
+      <span class="font-bold">{{ service().name }}</span>
+    </section>
+
+    <section class="flex justify-between text-xs">
+      <span class="text-white/45">Barbero</span>
+      <span class="font-bold">{{ resource().name }}</span>
+    </section>
+
+    <section class="flex justify-between text-xs">
+      <span class="text-white/45">Hora</span>
+      <span class="font-bold">{{ formatTime(slot().startTime) }}</span>
+    </section>
+
+    <section
+      class="flex justify-between text-xs border-t border-white/10 pt-2 mt-1"
+    >
+      <span class="text-white/45">Total</span>
+      <span class="font-extrabold text-cyan-400 text-sm">
+        ${{ service().price }}
+      </span>
+    </section>
+  </div>
+</article>

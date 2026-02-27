@@ -1,207 +1,162 @@
-import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl } from '@angular/forms';
+import { Component, computed, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
-import { DynamicDialogModule } from 'primeng/dynamicdialog';
-
-import { Business } from '../../../core/services/business';
-import { Dialog } from '../../../core/services/ui/dialog';
-import { Notification } from '../../../core/services/ui/notification';
 import { IBookingDataDTO } from '../../../models/appointment';
-import { IBusinessData } from '../../../models/businessData';
 import { IResource } from '../../../models/resource';
+import { IService } from '../../../models/service';
 import { ISlot, SlotStatus } from '../../../models/slot';
+import { AppButton } from '../../../shared/components/app-button/app-button';
 import { AppDateSelector } from '../../../shared/components/app-date-selector/app-date-selector';
-import { AppSelect } from '../../../shared/components/app-select/app-select';
-import {
-  AppointmentConfirmDialog,
-  AppointmentConfirmDialogData,
-  AppointmentConfirmDialogResult,
-} from './components/appointment-confirm-dialog/appointment-confirm-dialog';
-import { BusinessInfo } from './components/business-info/business-info';
-import { SlotPicker } from './components/slot-picker/slot-picker';
-import { Appointment } from './services/appointment/appointment';
-import { Resource } from './services/resources/resource';
+import { AppInput } from '../../../shared/components/app-input/app-input';
+import { BookingSummary } from './components/booking-summary/booking-summary';
+import { ResourceCard } from './components/resource-card/resource-card';
+import { ServiceCard } from './components/service-card/service-card';
 
 @Component({
   selector: 'app-booking-container',
   imports: [
-    CommonModule,
-    DynamicDialogModule,
-    BusinessInfo,
-    AppSelect,
-    SlotPicker,
+    ReactiveFormsModule,
+    AppInput,
+    AppButton,
     AppDateSelector,
+    ServiceCard,
+    ResourceCard,
+    BookingSummary,
   ],
   templateUrl: './booking-container.html',
 })
-export class BookingContainer implements OnInit {
-  private readonly dialog = inject(Dialog);
-  private readonly notificationService = inject(Notification);
-  private readonly destroyRef = inject(DestroyRef);
-  private readonly appointmentService = inject(Appointment);
-  private readonly resourceService = inject(Resource);
-  private readonly businessService = inject(Business);
+export class BookingContainer {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private fb = inject(FormBuilder);
 
-  businessData = signal<IBusinessData | null>(null);
-  businessLoading = signal(false);
-  slots = signal<ISlot[]>([]);
-  resources = signal<IResource[]>([]);
+  businessName = signal('FiloSlot Barber');
+  services = signal<IService[]>([
+    { id: 's1', name: 'Corte Premium', price: 25, duration: 30 },
+    { id: 's2', name: 'Barba & Ritual', price: 15, duration: 45 },
+    { id: 's3', name: 'Combo FiloSlot', price: 35, duration: 60 },
+  ]);
+  resources = signal<IResource[]>([
+    { id: 'r1', name: 'Jorge Beltrán', role: 'Barbero Senior' },
+    { id: 'r2', name: 'Carlos M.', role: 'Estilista' },
+  ]);
+  slots = signal<ISlot[]>([
+    {
+      id: 'sl1',
+      resourceId: 'r1',
+      startTime: new Date(),
+      endTime: new Date(),
+      status: SlotStatus.available,
+    },
+    {
+      id: 'sl2',
+      resourceId: 'r1',
+      startTime: new Date(),
+      endTime: new Date(),
+      status: SlotStatus.booked,
+    },
+    {
+      id: 'sl3',
+      resourceId: 'r1',
+      startTime: new Date(),
+      endTime: new Date(),
+      status: SlotStatus.available,
+    },
+    {
+      id: 'sl4',
+      resourceId: 'r2',
+      startTime: new Date(),
+      endTime: new Date(),
+      status: SlotStatus.available,
+    },
+  ]);
 
-  resourceSelected = signal<IResource | null>(null);
-  dateSelected = signal(new Date());
+  selectedService = signal<IService | null>(null);
+  selectedResource = signal<IResource | null>(null);
   selectedSlot = signal<ISlot | null>(null);
-  slotsLoading = signal(false);
+  selectedDate = signal<Date>(new Date());
 
-  resourceControl = new FormControl<string>('');
+  availableSlots = computed(() => {
+    const resource = this.selectedResource();
+    if (!resource) return [];
+    return this.slots().filter(
+      (s) => s.resourceId === resource.id && s.status === SlotStatus.available,
+    );
+  });
 
-  selectDate(date: Date): void {
-    this.dateSelected.set(date);
+  progress = computed(() => {
+    let steps = 0;
+    if (this.selectedService()) steps++;
+    if (this.selectedResource()) steps++;
+    if (this.selectedSlot()) steps++;
+    return steps;
+  });
 
-    this._getAvailableSlots();
+  canBook = computed(
+    () =>
+      this.selectedService() !== null &&
+      this.selectedResource() !== null &&
+      this.selectedSlot() !== null &&
+      this.form.valid,
+  );
+
+  form = this.fb.group({
+    userName: ['', [Validators.required, Validators.minLength(3)]],
+    userPhone: ['', [Validators.required]],
+  });
+
+  isSelected<T extends { id: string }>(item: T, selected: T | null): boolean {
+    return selected?.id === item.id;
   }
 
-  selectResource(resourceId: string): void {
-    const resource =
-      this.resources().find((res) => res.id === resourceId) ?? null;
-
-    if (!resource) return;
-
-    this.resourceSelected.set(resource);
-    this._getAvailableSlots();
-  }
-
-  openConfirmation(slot: ISlot): void {
-    this.selectedSlot.set(slot);
-
-    const slotTime = slot.startTime.toLocaleTimeString([], {
+  formatTime(date: Date): string {
+    return date.toLocaleTimeString('es', {
       hour: '2-digit',
       minute: '2-digit',
+      hour12: false,
     });
-
-    this.dialog
-      .open<
-        AppointmentConfirmDialog,
-        AppointmentConfirmDialogData,
-        AppointmentConfirmDialogResult
-      >(AppointmentConfirmDialog, {
-        header: 'Confirmar turno',
-        data: {
-          resourceName: this.resourceSelected()?.name ?? 'Recurso',
-          date: slot.startTime,
-          slotTime,
-        },
-      })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((result) => {
-        if (!result) return;
-
-        this._save(result, slot);
-      });
   }
 
-  ngOnInit(): void {
-    this._getBusinessData();
-    this._getResources();
+  selectService(service: IService): void {
+    this.selectedService.set(service);
+    this.selectedSlot.set(null);
   }
 
-  private _getBusinessData(): void {
-    this.businessLoading.set(true);
-
-    this.businessService
-      .getBusinessData()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data) => {
-          this.businessData.set(data);
-          this.businessLoading.set(false);
-        },
-        error: (err) => {
-          console.error('Error fetching business data:', err);
-          this.businessLoading.set(false);
-        },
-      });
+  selectResource(resource: IResource): void {
+    this.selectedResource.set(resource);
+    this.selectedSlot.set(null);
   }
 
-  private _getResources(): void {
-    this.resourceService
-      .getResources()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (resources) => {
-          this.resources.set(resources);
-          this.resourceSelected.set(resources.at(0) ?? null);
-          this.resourceControl.setValue(resources.at(0)?.id ?? '');
-
-          this._getAvailableSlots();
-        },
-        error: (err) => {
-          console.error('Error fetching resources:', err);
-        },
-      });
+  selectDate(date: Date): void {
+    this.selectedDate.set(date);
+    this.selectedSlot.set(null);
   }
 
-  private _getAvailableSlots(): void {
-    const resourceId = this.resourceSelected()?.id;
-    const date = this.dateSelected();
-
-    if (!resourceId || !date) return;
-
-    this.slotsLoading.set(true);
-
-    this.appointmentService
-      .getAvailableSlots(resourceId, date)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (slots) => {
-          this.slots.set(slots);
-          this.slotsLoading.set(false);
-        },
-        error: (err) => {
-          console.error('Error fetching available slots:', err);
-          this.slotsLoading.set(false);
-        },
-      });
+  selectSlot(slot: ISlot): void {
+    this.selectedSlot.set(slot);
   }
 
-  private _save(userData: AppointmentConfirmDialogResult, slot: ISlot): void {
-    const payload: IBookingDataDTO = {
-      userName: userData.name,
-      phone: userData.phone,
-      date: slot.startTime,
-      slotId: slot.id,
-      resourceId: this.resourceSelected()?.id ?? '',
-    };
+  goBack(): void {
+    const uuid = this.route.snapshot.paramMap.get('businessUuid');
+    this.router.navigate(['/business', uuid]);
+  }
 
-    this.appointmentService
-      .createAppointment(payload)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.slots.update((slots) =>
-            slots.map((s) =>
-              s.id === slot.id ? { ...s, status: SlotStatus.booked } : s,
-            ),
-          );
+  onSubmit(): void {
+    if (!this.canBook()) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
-          this.notificationService.showSuccess(
-            'Turno reservado',
-            `Tu turno para el ${slot.startTime.toLocaleDateString()} a las ${slot.startTime.toLocaleTimeString(
-              [],
-              {
-                hour: '2-digit',
-                minute: '2-digit',
-              },
-            )} ha sido reservado exitosamente.`,
-          );
-        },
-        error: () => {
-          this.notificationService.showError(
-            'Error al reservar',
-            'Hubo un error al reservar tu turno. Por favor, intenta nuevamente.',
-          );
-        },
-      });
+    // const payload: IBookingDataDTO = {
+    //   serviceId: this.selectedService()!.id,
+    //   resourceId: this.selectedResource()!.id,
+    //   slotId: this.selectedSlot()!.id,
+    //   userName: this.form.value.userName!,
+    //   userPhone: this.form.value.userPhone!,
+    // };
+
+    // console.log('Booking payload:', payload);
+    // TODO: llamar al servicio HTTP y navegar a confirmación
   }
 }

@@ -1,29 +1,170 @@
 <div class="flex flex-col gap-4">
-  <app-business-info
-    [businessData]="businessData()"
-    [loading]="businessLoading()"
-  />
+  <button
+    (click)="goBack()"
+    class="min-h-11 flex items-center gap-1.5 text-white/45 text-xs font-bold mb-5 hover:text-white transition-colors duration-150"
+  >
+    <i class="pi pi-arrow-left text-xs"></i>
+    {{ businessName() }}
+  </button>
 
-  <div class="flex flex-col gap-3">
-    <h3 class="text-sm font-semibold text-slate-200 ml-1">
-      Selecciona tu barbero
-    </h3>
-    <app-select
-      class="w-full md:w-56"
-      [options]="resources()"
-      labelField="name"
-      placeholder="Seleccione un recurso"
-      [control]="resourceControl"
-      (selectionChange)="selectResource($event)"
-    />
+  <h1 class="text-xl font-extrabold tracking-tight mb-1">Reserva tu turno</h1>
+  <p class="text-xs text-white/45 mb-6">Completa los pasos para confirmar</p>
+
+  <div class="w-full h-1 bg-white/7 rounded-full mb-7 overflow-hidden">
+    <div
+      class="h-full bg-linear-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-500"
+      [style.width]="(progress() / 3 * 100) + '%'"
+    ></div>
   </div>
 
-  <app-date-selector (dateChange)="selectDate($event)" />
+  <section>
+    <p
+      class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest mb-3"
+    >
+      <span
+        class="inline-flex w-4 h-4 rounded-full text-[0.55rem] mr-1.5 items-center justify-center"
+        [class]="selectedService()
+              ? 'bg-green-500 text-white'
+              : 'bg-indigo-500/30 text-indigo-300'"
+      >
+        {{ selectedService() ? '✓' : '1' }}
+      </span>
+      Selecciona un servicio
+    </p>
 
-  <app-slot-picker
-    [slots]="slots()"
-    [resources]="resources()"
-    [loading]="slotsLoading()"
-    (changeSlot)="openConfirmation($event)"
+    <div class="flex flex-col gap-2">
+      @for (service of services(); track service.id) {
+      <app-service-card
+        [service]="service"
+        [selected]="isSelected(service, selectedService())"
+        (cardSelect)="selectService($event)"
+      />
+      }
+    </div>
+  </section>
+
+  <section>
+    <p
+      class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest mb-3"
+    >
+      <span
+        class="inline-flex w-4 h-4 rounded-full text-[0.55rem] mr-1.5 items-center justify-center"
+        [class]="selectedResource()
+              ? 'bg-green-500 text-white'
+              : 'bg-indigo-500/30 text-indigo-300'"
+      >
+        {{ selectedResource() ? '✓' : '2' }}
+      </span>
+      Selecciona tu barbero
+    </p>
+
+    <div class="grid grid-cols-2 gap-2">
+      @for (resource of resources(); track resource.id) {
+      <app-resource-card
+        [resource]="resource"
+        [selected]="isSelected(resource, selectedResource())"
+        (cardSelect)="selectResource($event)"
+      />
+      }
+    </div>
+  </section>
+
+  <section>
+    <p
+      class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest mb-3"
+    >
+      <span
+        class="inline-flex w-4 h-4 rounded-full text-[0.55rem] mr-1.5 items-center justify-center"
+        [class]="selectedSlot()
+              ? 'bg-green-500 text-white'
+              : 'bg-indigo-500/30 text-indigo-300'"
+      >
+        {{ selectedSlot() ? '✓' : '3' }}
+      </span>
+      Selecciona fecha y hora
+    </p>
+
+    <app-date-selector
+      class="mb-4"
+      [selectedDate]="selectedDate()"
+      (dateChange)="selectDate($event)"
+    />
+
+    @if (!selectedResource()) {
+    <article class="py-6 text-center">
+      <p class="text-xs text-white/25 font-semibold">
+        Selecciona un barbero para ver horarios
+      </p>
+    </article>
+    } @else if (availableSlots().length === 0) {
+    <article class="py-6 text-center">
+      <p class="text-xs text-white/25 font-semibold">
+        Sin horarios disponibles para este día
+      </p>
+    </article>
+    } @else {
+    <article class="grid grid-cols-3 gap-2">
+      @for (slot of availableSlots(); track slot.id) {
+      <button
+        (click)="selectSlot(slot)"
+        class="py-3 rounded-sm border text-sm font-bold transition-all duration-150 min-h-11"
+        [class]="isSelected(slot, selectedSlot())
+                    ? 'bg-indigo-500 border-indigo-500 text-white'
+                    : 'bg-slate-900/60 border-white/10 text-white/70 hover:border-indigo-500/40'"
+      >
+        {{ formatTime(slot.startTime) }}
+      </button>
+      }
+    </article>
+    }
+  </section>
+
+  <section>
+    <p
+      class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest mb-3"
+    >
+      <span
+        class="inline-flex w-4 h-4 rounded-full text-[0.55rem] mr-1.5 bg-indigo-500/30 text-indigo-300 items-center justify-center"
+      >
+        4
+      </span>
+      Tus datos
+    </p>
+
+    <form class="flex flex-col gap-4">
+      <app-input
+        label="Nombre"
+        placeholder="Ej: Carlos Rodríguez"
+        [control]="form.controls.userName"
+        [errors]="{ minlength: 'Nombre requerido (mínimo 3 caracteres)' }"
+      />
+
+      <app-input
+        label="Teléfono"
+        placeholder="Ej: +57 300 000 0000"
+        type="tel"
+        [control]="form.controls.userPhone"
+      />
+    </form>
+  </section>
+
+  @if (selectedService() && selectedResource() && selectedSlot()) {
+  <app-booking-summary
+    [service]="selectedService()!"
+    [resource]="selectedResource()!"
+    [slot]="selectedSlot()!"
   />
+  }
 </div>
+
+<footer
+  class="px-4 py-4 bg-[#030712]/85 backdrop-blur-xl border-t border-white/7 z-90"
+>
+  <app-button
+    label="Confirmar reserva"
+    type="submit"
+    variant="primary"
+    [disabled]="!canBook()"
+    (click)="onSubmit()"
+  />
+</footer>

@@ -1,1 +1,110 @@
-<p>business-profile works!</p>
+@let b = business(); @if (b) {
+<article>
+  <button
+    (click)="goBack()"
+    class="flex items-center gap-1.5 text-white/45 text-xs font-bold mb-5 hover:text-white transition-colors duration-150 min-h-11"
+  >
+    <i class="pi pi-arrow-left text-xs"></i>
+    Directorio
+  </button>
+
+  <section class="flex items-center gap-4 mb-6">
+    @if (b.photo) {
+    <img
+      [src]="b.photo"
+      [alt]="b.name"
+      class="w-20 h-20 rounded-2xl object-cover shrink-0"
+    />
+    } @else {
+    <div
+      class="w-20 h-20 rounded-2xl grid place-items-center shrink-0 bg-linear-to-br from-indigo-500/30 to-violet-500/30 border border-indigo-500/20"
+    >
+      <span class="text-2xl font-extrabold text-indigo-300">
+        {{ b.name | initials }}
+      </span>
+    </div>
+    }
+
+    <article class="flex-1 min-w-0">
+      <h1 class="text-xl font-extrabold tracking-tight leading-tight mb-1">
+        {{ b.name }}
+      </h1>
+
+      <div class="flex items-center gap-1 mb-1.5">
+        <i class="pi pi-map-marker text-[0.65rem] text-white/35"></i>
+        <p class="text-xs text-white/45 truncate">{{ b.address }}</p>
+      </div>
+
+      <div class="flex items-center gap-1.5">
+        <i class="pi pi-star-fill text-yellow-400 text-[0.65rem]"></i>
+        <span class="text-xs font-bold text-white/80">{{ b.rating }}</span>
+        <span class="text-[0.65rem] text-white/30"
+          >({{ b.reviewCount }} reseñas)</span
+        >
+      </div>
+    </article>
+  </section>
+
+  <section
+    class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-2xl overflow-hidden mb-4"
+  >
+    <article class="px-4 py-3 border-b border-white/7">
+      <p
+        class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest"
+      >
+        Servicios destacados
+      </p>
+    </article>
+
+    @for (service of b.services; track service.id; let last = $last) {
+    <article
+      class="flex items-center gap-3 px-4 py-3"
+      [class]="!last ? 'border-b border-white/5' : ''"
+    >
+      <div
+        class="w-8 h-8 rounded-lg bg-indigo-500/15 grid place-items-center shrink-0"
+      >
+        <i class="pi pi-cog text-indigo-400 text-xs"></i>
+      </div>
+
+      <div class="flex-1 min-w-0">
+        <p class="text-sm font-bold">{{ service.name }}</p>
+        <p class="text-[0.65rem] text-white/45">
+          <i class="pi pi-clock text-[0.6rem] mr-0.5"></i>
+          {{ service.duration }} min
+        </p>
+      </div>
+
+      <span class="text-sm font-extrabold text-cyan-400"
+        >${{ service.price }}</span
+      >
+    </article>
+    }
+  </section>
+
+  <section
+    class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-2xl p-4 mb-4"
+  >
+    <p
+      class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest mb-3"
+    >
+      Contacto
+    </p>
+    <div class="flex items-center gap-2">
+      <i class="pi pi-phone text-indigo-400 text-sm"></i>
+      <span class="text-sm font-semibold">{{ b.phone }}</span>
+    </div>
+  </section>
+</article>
+
+<footer
+  class="px-4 py-4 bg-[#030712]/85 backdrop-blur-xl border-t border-white/7 z-90"
+>
+  <button
+    (click)="goToBooking()"
+    class="w-full max-w-120 mx-auto block py-3.5 bg-linear-to-r from-indigo-500 to-violet-500 rounded-xl text-white font-extrabold text-sm tracking-tight shadow-[0_8px_24px_rgba(99,102,241,0.3)] active:scale-[0.99] transition-all duration-150"
+  >
+    Reservar ahora
+  </button>
+</footer>
+}
