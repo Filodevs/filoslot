@@ -1,135 +1,30 @@
 <section class="flex flex-col gap-4">
-  <app-date-selector [showNavigation]="true" [(selectedDate)]="selectedDate" />
+  <app-date-selector
+    [showNavigation]="true"
+    [selectedDate]="selectedDate()"
+    (dateChange)="onDateSelected($event)"
+  />
 
-  <article class="grid grid-cols-3 gap-2 mb-5">
-    <section
-      class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-xl p-3 text-center"
-    >
-      <p class="text-xl font-extrabold text-indigo-400">{{ stats().total }}</p>
-      <p
-        class="text-[0.6rem] font-bold text-white/45 uppercase tracking-widest"
-      >
-        Total
-      </p>
-    </section>
-
-    <section
-      class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-xl p-3 text-center"
-    >
-      <p class="text-xl font-extrabold text-green-400">
-        {{ stats().completed }}
-      </p>
-      <p
-        class="text-[0.6rem] font-bold text-white/45 uppercase tracking-widest"
-      >
-        Listas
-      </p>
-    </section>
-
-    <section
-      class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-xl p-3 text-center"
-    >
-      <p class="text-xl font-extrabold text-yellow-400">
-        {{ stats().pending }}
-      </p>
-      <p
-        class="text-[0.6rem] font-bold text-white/45 uppercase tracking-widest"
-      >
-        Pendientes
-      </p>
-    </section>
-  </article>
+  @if (loadingResources()) {
+  <div class="grid grid-cols-3 gap-2 mb-5">
+    @for (_ of [1, 2, 3]; track $index) {
+    <app-skeleton height="60px" />
+    }
+  </div>
+  } @else {
+  <app-stats-card [stats]="stats()" />
+  }
 
   <article class="flex flex-col gap-4">
-    @for (resource of resources(); track resource.id) {
-
-    <div class="flex flex-col">
-      <header class="flex items-center gap-2.5 mb-2">
-        <div
-          class="w-7 h-7 rounded-full grid place-items-center bg-linear-to-br text-[0.6rem] font-extrabold text-white shrink-0"
-          [class]="resource.id | avatarColor"
-        >
-          {{ resource.name | initials }}
-        </div>
-
-        <span class="text-sm font-bold">{{ resource.name }}</span>
-
-        <span class="text-[0.62rem] text-white/35 ml-auto">
-          {{ resource?.appointments?.length }} citas
-        </span>
-      </header>
-
-      <div
-        class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-xl overflow-hidden"
-      >
-        @for (appt of resource.appointments; track appt.id; let last = $last) {
-
-        <div
-          class="flex items-center gap-3 px-4 py-3 border-l-[3px] transition-all duration-150"
-          [class]="[
-                   getAppointmentBorder(appt.status),
-                   appt.status === 'canceled' ? 'opacity-50' : '',
-                   !last ? 'border-b border-b-white/5' : ''
-                 ]"
-        >
-          <section class="text-center shrink-0 w-10">
-            <p class="text-[0.7rem] font-extrabold text-white/80">
-              {{ appt.startTime | date: 'HH:mm' }}
-            </p>
-            <p class="text-[0.55rem] text-white/30">{{ appt.duration }}m</p>
-          </section>
-
-          <section class="flex-1 min-w-0">
-            <p
-              class="text-sm font-bold truncate"
-              [class]="appt.status === 'canceled' ? 'line-through text-white/50' : ''"
-            >
-              {{ appt.clientName }}
-            </p>
-            <p class="text-[0.65rem] text-white/45 truncate">
-              {{ servicesByResource().get(appt.serviceId) }}
-            </p>
-          </section>
-
-          <section class="flex flex-col items-end gap-1.5 shrink-0">
-            <span
-              class="text-[0.55rem] font-bold px-2 py-0.5 rounded-full"
-              [class]="getBadgeClass(appt.status)"
-            >
-              {{ getBadgeLabel(appt.status) }}
-            </span>
-
-            @if (appt.status === 'pending') {
-            <div class="flex gap-1.5">
-              <button
-                (click)="markCompleted(resource.id, appt.id)"
-                title="Marcar como completada"
-                class="w-7 h-7 rounded-lg border border-white/10 grid place-items-center text-white/40 hover:border-green-500/50 hover:text-green-400 hover:bg-green-500/10 transition-all duration-150 min-h-11 min-w-11"
-              >
-                <i class="pi pi-check text-[0.65rem]"></i>
-              </button>
-
-              <button
-                (click)="cancelAppointment(resource.id, appt.id)"
-                title="Cancelar cita"
-                class="w-7 h-7 rounded-lg border border-white/10 grid place-items-center text-white/40 hover:border-red-500/50 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 min-h-11 min-w-11"
-              >
-                <i class="pi pi-times text-[0.65rem]"></i>
-              </button>
-            </div>
-            }
-          </section>
-        </div>
-        } @if (resource?.appointments?.length === 0) {
-        <article class="flex flex-col items-center gap-1.5 py-6 text-center">
-          <i class="pi pi-calendar text-white/20 text-2xl"></i>
-          <p class="text-xs text-white/35 font-semibold">
-            Sin citas para este día
-          </p>
-        </article>
-        }
-      </div>
-    </div>
-    }
+    @if (loadingResources()) { @for (_ of [1, 2]; track $index) {
+    <app-skeleton height="140px" />
+    } } @else { @for (resource of resources(); track resource.id) {
+    <app-resource-appointments
+      [resource]="resource"
+      [servicesByResource]="servicesByResource()"
+      (completed)="markCompleted($event)"
+      (canceled)="cancelAppointment($event)"
+    />
+    } }
   </article>
 </section>

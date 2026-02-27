@@ -1,7 +1,19 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { AppointmentService } from '../../../core/services/appointment.service';
+import { CatalogService } from '../../../core/services/catalog.service';
+import { ResourceService } from '../../../core/services/resource.service';
+import { Notification } from '../../../core/services/ui/notification';
 import { IBookingDataDTO } from '../../../models/appointment';
 import { IResource } from '../../../models/resource';
 import { IService } from '../../../models/service';
@@ -9,6 +21,7 @@ import { ISlot, SlotStatus } from '../../../models/slot';
 import { AppButton } from '../../../shared/components/app-button/app-button';
 import { AppDateSelector } from '../../../shared/components/app-date-selector/app-date-selector';
 import { AppInput } from '../../../shared/components/app-input/app-input';
+import { AppSkeleton } from '../../../shared/components/app-skeleton/app-skeleton';
 import { BookingSummary } from './components/booking-summary/booking-summary';
 import { ResourceCard } from './components/resource-card/resource-card';
 import { ServiceCard } from './components/service-card/service-card';
@@ -20,57 +33,31 @@ import { ServiceCard } from './components/service-card/service-card';
     AppInput,
     AppButton,
     AppDateSelector,
+    AppSkeleton,
     ServiceCard,
     ResourceCard,
     BookingSummary,
   ],
   templateUrl: './booking-container.html',
 })
-export class BookingContainer {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  private fb = inject(FormBuilder);
+export class BookingContainer implements OnInit {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly catalogService = inject(CatalogService);
+  private readonly resourceService = inject(ResourceService);
+  private readonly appointmentService = inject(AppointmentService);
+  private readonly notification = inject(Notification);
 
   businessName = signal('FiloSlot Barber');
-  services = signal<IService[]>([
-    { id: 's1', name: 'Corte Premium', price: 25, duration: 30 },
-    { id: 's2', name: 'Barba & Ritual', price: 15, duration: 45 },
-    { id: 's3', name: 'Combo FiloSlot', price: 35, duration: 60 },
-  ]);
-  resources = signal<IResource[]>([
-    { id: 'r1', name: 'Jorge Beltrán', role: 'Barbero Senior' },
-    { id: 'r2', name: 'Carlos M.', role: 'Estilista' },
-  ]);
-  slots = signal<ISlot[]>([
-    {
-      id: 'sl1',
-      resourceId: 'r1',
-      startTime: new Date(),
-      endTime: new Date(),
-      status: SlotStatus.available,
-    },
-    {
-      id: 'sl2',
-      resourceId: 'r1',
-      startTime: new Date(),
-      endTime: new Date(),
-      status: SlotStatus.booked,
-    },
-    {
-      id: 'sl3',
-      resourceId: 'r1',
-      startTime: new Date(),
-      endTime: new Date(),
-      status: SlotStatus.available,
-    },
-    {
-      id: 'sl4',
-      resourceId: 'r2',
-      startTime: new Date(),
-      endTime: new Date(),
-      status: SlotStatus.available,
-    },
-  ]);
+  services = signal<IService[]>([]);
+  resources = signal<IResource[]>([]);
+  slots = signal<ISlot[]>([]);
+
+  loadingServices = signal(true);
+  loadingResources = signal(true);
+  loadingSlots = signal(false);
 
   selectedService = signal<IService | null>(null);
   selectedResource = signal<IResource | null>(null);
@@ -80,6 +67,7 @@ export class BookingContainer {
   availableSlots = computed(() => {
     const resource = this.selectedResource();
     if (!resource) return [];
+
     return this.slots().filter(
       (s) => s.resourceId === resource.id && s.status === SlotStatus.available,
     );
@@ -90,6 +78,7 @@ export class BookingContainer {
     if (this.selectedService()) steps++;
     if (this.selectedResource()) steps++;
     if (this.selectedSlot()) steps++;
+
     return steps;
   });
 
@@ -105,6 +94,10 @@ export class BookingContainer {
     userName: ['', [Validators.required, Validators.minLength(3)]],
     userPhone: ['', [Validators.required]],
   });
+
+  ngOnInit(): void {
+    this._loadData();
+  }
 
   isSelected<T extends { id: string }>(item: T, selected: T | null): boolean {
     return selected?.id === item.id;
@@ -126,11 +119,13 @@ export class BookingContainer {
   selectResource(resource: IResource): void {
     this.selectedResource.set(resource);
     this.selectedSlot.set(null);
+    this._loadSlots();
   }
 
   selectDate(date: Date): void {
     this.selectedDate.set(date);
     this.selectedSlot.set(null);
+    this._loadSlots();
   }
 
   selectSlot(slot: ISlot): void {
@@ -148,15 +143,64 @@ export class BookingContainer {
       return;
     }
 
-    // const payload: IBookingDataDTO = {
-    //   serviceId: this.selectedService()!.id,
-    //   resourceId: this.selectedResource()!.id,
-    //   slotId: this.selectedSlot()!.id,
-    //   userName: this.form.value.userName!,
-    //   userPhone: this.form.value.userPhone!,
-    // };
+    const payload: IBookingDataDTO = {
+      resourceId: this.selectedResource()!.id,
+      date: this.selectedDate(),
+      slotId: this.selectedSlot()!.id,
+      userName: this.form.value.userName!,
+      phone: this.form.value.userPhone!,
+    };
 
-    // console.log('Booking payload:', payload);
-    // TODO: llamar al servicio HTTP y navegar a confirmación
+    this.appointmentService
+      .createAppointment(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.notification.showSuccess(
+            '¡Reserva confirmada!',
+            'Tu turno ha sido agendado exitosamente.',
+          );
+          this.router.navigate(['/directory']);
+        },
+      });
+  }
+
+  private _loadData(): void {
+    this.catalogService
+      .getServices()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (s) => {
+          this.services.set(s);
+          this.loadingServices.set(false);
+        },
+      });
+
+    this.resourceService
+      .getResources()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (r) => {
+          this.resources.set(r);
+          this.loadingResources.set(false);
+        },
+      });
+  }
+
+  private _loadSlots(): void {
+    const resource = this.selectedResource();
+
+    if (!resource) return;
+    this.loadingSlots.set(true);
+
+    this.appointmentService
+      .getAvailableSlots(resource.id, this.selectedDate())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (s) => {
+          this.slots.set(s);
+          this.loadingSlots.set(false);
+        },
+      });
   }
 }

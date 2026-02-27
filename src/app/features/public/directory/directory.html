@@ -22,89 +22,28 @@
     />
   </section>
 
+  @if (!loading()) {
   <p
     class="text-[0.68rem] font-bold text-white/35 uppercase tracking-widest mb-3"
   >
     {{ filteredBusinesses().length }} negocios disponibles
   </p>
+  }
 
   <div class="flex flex-col gap-3">
-    @for (business of filteredBusinesses(); track business.id) {
-
-    <button
-      (click)="navigateTo(business.id)"
-      class="w-full text-left bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-2xl overflow-hidden hover:border-indigo-500/35 active:scale-[0.99] transition-all duration-150"
-    >
-      <div class="flex items-center gap-3 p-4">
-        @if (business.photo) {
-        <img
-          [src]="business.photo"
-          [alt]="business.name"
-          class="w-14 h-14 rounded-xl object-cover shrink-0"
-        />
-        } @else {
-        <div
-          class="w-14 h-14 rounded-xl grid place-items-center shrink-0 bg-linear-to-br from-indigo-500/30 to-violet-500/30 border border-indigo-500/20"
-        >
-          <span class="text-lg font-extrabold text-indigo-300">
-            {{ business.name | initials }}
-          </span>
-        </div>
-        }
-
-        <div class="flex-1 min-w-0">
-          <h2 class="text-sm font-extrabold truncate mb-0.5">
-            {{ business.name }}
-          </h2>
-          <div class="flex items-center gap-1 mb-1">
-            <i class="pi pi-map-marker text-[0.6rem] text-white/35"></i>
-            <p class="text-[0.68rem] text-white/45 truncate">
-              {{ business.address }}
-            </p>
-          </div>
-
-          <div class="flex items-center gap-1.5">
-            <div class="flex gap-0.5">
-              @for (star of getRatingStars(business.rating); track star) {
-              <i
-                class="pi text-[0.55rem]"
-                [class]="isStarFilled(star, business.rating)
-                       ? 'pi-star-fill text-yellow-400'
-                       : 'pi-star text-white/20'"
-              >
-              </i>
-              }
-            </div>
-            <span class="text-[0.65rem] font-bold text-white/70">
-              {{ business.rating }}
-            </span>
-            <span class="text-[0.6rem] text-white/30">
-              ({{ business.reviewCount }})
-            </span>
-          </div>
-        </div>
-
-        <i class="pi pi-chevron-right text-xs text-white/20 shrink-0"></i>
-      </div>
-
-      <div class="px-4 pb-3 border-t border-white/5 pt-2.5">
-        <div class="flex flex-wrap gap-1.5">
-          @for (service of business.featuredServices; track service) {
-          <span
-            class="text-[0.6rem] font-bold px-2 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300"
-          >
-            {{ service }}
-          </span>
-          }
-        </div>
-      </div>
-    </button>
+    @if (loading()) { @for (i of [1, 2, 3]; track i) {
+    <app-skeleton height="120px" radius="16px" />
+    } } @else { @for (business of filteredBusinesses(); track business.id) {
+    <app-business-card
+      [business]="business"
+      (cardSelect)="navigateTo($event.id)"
+    />
     } @if (filteredBusinesses().length === 0) {
-    <div class="flex flex-col items-center gap-3 py-16 text-center">
+    <article class="flex flex-col items-center gap-3 py-16 text-center">
       <i class="pi pi-search text-white/15 text-4xl"></i>
       <p class="text-sm font-bold text-white/45">Sin resultados</p>
       <p class="text-xs text-white/25">Intenta con otro nombre o dirección</p>
-    </div>
-    }
+    </article>
+    } }
   </div>
 </div>

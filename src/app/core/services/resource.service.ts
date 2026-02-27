@@ -2,11 +2,11 @@ import { Injectable } from '@angular/core';
 
 import { delay, Observable, of } from 'rxjs';
 
-import { IResource } from '../../../../../models/resource';
-import { RESOURCE_MOCK } from '../../__mocks__/resource';
+import { RESOURCE_MOCK } from '../../models/__mocks__/resource.mock';
+import { IResource } from '../../models/resource';
 
 @Injectable({ providedIn: 'root' })
-export class Resource {
+export class ResourceService {
   getResources(): Observable<IResource[]> {
     return of(RESOURCE_MOCK).pipe(delay(500));
   }

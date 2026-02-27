@@ -1,0 +1,28 @@
+<article class="grid grid-cols-3 gap-2 mb-5">
+  <section
+    class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-xl p-3 text-center"
+  >
+    <p class="text-xl font-extrabold text-indigo-400">{{ stats().total }}</p>
+    <p class="text-[0.6rem] font-bold text-white/45 uppercase tracking-widest">
+      Total
+    </p>
+  </section>
+
+  <section
+    class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-xl p-3 text-center"
+  >
+    <p class="text-xl font-extrabold text-green-400">{{ stats().completed }}</p>
+    <p class="text-[0.6rem] font-bold text-white/45 uppercase tracking-widest">
+      Listas
+    </p>
+  </section>
+
+  <section
+    class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-xl p-3 text-center"
+  >
+    <p class="text-xl font-extrabold text-yellow-400">{{ stats().pending }}</p>
+    <p class="text-[0.6rem] font-bold text-white/45 uppercase tracking-widest">
+      Pendientes
+    </p>
+  </section>
+</article>

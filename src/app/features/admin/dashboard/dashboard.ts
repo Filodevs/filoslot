@@ -1,36 +1,49 @@
-import { CommonModule } from '@angular/common';
-import { Component, computed, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { CatalogService } from '../../../core/services/catalog.service';
+import { ResourceService } from '../../../core/services/resource.service';
 import { AppointmentStatus } from '../../../models/appointment';
 import { IResource } from '../../../models/resource';
+import { IService } from '../../../models/service';
 import { AppDateSelector } from '../../../shared/components/app-date-selector/app-date-selector';
-import { AvatarColorPipe } from '../../../shared/pipes/avatar-color.pipe';
-import { InitialsPipe } from '../../../shared/pipes/initials.pipe';
-import { RESOURCE_MOCK } from '../../public/booking/__mocks__/resource';
+import { AppSkeleton } from '../../../shared/components/app-skeleton/app-skeleton';
+import { AppStatsCard } from '../../../shared/components/app-stats-card/app-stats-card';
+import {
+  AppointmentAction,
+  ResourceAppointments,
+} from './components/resource-appointments/resource-appointments';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, AppDateSelector, InitialsPipe, AvatarColorPipe],
+  imports: [AppDateSelector, AppSkeleton, AppStatsCard, ResourceAppointments],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
+  private readonly resourceService = inject(ResourceService);
+  private readonly catalogService = inject(CatalogService);
+  private readonly destroyRef = inject(DestroyRef);
+
   selectedDate = signal<Date>(new Date());
-  resources = signal<IResource[]>(RESOURCE_MOCK);
+  resources = signal<IResource[]>([]);
+  services = signal<IService[]>([]);
+
+  loadingResources = signal(true);
+  loadingServices = signal(true);
 
   servicesByResource = computed(() => {
-    //TODO: THIS IS MOCKED, REPLACE WITH REAL DATA
-    const servicesMock = [
-      { id: 's1', name: 'Corte de cabello', duration: 30 },
-      { id: 's2', name: 'Afeitado', duration: 15 },
-      { id: 's3', name: 'Corte + Afeitado', duration: 45 },
-    ];
-
-    const map = new Map<string, typeof servicesMock>();
-    this.resources().forEach((r) => map.set(r.id, servicesMock));
+    const map = new Map<string, string>();
+    this.services().forEach((s) => map.set(s.id, s.name));
     return map;
   });
-
   stats = computed(() => {
     const all = this.resources().flatMap((r) => r.appointments);
     return {
@@ -42,7 +55,33 @@ export class Dashboard {
     };
   });
 
-  markCompleted(resourceId: string, appointmentId: string): void {
+  ngOnInit(): void {
+    this.resourceService
+      .getResources()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.resources.set(data);
+          this.loadingResources.set(false);
+        },
+      });
+
+    this.catalogService
+      .getServices()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.services.set(data);
+          this.loadingServices.set(false);
+        },
+      });
+  }
+
+  onDateSelected(date: Date): void {
+    this.selectedDate.set(date);
+  }
+
+  markCompleted({ resourceId, appointmentId }: AppointmentAction): void {
     this.resources.update((list) =>
       list.map((r) =>
         r.id !== resourceId
@@ -59,7 +98,7 @@ export class Dashboard {
     );
   }
 
-  cancelAppointment(resourceId: string, appointmentId: string): void {
+  cancelAppointment({ resourceId, appointmentId }: AppointmentAction): void {
     this.resources.update((list) =>
       list.map((r) =>
         r.id !== resourceId
@@ -74,33 +113,5 @@ export class Dashboard {
             },
       ),
     );
-  }
-
-  //TODO: USE A PIPE FOR THIS
-  getAppointmentBorder(status: AppointmentStatus): string {
-    const map: Record<AppointmentStatus, string> = {
-      [AppointmentStatus.pending]: 'border-l-indigo-500',
-      [AppointmentStatus.completed]: 'border-l-green-500',
-      [AppointmentStatus.canceled]: 'border-l-red-500/50',
-    };
-    return map[status];
-  }
-
-  getBadgeClass(status: AppointmentStatus): string {
-    const map: Record<AppointmentStatus, string> = {
-      [AppointmentStatus.pending]: 'bg-yellow-400/15 text-yellow-300',
-      [AppointmentStatus.completed]: 'bg-green-500/15 text-green-400',
-      [AppointmentStatus.canceled]: 'bg-red-500/15 text-red-400',
-    };
-    return map[status];
-  }
-
-  getBadgeLabel(status: AppointmentStatus): string {
-    const map: Record<AppointmentStatus, string> = {
-      [AppointmentStatus.pending]: 'Pendiente',
-      [AppointmentStatus.completed]: 'Completada',
-      [AppointmentStatus.canceled]: 'Cancelada',
-    };
-    return map[status];
   }
 }
