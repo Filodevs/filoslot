@@ -1,0 +1,80 @@
+<div class="flex flex-col h-full px-3 py-5">
+  <section class="flex items-center gap-2 px-2 mb-6">
+    <div
+      class="w-8 h-8 rounded-lg bg-indigo-500 grid place-items-center font-extrabold text-sm text-white shrink-0"
+    >
+      F
+    </div>
+    <span class="font-extrabold text-base tracking-tight">
+      <span class="text-indigo-400">FILO</span>SLOT
+    </span>
+  </section>
+
+  <section
+    class="flex items-center gap-2.5 px-2 py-3 mb-4 bg-indigo-500/10 border border-indigo-500/20 rounded-xl"
+  >
+    <div
+      class="w-9 h-9 rounded-full shrink-0 bg-linear-to-br from-indigo-500 to-violet-500 grid place-items-center font-extrabold text-sm text-white"
+    >
+      JB
+    </div>
+
+    <div class="min-w-0">
+      <p class="text-xs font-bold truncate">FiloSlot Barber</p>
+      <p class="text-[0.6rem] text-white/45">Dueño del negocio</p>
+    </div>
+  </section>
+
+  <p
+    class="text-[0.58rem] font-bold text-white/25 uppercase tracking-widest px-2 mb-2"
+  >
+    Menú
+  </p>
+
+  <nav class="flex flex-col gap-1">
+    <a
+      routerLink="/admin/dashboard"
+      class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold transition-all duration-150 min-h-11"
+      [class]="isActive('/admin/dashboard')
+         ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/25'
+         : 'text-white/50 hover:bg-white/5 hover:text-white'"
+    >
+      <i class="pi pi-home text-sm w-4 text-center"></i>
+      Dashboard
+    </a>
+
+    <a
+      routerLink="/admin/setup"
+      class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold transition-all duration-150 min-h-11"
+      [class]="isActive('/admin/setup')
+         ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/25'
+         : 'text-white/50 hover:bg-white/5 hover:text-white'"
+    >
+      <i class="pi pi-cog text-sm w-4 text-center"></i>
+      Configuración
+    </a>
+
+    <a
+      routerLink="/admin/profile"
+      class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold transition-all duration-150 min-h-11"
+      [class]="isActive('/admin/profile')
+         ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/25'
+         : 'text-white/50 hover:bg-white/5 hover:text-white'"
+    >
+      <i class="pi pi-building text-sm w-4 text-center"></i>
+      Perfil negocio
+    </a>
+  </nav>
+
+  <div class="flex-1"></div>
+
+  <div class="h-px bg-white/7 mb-3"></div>
+
+  <button
+    (click)="logout()"
+    class="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold w-full text-left min-h-11 text-red-400/70 hover:bg-red-500/10 hover:text-red-400 transition-all duration-150"
+  >
+    <i class="pi pi-sign-out text-sm w-4 text-center"></i>
+    Cerrar sesión
+  </button>
+</div>

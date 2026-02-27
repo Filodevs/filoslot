@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MainLayout } from './main-layout';
+import { SidebarNav } from './sidebar-nav';
 
-describe('MainLayout', () => {
-  let component: MainLayout;
-  let fixture: ComponentFixture<MainLayout>;
+describe('SidebarNav', () => {
+  let component: SidebarNav;
+  let fixture: ComponentFixture<SidebarNav>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MainLayout]
+      imports: [SidebarNav]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(MainLayout);
+    fixture = TestBed.createComponent(SidebarNav);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

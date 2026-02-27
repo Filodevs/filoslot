@@ -33,17 +33,7 @@ body {
   padding: 0;
 }
 
-main > div {
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-}
-
 /* DIALOG */
-
 .app-dialog.p-dialog {
   background: var(--color-surface);
   color: white;

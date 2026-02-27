@@ -1,0 +1,32 @@
+<header class="w-full bg-slate-900/80 backdrop-blur-xl border-b border-white/7">
+  <div class="px-4 py-3 flex items-center justify-between">
+    <button (click)="goHome()" class="flex items-center gap-2 min-h-11">
+      <div
+        class="w-8 h-8 rounded-lg bg-indigo-500 grid place-items-center font-extrabold text-sm text-white shrink-0"
+      >
+        F
+      </div>
+      <span class="font-extrabold text-base tracking-tight">
+        <span class="text-indigo-400">FILO</span>SLOT
+      </span>
+    </button>
+
+    <section class="flex items-center gap-2">
+      @if (!isAuthenticated()) {
+      <button
+        routerLink="/auth"
+        class="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/10 text-white/60 text-xs font-bold min-h-11 hover:border-indigo-500/50 hover:text-indigo-400 transition-all duration-150"
+      >
+        <i class="pi pi-user text-xs"></i>
+        Acceso Staff
+      </button>
+      } @if (isAuthenticated()) {
+      <div
+        class="w-9 h-9 rounded-full bg-linear-to-br from-indigo-500 to-violet-500 grid place-items-center font-extrabold text-sm text-white cursor-pointer"
+      >
+        JB
+      </div>
+      }
+    </section>
+  </div>
+</header>
