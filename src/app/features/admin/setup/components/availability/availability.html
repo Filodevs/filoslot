@@ -45,7 +45,10 @@
             {{ day.label }}
           </span>
 
-          <app-toggle [checked]="day.enabled" (changed)="toggleDay(day.key)" />
+          <p-toggleswitch
+            [ngModel]="day.enabled"
+            (ngModelChange)="toggleDay(day.key)"
+          />
         </article>
 
         @if (day.enabled) {

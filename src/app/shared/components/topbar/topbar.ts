@@ -1,6 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
+import { AuthService } from '../../../core/services/auth.service';
+
 @Component({
   selector: 'app-topbar',
   imports: [RouterLink],
@@ -9,8 +11,9 @@ import { Router, RouterLink } from '@angular/router';
 })
 export class Topbar {
   private router = inject(Router);
+  private authService = inject(AuthService);
 
-  isAuthenticated = signal(true); // Placeholder for actual authentication logic
+  isAuthenticated = signal(this.authService.isAuthenticated());
 
   isAdminRoute = computed(() => this.router.url.startsWith('/admin'));
 

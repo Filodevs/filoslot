@@ -1,11 +1,10 @@
 import { Component, computed, output, signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
-import { SelectModule } from 'primeng/select';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 import { IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
-import { AppToggle } from '../../../../../shared/components/app-toggle/app-toggle';
 import { Section } from '../../setup.d';
 
 export interface DaySchedule {
@@ -18,7 +17,7 @@ export interface DaySchedule {
 
 @Component({
   selector: 'app-availability',
-  imports: [ReactiveFormsModule, SelectModule, AppButton, AppToggle],
+  imports: [FormsModule, ToggleSwitchModule, AppButton],
   templateUrl: './availability.html',
   styleUrl: './availability.css',
 })

@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
+import { AuthService } from '../../../../services/auth.service';
+
 @Component({
   selector: 'app-sidebar-nav',
   imports: [RouterLink],
@@ -9,12 +11,14 @@ import { Router, RouterLink } from '@angular/router';
 })
 export class SidebarNav {
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   isActive(route: string): boolean {
     return this.router.url.startsWith(route);
   }
 
   logout(): void {
-    console.log('Logging out...');
+    this.authService.logout();
+    this.router.navigate(['/auth/login']);
   }
 }

@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
+import { AuthService } from '../../../../services/auth.service';
+
 interface TabItem {
   label: string;
   icon: string;
@@ -15,6 +17,7 @@ interface TabItem {
 })
 export class TabBar {
   private router = inject(Router);
+  private authService = inject(AuthService);
 
   readonly tabs: TabItem[] = [
     { label: 'Dashboard', icon: 'pi-home', route: '/admin/dashboard' },
@@ -27,6 +30,7 @@ export class TabBar {
   }
 
   logout(): void {
-    console.log('Logout action triggered');
+    this.authService.logout();
+    this.router.navigate(['/auth/login']);
   }
 }
