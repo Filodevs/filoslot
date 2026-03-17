@@ -7,12 +7,16 @@ import { IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { Section } from '../../setup.d';
 
+export interface TimeRange {
+  start: string;
+  end: string;
+}
+
 export interface DaySchedule {
   key: string;
   label: string;
   enabled: boolean;
-  start: string;
-  end: string;
+  ranges: TimeRange[];
 }
 
 @Component({
@@ -22,21 +26,49 @@ export interface DaySchedule {
   styleUrl: './availability.css',
 })
 export class Availability {
-  readonly intervals = [
-    { label: '15 minutos', value: 15 },
-    { label: '30 minutos', value: 30 },
-    { label: '45 minutos', value: 45 },
-    { label: '60 minutos', value: 60 },
-  ];
-
   readonly defaultDays: DaySchedule[] = [
-    { key: 'mon', label: 'LUN', enabled: true, start: '09:00', end: '18:00' },
-    { key: 'tue', label: 'MAR', enabled: true, start: '09:00', end: '18:00' },
-    { key: 'wed', label: 'MIÉ', enabled: true, start: '09:00', end: '18:00' },
-    { key: 'thu', label: 'JUE', enabled: true, start: '09:00', end: '18:00' },
-    { key: 'fri', label: 'VIE', enabled: true, start: '09:00', end: '20:00' },
-    { key: 'sat', label: 'SÁB', enabled: false, start: '09:00', end: '14:00' },
-    { key: 'sun', label: 'DOM', enabled: false, start: '09:00', end: '14:00' },
+    {
+      key: 'mon',
+      label: 'LUN',
+      enabled: true,
+      ranges: [{ start: '09:00', end: '18:00' }],
+    },
+    {
+      key: 'tue',
+      label: 'MAR',
+      enabled: true,
+      ranges: [{ start: '09:00', end: '18:00' }],
+    },
+    {
+      key: 'wed',
+      label: 'MIÉ',
+      enabled: true,
+      ranges: [{ start: '09:00', end: '18:00' }],
+    },
+    {
+      key: 'thu',
+      label: 'JUE',
+      enabled: true,
+      ranges: [{ start: '09:00', end: '18:00' }],
+    },
+    {
+      key: 'fri',
+      label: 'VIE',
+      enabled: true,
+      ranges: [{ start: '09:00', end: '20:00' }],
+    },
+    {
+      key: 'sat',
+      label: 'SÁB',
+      enabled: false,
+      ranges: [{ start: '09:00', end: '14:00' }],
+    },
+    {
+      key: 'sun',
+      label: 'DOM',
+      enabled: false,
+      ranges: [{ start: '09:00', end: '14:00' }],
+    },
   ];
 
   readonly resources = signal<IResource[]>([
@@ -50,21 +82,16 @@ export class Availability {
     new Map(
       this.resources().map((r) => [
         r.id,
-        this.defaultDays.map((d) => ({ ...d })),
+        this.defaultDays.map((d) => ({
+          ...d,
+          ranges: d.ranges.map((r) => ({ ...r })),
+        })),
       ]),
     ),
   );
 
-  intervalMap = signal<Map<string, number>>(
-    new Map(this.resources().map((r) => [r.id, 30])),
-  );
-
   currentSchedule = computed(
     () => this.scheduleMap().get(this.selectedResource().id) ?? [],
-  );
-
-  currentInterval = computed(
-    () => this.intervalMap().get(this.selectedResource().id) ?? 30,
   );
 
   completed = output<Section>();
@@ -74,34 +101,45 @@ export class Availability {
   }
 
   toggleDay(key: string): void {
+    this.updateDay(key, (d) => ({ ...d, enabled: !d.enabled }));
+  }
+
+  addRange(dayKey: string): void {
+    this.updateDay(dayKey, (d) => ({
+      ...d,
+      ranges: [...d.ranges, { start: '09:00', end: '18:00' }],
+    }));
+  }
+
+  removeRange(dayKey: string, rangeIndex: number): void {
+    this.updateDay(dayKey, (d) => ({
+      ...d,
+      ranges: d.ranges.filter((_, i) => i !== rangeIndex),
+    }));
+  }
+
+  updateRange(
+    dayKey: string,
+    rangeIndex: number,
+    field: 'start' | 'end',
+    value: string,
+  ): void {
+    this.updateDay(dayKey, (d) => ({
+      ...d,
+      ranges: d.ranges.map((r, i) =>
+        i === rangeIndex ? { ...r, [field]: value } : r,
+      ),
+    }));
+  }
+
+  private updateDay(key: string, fn: (d: DaySchedule) => DaySchedule): void {
     const resourceId = this.selectedResource().id;
     this.scheduleMap.update((map) => {
       const newMap = new Map(map);
-      const days = (newMap.get(resourceId) ?? []).map((d) =>
-        d.key === key ? { ...d, enabled: !d.enabled } : d,
+      newMap.set(
+        resourceId,
+        (newMap.get(resourceId) ?? []).map((d) => (d.key === key ? fn(d) : d)),
       );
-      newMap.set(resourceId, days);
-      return newMap;
-    });
-  }
-
-  updateTime(key: string, field: 'start' | 'end', value: string): void {
-    const resourceId = this.selectedResource().id;
-    this.scheduleMap.update((map) => {
-      const newMap = new Map(map);
-      const days = (newMap.get(resourceId) ?? []).map((d) =>
-        d.key === key ? { ...d, [field]: value } : d,
-      );
-      newMap.set(resourceId, days);
-      return newMap;
-    });
-  }
-
-  updateInterval(value: number): void {
-    const resourceId = this.selectedResource().id;
-    this.intervalMap.update((map) => {
-      const newMap = new Map(map);
-      newMap.set(resourceId, value);
       return newMap;
     });
   }

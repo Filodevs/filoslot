@@ -47,7 +47,7 @@
       [class]="getCardClass(section.key)"
     >
       <button
-        class="w-full flex items-center gap-3.5 px-5 py-4 text-left hover:bg-white/2.5 transition-colors duration-150"
+        class="w-full flex items-center gap-3.5 p-2 text-left hover:bg-white/2.5 transition-colors duration-150"
         (click)="setActive(section.key)"
       >
         <span
@@ -82,7 +82,7 @@
 
       <div class="card-body" [class.card-body--open]="isActive(section.key)">
         <div>
-          <section class="border-t border-white/7 p-5">
+          <section class="border-t border-white/7 p-2">
             @switch (section.key) { @case ('info') {
             <app-business-info (completed)="markCompleted($event)" />
             } @case ('services') {
