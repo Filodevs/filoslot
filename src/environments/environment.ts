@@ -51,7 +51,7 @@ export const environment: IEnvironment = {
     },
   },
   features: {
-    enableMocking: true,
+    enableMocking: false,
     enableAnalytics: false,
     enableServiceWorker: false,
   },

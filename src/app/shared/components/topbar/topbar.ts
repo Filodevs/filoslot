@@ -2,10 +2,11 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth.service';
+import { InitialsPipe } from '../../pipes/initials.pipe';
 
 @Component({
   selector: 'app-topbar',
-  imports: [RouterLink],
+  imports: [RouterLink, InitialsPipe],
   templateUrl: './topbar.html',
   styleUrl: './topbar.css',
 })
@@ -14,7 +15,7 @@ export class Topbar {
   private authService = inject(AuthService);
 
   isAuthenticated = signal(this.authService.isAuthenticated());
-
+  currentUser = computed(() => this.authService.currentUser());
   isAdminRoute = computed(() => this.router.url.startsWith('/admin'));
 
   goHome(): void {

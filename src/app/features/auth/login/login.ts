@@ -43,8 +43,7 @@ export class Login {
       .login({ email: email!, password: password! })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (response) => {
-          this.authService.setSession(response);
+        next: () => {
           this.router.navigate(['/admin']);
         },
         error: (err: Error) => {

@@ -20,11 +20,11 @@
         <i class="pi pi-user text-xs"></i>
         Acceso Staff
       </button>
-      } @if (isAuthenticated()) {
+      } @if (isAuthenticated() && currentUser()) {
       <div
         class="w-9 h-9 rounded-full bg-linear-to-br from-indigo-500 to-violet-500 grid place-items-center font-extrabold text-sm text-white cursor-pointer"
       >
-        JB
+        {{ currentUser()!.name | initials }}
       </div>
       }
     </section>
