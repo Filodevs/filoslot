@@ -23,6 +23,10 @@ export class AuthService {
   readonly currentUser = this._currentUser.asReadonly();
   readonly isAuthenticated = () => this._currentUser() !== null;
 
+  constructor() {
+    this._initializeSession();
+  }
+
   login(credentials: ILoginCredentials): Observable<ILoginResponse> {
     if (this.env.isMockingEnabled()) {
       return this._loginMock(credentials).pipe(
@@ -37,12 +41,45 @@ export class AuthService {
 
   logout(): void {
     this._currentUser.set(null);
-    localStorage.removeItem('token');
+    localStorage.removeItem('session');
   }
 
   private _setSession(response: ILoginResponse): void {
     this._currentUser.set(response.user);
-    localStorage.setItem('token', response.token);
+    localStorage.setItem(
+      'session',
+      JSON.stringify({
+        user: response.user,
+        token: response.token,
+      }),
+    );
+  }
+
+  private _initializeSession(): void {
+    const sessionData = localStorage.getItem('session');
+    if (sessionData) {
+      try {
+        const session = JSON.parse(sessionData) as ILoginResponse;
+
+        if (!this._isTokenValid(session.token)) {
+          this.logout();
+          return;
+        }
+
+        this._currentUser.set(session.user);
+      } catch {
+        localStorage.removeItem('session');
+      }
+    }
+  }
+
+  private _isTokenValid(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp * 1000 > Date.now();
+    } catch {
+      return false;
+    }
   }
 
   private _loginMock(

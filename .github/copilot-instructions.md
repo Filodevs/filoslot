@@ -191,7 +191,7 @@ ng generate component feature/comp-name  # Scaffold component
 - **Testing**: Vitest 4.x (not Jasmine)
 - **Styling**: Tailwind CSS 4 + PrimeNG 21.1 + PrimeUI Aura theme
 - **Forms**: @angular/forms (ReactiveFormsModule)
-- **HTTP**: Plain fetch (no HttpClient) or RxJS Observable patterns
+- **HTTP**: HttpClient with RxJS Observable patterns
 - **PWA**: Service Worker enabled (@angular/service-worker)
 
 ## Linting & Formatting
