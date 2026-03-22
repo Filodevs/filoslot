@@ -16,6 +16,7 @@ export const environment: IEnvironment = {
       verify: '/auth/verify',
     },
     business: {
+      me: '/businesses/me',
       list: '/business',
       detail: '/business/:id',
       create: '/business',

@@ -1,22 +1,50 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
 
-import { delay, Observable, of } from 'rxjs';
+import { catchError, delay, map, Observable, of, throwError } from 'rxjs';
 
 import { IBusinessData } from '../../models/businessData';
+import { EnvironmentService } from './environment.service';
+
+interface ApiResponse<T> {
+  data: T;
+}
+
+const BUSINESS_DATA_MOCK: IBusinessData = {
+  name: 'FiloSlot Barber',
+  address: '123 Razor Street, Downtown',
+  rating: 4.9,
+  reviews: 120,
+  services: [
+    { name: 'Corte Premium', price: 25 },
+    { name: 'Barba & Ritual', price: 15 },
+    { name: 'Combo FiloSlot', price: 35 },
+  ],
+};
 
 @Injectable({ providedIn: 'root' })
 export class Business {
+  private readonly http = inject(HttpClient);
+  private readonly env = inject(EnvironmentService);
+
   getBusinessData(): Observable<IBusinessData> {
-    return of({
-      name: 'FiloSlot Barber',
-      address: '123 Razor Street, Downtown',
-      rating: 4.9,
-      reviews: 120,
-      services: [
-        { name: 'Corte Premium', price: 25 },
-        { name: 'Barba & Ritual', price: 15 },
-        { name: 'Combo FiloSlot', price: 35 },
-      ],
-    }).pipe(delay(500));
+    return of(BUSINESS_DATA_MOCK).pipe(delay(500));
+  }
+
+  getMyBusiness(): Observable<IBusinessData> {
+    if (this.env.isMockingEnabled()) {
+      return of(BUSINESS_DATA_MOCK).pipe(delay(500));
+    }
+
+    const url = this.env.buildApiUrl(this.env.config().api.business.me);
+
+    return this.http.get<ApiResponse<IBusinessData>>(url).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        const errorMessage =
+          error.error?.data?.message || 'Error al obtener el negocio';
+        return throwError(() => new Error(errorMessage));
+      }),
+    );
   }
 }

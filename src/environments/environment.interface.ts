@@ -10,6 +10,7 @@ export interface IEnvironment {
       verify: string;
     };
     business: {
+      me: string;
       list: string;
       detail: string;
       create: string;
