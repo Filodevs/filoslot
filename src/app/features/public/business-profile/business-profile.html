@@ -9,13 +9,6 @@
   </button>
 
   <section class="flex items-center gap-4 mb-6">
-    @if (b.photo) {
-    <img
-      [src]="b.photo"
-      [alt]="b.name"
-      class="w-20 h-20 rounded-2xl object-cover shrink-0"
-    />
-    } @else {
     <div
       class="w-20 h-20 rounded-2xl grid place-items-center shrink-0 bg-linear-to-br from-indigo-500/30 to-violet-500/30 border border-indigo-500/20"
     >
@@ -23,7 +16,6 @@
         {{ b.name | initials }}
       </span>
     </div>
-    }
 
     <article class="flex-1 min-w-0">
       <h1 class="text-xl font-extrabold tracking-tight leading-tight mb-1">
@@ -33,14 +25,6 @@
       <div class="flex items-center gap-1 mb-1.5">
         <i class="pi pi-map-marker text-[0.65rem] text-white/35"></i>
         <p class="text-xs text-white/45 truncate">{{ b.address }}</p>
-      </div>
-
-      <div class="flex items-center gap-1.5">
-        <i class="pi pi-star-fill text-yellow-400 text-[0.65rem]"></i>
-        <span class="text-xs font-bold text-white/80">{{ b.rating }}</span>
-        <span class="text-[0.65rem] text-white/30"
-          >({{ b.reviewCount }} reseñas)</span
-        >
       </div>
     </article>
   </section>

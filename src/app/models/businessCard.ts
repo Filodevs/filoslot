@@ -3,8 +3,6 @@ export interface IBusinessCard {
   slug: string;
   name: string;
   address: string;
-  rating: number;
-  reviewCount: number;
-  photo: string;
-  featuredServices: string[];
+  phone: string;
+  services?: string[];
 }

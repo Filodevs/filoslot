@@ -13,14 +13,6 @@ export class BusinessCard {
 
   cardSelect = output<IBusinessCard>();
 
-  getRatingStars(): number[] {
-    return Array.from({ length: 5 }, (_, i) => i);
-  }
-
-  isStarFilled(index: number): boolean {
-    return index < Math.round(this.business().rating);
-  }
-
   onSelect(): void {
     this.cardSelect.emit(this.business());
   }

@@ -9,9 +9,6 @@ interface IBusinessDetail {
   name: string;
   address: string;
   phone: string;
-  rating: number;
-  reviewCount: number;
-  photo: string;
   services: IService[];
 }
 
@@ -35,9 +32,6 @@ export class BusinessProfile implements OnInit {
       name: 'FiloSlot Barber',
       address: '123 Razor Street, Downtown',
       phone: '+57 300 000 0000',
-      rating: 4.9,
-      reviewCount: 120,
-      photo: '',
       services: [
         { id: 's1', name: 'Corte Premium', price: 25, duration: 30 },
         { id: 's2', name: 'Barba & Ritual', price: 15, duration: 45 },
