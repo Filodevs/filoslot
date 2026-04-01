@@ -1,4 +1,11 @@
-import { Component, DestroyRef, inject, OnInit, output } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  output,
+  signal,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
@@ -22,6 +29,8 @@ export class BusinessInfo implements OnInit {
   readonly destroyRef = inject(DestroyRef);
   readonly notifications = inject(Notification);
   readonly businessService = inject(Business);
+
+  isLoading = signal(false);
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -73,6 +82,7 @@ export class BusinessInfo implements OnInit {
   }
 
   private _updateBusiness(): void {
+    this.isLoading.set(true);
     const { name, address, phone } = this.form.value;
 
     const businessData: IBusinessUpdateDTO = {
@@ -91,6 +101,7 @@ export class BusinessInfo implements OnInit {
             'Datos del negocio actualizados correctamente',
           );
           this.completed.emit('info');
+          this.isLoading.set(false);
         },
         error: (error) => {
           console.error('Error al actualizar datos del negocio:', error);
@@ -98,6 +109,7 @@ export class BusinessInfo implements OnInit {
             '',
             'Error al actualizar datos del negocio',
           );
+          this.isLoading.set(false);
         },
       });
   }

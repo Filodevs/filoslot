@@ -88,11 +88,18 @@
       <app-button variant="secondary" label="Cancelar" (click)="cancelForm()" />
       <app-button
         type="submit"
+        variant="primary"
+        [loading]="loading()"
         [label]="editingId() ? 'Actualizar' : 'Agregar'"
       />
     </section>
   </form>
   } @else {
-  <app-button variant="ghost" label="+ Agregar servicio" (click)="openForm()" />
+  <app-button
+    variant="primary"
+    label="+ Agregar servicio"
+    [loading]="loading()"
+    (click)="openForm()"
+  />
   }
 </div>

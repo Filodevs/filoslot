@@ -24,5 +24,10 @@
     [errors]="{ required: 'El teléfono es requerido', pattern: 'Ingresa un número de teléfono válido' }"
   />
 
-  <app-button type="submit" label="Guardar información" />
+  <app-button
+    type="submit"
+    variant="primary"
+    label="Guardar información"
+    [loading]="isLoading()"
+  />
 </form>

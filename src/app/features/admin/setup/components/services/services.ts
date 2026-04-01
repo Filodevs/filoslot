@@ -30,6 +30,7 @@ export class Services implements OnInit {
   services = signal<IService[]>([]);
   showForm = signal(false);
   editingId = signal<string | null>(null);
+  loading = signal(false);
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -72,6 +73,7 @@ export class Services implements OnInit {
       return;
     }
 
+    this.loading.set(true);
     const { name, price, duration } = this.form.value;
 
     if (this.editingId()) {
@@ -128,8 +130,10 @@ export class Services implements OnInit {
           this.services.update((list) => [...list, service]);
           this.cancelForm();
           this.completed.emit('services');
+          this.loading.set(false);
         },
         error: (error) => {
+          this.loading.set(false);
           console.error('Error al crear servicio:', error);
         },
       });
@@ -154,8 +158,10 @@ export class Services implements OnInit {
           );
           this.cancelForm();
           this.completed.emit('services');
+          this.loading.set(false);
         },
         error: (error) => {
+          this.loading.set(false);
           console.error('Error al actualizar servicio:', error);
         },
       });
