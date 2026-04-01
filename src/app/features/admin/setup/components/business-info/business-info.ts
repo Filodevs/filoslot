@@ -5,6 +5,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 
 import { Business } from '../../../../../core/services/business';
+import { Notification } from '../../../../../core/services/ui/notification';
 import { IBusinessUpdateDTO } from '../../../../../models/businessData';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
@@ -19,6 +20,7 @@ import { Section } from '../../setup.d';
 export class BusinessInfo implements OnInit {
   readonly fb = inject(FormBuilder);
   readonly destroyRef = inject(DestroyRef);
+  readonly notifications = inject(Notification);
   readonly businessService = inject(Business);
 
   form = this.fb.group({
@@ -84,12 +86,18 @@ export class BusinessInfo implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          //TODO: Mostrar mensaje de éxito
-
+          this.notifications.showSuccess(
+            'Información guardada',
+            'Datos del negocio actualizados correctamente',
+          );
           this.completed.emit('info');
         },
         error: (error) => {
           console.error('Error al actualizar datos del negocio:', error);
+          this.notifications.showError(
+            '',
+            'Error al actualizar datos del negocio',
+          );
         },
       });
   }
