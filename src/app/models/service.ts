@@ -10,3 +10,9 @@ export interface CreateServiceDTO {
   price: number;
   duration: number;
 }
+
+export interface UpdateServiceDTO {
+  name?: string;
+  price?: number;
+  duration?: number;
+}

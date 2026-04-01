@@ -95,10 +95,4 @@
   } @else {
   <app-button variant="ghost" label="+ Agregar servicio" (click)="openForm()" />
   }
-
-  <app-button
-    label="Guardar servicios"
-    (click)="save()"
-    [disabled]="services().length === 0"
-  />
 </div>

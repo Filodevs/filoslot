@@ -28,7 +28,7 @@ export const environment: IEnvironment = {
     },
     services: {
       list: '/services',
-      create: '/services/bulk',
+      create: '/services',
       update: '/services/:id',
       delete: '/services/:id',
     },

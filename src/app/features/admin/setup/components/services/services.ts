@@ -62,7 +62,8 @@ export class Services implements OnInit {
   }
 
   deleteService(id: string): void {
-    this.services.update((list) => list.filter((s) => s.id !== id));
+    // TODO: Agregar confirmación antes de eliminar
+    this._deleteService(id);
   }
 
   addService(): void {
@@ -74,31 +75,24 @@ export class Services implements OnInit {
     const { name, price, duration } = this.form.value;
 
     if (this.editingId()) {
-      this.services.update((list) =>
-        list.map((s) =>
-          s.id === this.editingId()
-            ? { ...s, name: name!, price: price!, duration: duration! }
-            : s,
-        ),
-      );
-    } else {
-      const newService: IService = {
-        id: crypto.randomUUID(),
+      this._updateService({
+        id: this.editingId()!,
         name: name!,
         price: price!,
         duration: duration!,
-      };
-      this.services.update((list) => [...list, newService]);
+      });
+
+      return;
     }
 
-    this.cancelForm();
-  }
+    const newService: IService = {
+      id: crypto.randomUUID(),
+      name: name!,
+      price: price!,
+      duration: duration!,
+    };
 
-  save(): void {
-    const services = this.services();
-    if (services.length === 0) return;
-
-    this._createService(services);
+    this._createService(newService);
   }
 
   private _getMyServices(): void {
@@ -119,24 +113,64 @@ export class Services implements OnInit {
       });
   }
 
-  private _createService(services: IService[]): void {
-    const createDTO = services.map((s) => ({
-      name: s.name,
-      price: s.price,
-      duration: s.duration,
-    }));
+  private _createService(service: IService): void {
+    const createDTO = {
+      name: service.name,
+      price: service.price,
+      duration: service.duration,
+    };
 
     this.catalogService
-      .createMany(createDTO)
+      .create(createDTO)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
+          this.services.update((list) => [...list, service]);
           this.cancelForm();
-
           this.completed.emit('services');
         },
         error: (error) => {
           console.error('Error al crear servicio:', error);
+        },
+      });
+  }
+
+  private _updateService(service: IService): void {
+    const { id, name, price, duration } = service;
+
+    const updateDTO = {
+      name,
+      price,
+      duration,
+    };
+
+    this.catalogService
+      .update(id, updateDTO)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.services.update((list) =>
+            list.map((s) => (s.id === id ? { ...s, ...updateDTO } : s)),
+          );
+          this.cancelForm();
+          this.completed.emit('services');
+        },
+        error: (error) => {
+          console.error('Error al actualizar servicio:', error);
+        },
+      });
+  }
+
+  private _deleteService(id: string): void {
+    this.catalogService
+      .delete(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.services.update((list) => list.filter((s) => s.id !== id));
+        },
+        error: (error) => {
+          console.error('Error al eliminar servicio:', error);
         },
       });
   }
