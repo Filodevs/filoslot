@@ -65,7 +65,7 @@ export class Services implements OnInit {
     this.services.update((list) => list.filter((s) => s.id !== id));
   }
 
-  onSubmit(): void {
+  addService(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -95,10 +95,10 @@ export class Services implements OnInit {
   }
 
   save(): void {
-    if (this.services().length === 0) return;
+    const services = this.services();
+    if (services.length === 0) return;
 
-    // TODO: llamar al servicio HTTP
-    this.completed.emit('services');
+    this._createService(services);
   }
 
   private _getMyServices(): void {
@@ -108,9 +108,35 @@ export class Services implements OnInit {
       .subscribe({
         next: (data) => {
           this.services.set(data);
+
+          if (data.length > 0) {
+            this.completed.emit('services');
+          }
         },
         error: (error) => {
           console.error('Error al cargar servicios:', error);
+        },
+      });
+  }
+
+  private _createService(services: IService[]): void {
+    const createDTO = services.map((s) => ({
+      name: s.name,
+      price: s.price,
+      duration: s.duration,
+    }));
+
+    this.catalogService
+      .createMany(createDTO)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.cancelForm();
+
+          this.completed.emit('services');
+        },
+        error: (error) => {
+          console.error('Error al crear servicio:', error);
         },
       });
   }

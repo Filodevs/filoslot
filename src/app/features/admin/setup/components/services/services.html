@@ -1,10 +1,6 @@
 <div class="flex flex-col gap-4">
   @if (services().length > 0) {
   <section class="flex flex-col">
-    <p class="text-sm font-bold text-white/45 uppercase tracking-widest mb-3">
-      Servicios registrados
-    </p>
-
     <div class="flex flex-col divide-y divide-white/7">
       @for (service of services(); track service.id) {
       <div class="flex items-center gap-3 py-3">
@@ -55,7 +51,7 @@
   } @if (showForm()) {
   <form
     [formGroup]="form"
-    (ngSubmit)="onSubmit()"
+    (ngSubmit)="addService()"
     class="flex flex-col gap-4 pt-4 border-t border-white/7 animate-[fadeSlide_0.15s_ease]"
   >
     <p class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest">

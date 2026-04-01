@@ -4,3 +4,9 @@ export interface IService {
   price: number;
   duration: number;
 }
+
+export interface CreateServiceDTO {
+  name: string;
+  price: number;
+  duration: number;
+}
