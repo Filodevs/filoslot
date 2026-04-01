@@ -10,8 +10,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { CatalogService } from '../../../../../core/services/catalog.service';
+import { ConfirmDialog } from '../../../../../core/services/ui/confirm-dialog';
 import { Notification } from '../../../../../core/services/ui/notification';
-import { IService } from '../../../../../models/service';
+import { CreateServiceDTO, IService } from '../../../../../models/service';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
 import { AppInputNumber } from '../../../../../shared/components/app-input-number/app-input-number';
@@ -22,11 +23,13 @@ import { Section } from '../../setup.d';
   imports: [ReactiveFormsModule, AppInput, AppInputNumber, AppButton],
   templateUrl: './services.html',
   styleUrl: './services.css',
+  providers: [],
 })
 export class Services implements OnInit {
   readonly fb = inject(FormBuilder);
   readonly destroyRef = inject(DestroyRef);
   readonly notifications = inject(Notification);
+  readonly confirmDialog = inject(ConfirmDialog);
   readonly catalogService = inject(CatalogService);
 
   services = signal<IService[]>([]);
@@ -65,8 +68,16 @@ export class Services implements OnInit {
   }
 
   deleteService(id: string): void {
-    // TODO: Agregar confirmación antes de eliminar
-    this._deleteService(id);
+    this.confirmDialog
+      .confirm(
+        '¿Estás seguro de que deseas eliminar este servicio?',
+        'Confirmar eliminación',
+      )
+      .then((confirmed) => {
+        if (confirmed) {
+          this._deleteService(id);
+        }
+      });
   }
 
   addService(): void {
@@ -89,8 +100,7 @@ export class Services implements OnInit {
       return;
     }
 
-    const newService: IService = {
-      id: crypto.randomUUID(),
+    const newService: CreateServiceDTO = {
       name: name!,
       price: price!,
       duration: duration!,
@@ -117,19 +127,17 @@ export class Services implements OnInit {
       });
   }
 
-  private _createService(service: IService): void {
-    const createDTO = {
-      name: service.name,
-      price: service.price,
-      duration: service.duration,
-    };
-
+  private _createService(service: CreateServiceDTO): void {
     this.catalogService
-      .create(createDTO)
+      .create(service)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
-          this.services.update((list) => [...list, service]);
+        next: (data) => {
+          this.services.update((list) => [
+            ...list,
+            { ...service, id: data.id },
+          ]);
+
           this.cancelForm();
           this.completed.emit('services');
           this.loading.set(false);

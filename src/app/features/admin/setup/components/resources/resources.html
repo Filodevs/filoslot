@@ -97,7 +97,11 @@
     </section>
   </form>
   } @if (resources().length === 0 && !showForm()) {
-  <app-button variant="ghost" label="+ Agregar recurso" (click)="openForm()" />
+  <app-button
+    variant="primary"
+    label="+ Agregar recurso"
+    (click)="openForm()"
+  />
   }
   <app-button
     label="Guardar recursos"
