@@ -5,6 +5,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 
 import { Business } from '../../../../../core/services/business';
+import { IBusinessUpdateDTO } from '../../../../../models/businessData';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
 import { Section } from '../../setup.d';
@@ -35,14 +36,13 @@ export class BusinessInfo implements OnInit {
     this._getBusiness();
   }
 
-  onSubmit(): void {
+  updateBusiness(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    // TODO: llamar al servicio HTTP
-    this.completed.emit('info');
+    this._updateBusiness();
   }
 
   private _getBusiness(): void {
@@ -66,6 +66,30 @@ export class BusinessInfo implements OnInit {
         },
         error: (error) => {
           console.error('Error al cargar datos del negocio:', error);
+        },
+      });
+  }
+
+  private _updateBusiness(): void {
+    const { name, address, phone } = this.form.value;
+
+    const businessData: IBusinessUpdateDTO = {
+      ...(name ? { name } : {}),
+      ...(address ? { address } : {}),
+      ...(phone ? { phone } : {}),
+    };
+
+    this.businessService
+      .updateBusinessData(businessData)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          //TODO: Mostrar mensaje de éxito
+
+          this.completed.emit('info');
+        },
+        error: (error) => {
+          console.error('Error al actualizar datos del negocio:', error);
         },
       });
   }

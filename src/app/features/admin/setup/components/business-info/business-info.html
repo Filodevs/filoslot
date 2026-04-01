@@ -1,4 +1,8 @@
-<form class="flex flex-col gap-5" [formGroup]="form" (ngSubmit)="onSubmit()">
+<form
+  class="flex flex-col gap-5"
+  [formGroup]="form"
+  (ngSubmit)="updateBusiness()"
+>
   <app-input
     label="Nombre del negocio"
     placeholder="Ej: FiloSlot Barber"

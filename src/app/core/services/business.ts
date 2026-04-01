@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 
 import { catchError, delay, map, Observable, of, throwError } from 'rxjs';
 
-import { IBusinessData } from '../../models/businessData';
+import { IBusinessData, IBusinessUpdateDTO } from '../../models/businessData';
 import { EnvironmentService } from './environment.service';
 
 interface ApiResponse<T> {
@@ -42,6 +42,28 @@ export class Business {
       catchError((error) => {
         const errorMessage =
           error.error?.data?.message || 'Error al obtener el negocio';
+        return throwError(() => new Error(errorMessage));
+      }),
+    );
+  }
+
+  updateBusinessData(data: IBusinessUpdateDTO): Observable<IBusinessData> {
+    if (this.env.isMockingEnabled()) {
+      const updatedData: IBusinessData = {
+        ...BUSINESS_DATA_MOCK,
+        ...data,
+      };
+
+      return of(updatedData).pipe(delay(500));
+    }
+
+    const url = this.env.buildApiUrl(this.env.config().api.business.me);
+
+    return this.http.patch<ApiResponse<IBusinessData>>(url, data).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        const errorMessage =
+          error.error?.data?.message || 'Error al actualizar el negocio';
         return throwError(() => new Error(errorMessage));
       }),
     );
