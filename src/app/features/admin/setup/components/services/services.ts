@@ -1,6 +1,15 @@
-import { Component, inject, output, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  output,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
+import { CatalogService } from '../../../../../core/services/catalog.service';
 import { IService } from '../../../../../models/service';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
@@ -13,8 +22,10 @@ import { Section } from '../../setup.d';
   templateUrl: './services.html',
   styleUrl: './services.css',
 })
-export class Services {
+export class Services implements OnInit {
   readonly fb = inject(FormBuilder);
+  readonly destroyRef = inject(DestroyRef);
+  readonly catalogService = inject(CatalogService);
 
   services = signal<IService[]>([]);
   showForm = signal(false);
@@ -27,6 +38,10 @@ export class Services {
   });
 
   completed = output<Section>();
+
+  ngOnInit(): void {
+    this._getMyServices();
+  }
 
   openForm(): void {
     this.editingId.set(null);
@@ -84,5 +99,19 @@ export class Services {
 
     // TODO: llamar al servicio HTTP
     this.completed.emit('services');
+  }
+
+  private _getMyServices(): void {
+    this.catalogService
+      .getMyServices()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.services.set(data);
+        },
+        error: (error) => {
+          console.error('Error al cargar servicios:', error);
+        },
+      });
   }
 }

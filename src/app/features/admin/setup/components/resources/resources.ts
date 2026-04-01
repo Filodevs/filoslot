@@ -1,6 +1,15 @@
-import { Component, inject, output, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  inject,
+  OnInit,
+  output,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
+import { ResourceService } from '../../../../../core/services/resource.service';
 import { IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
@@ -21,8 +30,10 @@ import { Section } from '../../setup.d';
   templateUrl: './resources.html',
   styleUrl: './resources.css',
 })
-export class Resources {
+export class Resources implements OnInit {
   private readonly fb = inject(FormBuilder);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly resourceService = inject(ResourceService);
   private readonly avatarColorService = inject(AvatarColorService);
 
   resources = signal<IResource[]>([]);
@@ -36,6 +47,10 @@ export class Resources {
   });
 
   completed = output<Section>();
+
+  ngOnInit(): void {
+    this._getResources();
+  }
 
   openForm(): void {
     this.editingId.set(null);
@@ -90,5 +105,25 @@ export class Resources {
     if (this.resources().length === 0) return;
     // TODO: llamar al servicio HTTP
     this.completed.emit('resources');
+  }
+
+  private _getResources(): void {
+    this.resourceService
+      .getMyResources()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          if (!data) {
+            console.warn('No se encontraron recursos');
+            return;
+          }
+
+          this.resources.set(data);
+          this.completed.emit('resources');
+        },
+        error: (error) => {
+          console.error('Error al cargar recursos:', error);
+        },
+      });
   }
 }

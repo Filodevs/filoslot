@@ -17,8 +17,8 @@ import { Section } from '../../setup.d';
 })
 export class BusinessInfo implements OnInit {
   readonly fb = inject(FormBuilder);
-  readonly businessService = inject(Business);
   readonly destroyRef = inject(DestroyRef);
+  readonly businessService = inject(Business);
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
