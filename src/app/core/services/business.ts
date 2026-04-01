@@ -13,8 +13,7 @@ interface ApiResponse<T> {
 const BUSINESS_DATA_MOCK: IBusinessData = {
   name: 'FiloSlot Barber',
   address: '123 Razor Street, Downtown',
-  rating: 4.9,
-  reviews: 120,
+  phone: '+1 234 567 890',
   services: [
     { name: 'Corte Premium', price: 25 },
     { name: 'Barba & Ritual', price: 15 },
