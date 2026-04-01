@@ -10,6 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { CatalogService } from '../../../../../core/services/catalog.service';
+import { Notification } from '../../../../../core/services/ui/notification';
 import { IService } from '../../../../../models/service';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
@@ -25,6 +26,7 @@ import { Section } from '../../setup.d';
 export class Services implements OnInit {
   readonly fb = inject(FormBuilder);
   readonly destroyRef = inject(DestroyRef);
+  readonly notifications = inject(Notification);
   readonly catalogService = inject(CatalogService);
 
   services = signal<IService[]>([]);
@@ -131,9 +133,13 @@ export class Services implements OnInit {
           this.cancelForm();
           this.completed.emit('services');
           this.loading.set(false);
+
+          this.notifications.showSuccess('Servicio agregado exitosamente');
         },
         error: (error) => {
           this.loading.set(false);
+          this.notifications.showError('Error al crear servicio');
+
           console.error('Error al crear servicio:', error);
         },
       });
@@ -159,9 +165,13 @@ export class Services implements OnInit {
           this.cancelForm();
           this.completed.emit('services');
           this.loading.set(false);
+
+          this.notifications.showSuccess('Servicio actualizado exitosamente');
         },
         error: (error) => {
           this.loading.set(false);
+          this.notifications.showError('Error al actualizar servicio');
+
           console.error('Error al actualizar servicio:', error);
         },
       });
@@ -174,8 +184,11 @@ export class Services implements OnInit {
       .subscribe({
         next: () => {
           this.services.update((list) => list.filter((s) => s.id !== id));
+
+          this.notifications.showSuccess('Servicio eliminado exitosamente');
         },
         error: (error) => {
+          this.notifications.showError('Error al eliminar servicio');
           console.error('Error al eliminar servicio:', error);
         },
       });
