@@ -83,4 +83,18 @@ export class ResourceService {
       }),
     );
   }
+
+  delete(id: string): Observable<void> {
+    const url = this.env.buildApiUrl(
+      this.env.config().api.resources.delete.replace(':id', id),
+    );
+
+    return this.http.delete<void>(url).pipe(
+      catchError((error) => {
+        const errorMessage =
+          error.error?.data?.message || 'Error al eliminar el recurso';
+        return throwError(() => new Error(errorMessage));
+      }),
+    );
+  }
 }

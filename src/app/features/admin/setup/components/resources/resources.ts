@@ -10,6 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ResourceService } from '../../../../../core/services/resource.service';
+import { ConfirmDialog } from '../../../../../core/services/ui/confirm-dialog';
 import { CreateResourceDTO, IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
@@ -33,6 +34,7 @@ import { Section } from '../../setup.d';
 export class Resources implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
+  readonly confirmDialog = inject(ConfirmDialog);
   private readonly resourceService = inject(ResourceService);
   private readonly avatarColorService = inject(AvatarColorService);
 
@@ -71,8 +73,13 @@ export class Resources implements OnInit {
   }
 
   deleteResource(id: string): void {
-    this.avatarColorService.removeColor(id);
-    this.resources.update((list) => list.filter((r) => r.id !== id));
+    this.confirmDialog
+      .confirm('¿Estás seguro de eliminar este recurso?')
+      .then((confirmed) => {
+        if (confirmed) {
+          this._deleteResource(id);
+        }
+      });
   }
 
   saveResource(): void {
@@ -163,6 +170,21 @@ export class Resources implements OnInit {
         },
         error: (error) => {
           console.error('Error al cargar recursos:', error);
+        },
+      });
+  }
+
+  private _deleteResource(id: string): void {
+    this.resourceService
+      .delete(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.avatarColorService.removeColor(id);
+          this.resources.update((list) => list.filter((r) => r.id !== id));
+        },
+        error: (error) => {
+          console.error('Error al eliminar el recurso:', error);
         },
       });
   }

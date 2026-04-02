@@ -98,10 +98,7 @@ export class Services implements OnInit {
 
   deleteService(id: string): void {
     this.confirmDialog
-      .confirm(
-        '¿Estás seguro de que deseas eliminar este servicio?',
-        'Confirmar eliminación',
-      )
+      .confirm('¿Estás seguro de que deseas eliminar este servicio?')
       .then((confirmed) => {
         if (confirmed) {
           this._deleteService(id);
