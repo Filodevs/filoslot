@@ -68,7 +68,7 @@
   } @if (showForm()) {
   <form
     [formGroup]="form"
-    (ngSubmit)="onSubmit()"
+    (ngSubmit)="saveResource()"
     class="flex flex-col gap-4 pt-4 border-t border-white/7 animate-[fadeSlide_0.15s_ease]"
   >
     <p class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest">
@@ -103,9 +103,4 @@
     (click)="openForm()"
   />
   }
-  <app-button
-    label="Guardar recursos"
-    (click)="save()"
-    [disabled]="resources().length === 0"
-  />
 </section>

@@ -49,6 +49,35 @@ export class Services implements OnInit {
     this._getMyServices();
   }
 
+  addService(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    this.loading.set(true);
+    const { name, price, duration } = this.form.value;
+
+    if (this.editingId()) {
+      this._updateService({
+        id: this.editingId()!,
+        name: name!,
+        price: price!,
+        duration: duration!,
+      });
+
+      return;
+    }
+
+    const newService: CreateServiceDTO = {
+      name: name!,
+      price: price!,
+      duration: duration!,
+    };
+
+    this._createService(newService);
+  }
+
   openForm(): void {
     this.editingId.set(null);
     this.form.reset({ duration: 30 });
@@ -80,35 +109,6 @@ export class Services implements OnInit {
       });
   }
 
-  addService(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    this.loading.set(true);
-    const { name, price, duration } = this.form.value;
-
-    if (this.editingId()) {
-      this._updateService({
-        id: this.editingId()!,
-        name: name!,
-        price: price!,
-        duration: duration!,
-      });
-
-      return;
-    }
-
-    const newService: CreateServiceDTO = {
-      name: name!,
-      price: price!,
-      duration: duration!,
-    };
-
-    this._createService(newService);
-  }
-
   private _getMyServices(): void {
     this.catalogService
       .getMyServices()
@@ -133,6 +133,13 @@ export class Services implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
+          if (!data) {
+            this.loading.set(false);
+            this.notifications.showError('Error al crear servicio');
+            console.warn('No se pudo crear el servicio');
+            return;
+          }
+
           this.services.update((list) => [
             ...list,
             { ...service, id: data.id },

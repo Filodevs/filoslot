@@ -10,7 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ResourceService } from '../../../../../core/services/resource.service';
-import { IResource } from '../../../../../models/resource';
+import { CreateResourceDTO, IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
 import { AvatarColorPipe } from '../../../../../shared/pipes/avatar-color.pipe';
@@ -75,7 +75,7 @@ export class Resources implements OnInit {
     this.resources.update((list) => list.filter((r) => r.id !== id));
   }
 
-  onSubmit(): void {
+  saveResource(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -89,22 +89,37 @@ export class Resources implements OnInit {
           r.id === this.editingId() ? { ...r, name: name!, role: role! } : r,
         ),
       );
-    } else {
-      const newResource: IResource = {
-        id: crypto.randomUUID(),
-        name: name!,
-        role: role!,
-      };
-      this.resources.update((list) => [...list, newResource]);
+
+      return;
     }
 
-    this.cancelForm();
+    const newResource: CreateResourceDTO = {
+      name: name!,
+      role: role!,
+    };
+
+    this._createResource(newResource);
   }
 
-  save(): void {
-    if (this.resources().length === 0) return;
-    // TODO: llamar al servicio HTTP
-    this.completed.emit('resources');
+  private _createResource(resource: CreateResourceDTO): void {
+    this.resourceService
+      .create(resource)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          if (!data) {
+            console.warn('No se pudo crear el recurso');
+            return;
+          }
+
+          this.resources.update((list) => [...list, data]);
+          this.cancelForm();
+          this.completed.emit('resources');
+        },
+        error: (error) => {
+          console.error('Error al crear el recurso:', error);
+        },
+      });
   }
 
   private _getResources(): void {

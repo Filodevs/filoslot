@@ -6,3 +6,8 @@ export interface IResource {
   role: string;
   appointments?: IAppointment[];
 }
+
+export interface CreateResourceDTO {
+  name: string;
+  role: string;
+}
