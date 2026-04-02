@@ -32,7 +32,6 @@ export class Services implements OnInit {
   readonly confirmDialog = inject(ConfirmDialog);
   readonly catalogService = inject(CatalogService);
 
-  services = signal<IService[]>([]);
   showForm = signal(false);
   editingId = signal<string | null>(null);
   loading = signal(false);
@@ -111,8 +110,6 @@ export class Services implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
-          this.services.set(data);
-
           if (data.length > 0) {
             this.completed.emit('services');
           }
@@ -135,11 +132,6 @@ export class Services implements OnInit {
             console.warn('No se pudo crear el servicio');
             return;
           }
-
-          this.services.update((list) => [
-            ...list,
-            { ...service, id: data.id },
-          ]);
 
           this.cancelForm();
           this.completed.emit('services');
@@ -170,9 +162,6 @@ export class Services implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.services.update((list) =>
-            list.map((s) => (s.id === id ? { ...s, ...updateDTO } : s)),
-          );
           this.cancelForm();
           this.completed.emit('services');
           this.loading.set(false);
@@ -194,8 +183,6 @@ export class Services implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          this.services.update((list) => list.filter((s) => s.id !== id));
-
           this.notifications.showSuccess('Servicio eliminado exitosamente');
         },
         error: (error) => {

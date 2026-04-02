@@ -10,20 +10,31 @@
     <div class="grid md:grid-cols-2 gap-3">
       @for (resource of resources(); track resource.id) {
       <div
-        class="relative flex flex-col items-center gap-2 p-4 bg-slate-800/60 border border-white/7 rounded-xl text-center transition-colors duration-150 hover:border-indigo-500/30"
+        class="relative flex items-center gap-2 p-4 bg-slate-800/60 border border-white/7 rounded-xl text-center transition-colors duration-150 hover:border-indigo-500/30"
       >
         <section
-          class="w-12 h-12 rounded-full grid place-items-center bg-linear-to-br font-bold text-base text-white shrink-0"
+          class="w-8 h-8 md:w-12 md:h-12 rounded-full grid place-items-center self-start bg-linear-to-br font-bold text-base text-white shrink-0"
           [class]="resource.id | avatarColor"
         >
           {{ resource.name | initials }}
         </section>
 
-        <section class="flex flex-col gap-0.5 w-full min-w-0">
+        <section class="flex flex-col items-start gap-0.5 w-full min-w-0">
           <p class="text-sm font-bold truncate">{{ resource.name }}</p>
           <p class="text-[0.68rem] text-white/45 truncate">
             {{ resource.role }}
           </p>
+
+          <div>
+            @for (service of catalogService.services(); track service.id) { @if
+            (resource.serviceIds?.includes(service.id)) {
+            <span
+              class="inline-block px-2 py-0.5 mr-1 mb-1 text-[0.65rem] font-medium text-white/45 bg-slate-700/50 rounded"
+            >
+              {{ service.name }}
+            </span>
+            } }
+          </div>
         </section>
 
         <section class="flex gap-2">
@@ -56,6 +67,7 @@
       }
     </div>
   </section>
+
   } @if (resources().length === 0 && !showForm()) {
   <section class="flex flex-col items-center gap-2 py-6 text-center">
     <span class="text-3xl">👤</span>
@@ -68,7 +80,6 @@
   } @if (showForm()) {
   <form
     [formGroup]="form"
-    (ngSubmit)="saveResource()"
     class="flex flex-col gap-4 pt-4 border-t border-white/7 animate-[fadeSlide_0.15s_ease]"
   >
     <p class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest">
@@ -88,6 +99,48 @@
       [control]="form.controls.role"
     />
 
+    <section>
+      @if(catalogService.services().length === 0) {
+      <p class="text-xs text-white/45 italic">
+        Agrega servicios al catálogo para asignarlos a los recursos
+      </p>
+      } @else {
+      <p class="mb-2 text-xs tracking-widest font-bold uppercase text-white/45">
+        Servicios asignados
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-2 bg-slate-800/50 rounded">
+        @for (service of catalogService.services(); track service.id) {
+
+        <button
+          class="p-4 flex gap-4 rounded-sm border text-left transition-all duration-150 min-h-11 w-full"
+          [class]="isServiceAssigned(service.id)
+            ? 'bg-indigo-500/15 border-indigo-500/50'
+            : 'bg-slate-900/60 border-white/7 hover:border-white/20'"
+          (click)="toggleServiceToResource(service.id)"
+        >
+          <section>
+            <div
+              class="w-6 h-6 flex justify-center items-center rounded-xl bg-accent"
+            >
+              @if(isServiceAssigned(service.id)) {
+              <i class="pi pi-check text-xs text-white"></i>
+              }
+            </div>
+          </section>
+
+          <section>
+            <p class="text-sm font-bold truncate">{{ service.name }}</p>
+            <p class="text-xs text-white/45 truncate">
+              {{ service.duration }} min
+            </p>
+          </section>
+        </button>
+        }
+      </div>
+      }
+    </section>
+
     <section class="grid grid-cols-2 gap-3">
       <app-button variant="secondary" label="Cancelar" (click)="cancelForm()" />
       <app-button
@@ -95,6 +148,7 @@
         variant="primary"
         [loading]="loading()"
         [label]="editingId() ? 'Actualizar' : 'Agregar'"
+        (click)="saveResource()"
       />
     </section>
   </form>

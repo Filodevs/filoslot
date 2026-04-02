@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 
-import { catchError, delay, map, Observable, of, throwError } from 'rxjs';
+import { catchError, delay, map, Observable, of, tap, throwError } from 'rxjs';
 
 import { CATALOG_MOCK } from '../../models/__mocks__/catalog.mock';
 import {
@@ -20,19 +20,26 @@ export class CatalogService {
   private readonly http = inject(HttpClient);
   private readonly env = inject(EnvironmentService);
 
+  private readonly _services = signal<IService[]>([]);
+  readonly services = this._services.asReadonly();
+
   getServices(): Observable<IService[]> {
     return of(CATALOG_MOCK).pipe(delay(500));
   }
 
   getMyServices(): Observable<IService[]> {
     if (this.env.isMockingEnabled()) {
-      return of(CATALOG_MOCK).pipe(delay(500));
+      return of(CATALOG_MOCK).pipe(
+        delay(500),
+        tap((data) => this._services.set(data)),
+      );
     }
 
     const url = this.env.buildApiUrl(this.env.config().api.services.list);
 
     return this.http.get<ApiResponse<IService[]>>(url).pipe(
       map((response) => response.data),
+      tap((data) => this._services.set(data)),
       catchError((error) => {
         const errorMessage =
           error.error?.data?.message || 'Error al obtener los servicios';
@@ -46,13 +53,16 @@ export class CatalogService {
       return of({
         id: crypto.randomUUID(),
         ...service,
-      });
+      }).pipe(
+        tap((created) => this._services.update((list) => [...list, created])),
+      );
     }
 
     const url = this.env.buildApiUrl(this.env.config().api.services.create);
 
     return this.http.post<ApiResponse<IService>>(url, service).pipe(
       map((response) => response.data),
+      tap((created) => this._services.update((list) => [...list, created])),
       catchError((error) => {
         const errorMessage =
           error.error?.data?.message || 'Error al crear el servicio';
@@ -68,6 +78,11 @@ export class CatalogService {
 
     return this.http.patch<ApiResponse<IService>>(url, service).pipe(
       map((response) => response.data),
+      tap((updated) =>
+        this._services.update((list) =>
+          list.map((s) => (s.id === id ? updated : s)),
+        ),
+      ),
       catchError((error) => {
         const errorMessage =
           error.error?.data?.message || 'Error al actualizar el servicio';
@@ -82,6 +97,9 @@ export class CatalogService {
     );
 
     return this.http.delete<void>(url).pipe(
+      tap(() =>
+        this._services.update((list) => list.filter((s) => s.id !== id)),
+      ),
       catchError((error) => {
         const errorMessage =
           error.error?.data?.message || 'Error al eliminar el servicio';

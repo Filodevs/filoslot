@@ -9,6 +9,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
+import { CatalogService } from '../../../../../core/services/catalog.service';
 import { ResourceService } from '../../../../../core/services/resource.service';
 import { ConfirmDialog } from '../../../../../core/services/ui/confirm-dialog';
 import { Notification } from '../../../../../core/services/ui/notification';
@@ -38,13 +39,14 @@ export class Resources implements OnInit {
   readonly confirmDialog = inject(ConfirmDialog);
   readonly notifications = inject(Notification);
   readonly resourceService = inject(ResourceService);
+  readonly catalogService = inject(CatalogService);
   readonly avatarColorService = inject(AvatarColorService);
 
   resources = signal<IResource[]>([]);
-
   showForm = signal(false);
   editingId = signal<string | null>(null);
   loading = signal(false);
+  selectedServiceIds = signal<string[]>([]);
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -59,12 +61,14 @@ export class Resources implements OnInit {
 
   openForm(): void {
     this.editingId.set(null);
+    this.selectedServiceIds.set([]);
     this.form.reset();
     this.showForm.set(true);
   }
 
   editResource(resource: IResource): void {
     this.editingId.set(resource.id);
+    this.selectedServiceIds.set(resource.serviceIds ?? []);
     this.form.patchValue({ name: resource.name, role: resource.role });
     this.showForm.set(true);
   }
@@ -72,6 +76,7 @@ export class Resources implements OnInit {
   cancelForm(): void {
     this.showForm.set(false);
     this.editingId.set(null);
+    this.selectedServiceIds.set([]);
     this.form.reset();
   }
 
@@ -85,6 +90,18 @@ export class Resources implements OnInit {
       });
   }
 
+  isServiceAssigned(serviceId: string): boolean {
+    return this.selectedServiceIds().includes(serviceId);
+  }
+
+  toggleServiceToResource(serviceId: string): void {
+    this.selectedServiceIds.update((ids) =>
+      ids.includes(serviceId)
+        ? ids.filter((id) => id !== serviceId)
+        : [...ids, serviceId],
+    );
+  }
+
   saveResource(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -93,22 +110,22 @@ export class Resources implements OnInit {
 
     const { name, role } = this.form.value;
 
+    const resource: CreateResourceDTO = {
+      name: name!,
+      role: role!,
+      serviceIds: this.selectedServiceIds(),
+    };
+
     if (this.editingId()) {
       this._updateResource({
         id: this.editingId()!,
-        name: name!,
-        role: role!,
+        ...resource,
       });
 
       return;
     }
 
-    const newResource: CreateResourceDTO = {
-      name: name!,
-      role: role!,
-    };
-
-    this._createResource(newResource);
+    this._createResource(resource);
   }
 
   private _createResource(resource: CreateResourceDTO): void {
@@ -125,7 +142,10 @@ export class Resources implements OnInit {
             return;
           }
 
-          this.resources.update((list) => [...list, data]);
+          this.resources.update((list) => [
+            ...list,
+            { ...data, serviceIds: resource.serviceIds },
+          ]);
           this.cancelForm();
           this.completed.emit('resources');
           this.notifications.showSuccess('Recurso agregado exitosamente');
@@ -146,6 +166,7 @@ export class Resources implements OnInit {
     const updateDTO = {
       name,
       role,
+      serviceIds: resource.serviceIds,
     };
 
     this.resourceService
