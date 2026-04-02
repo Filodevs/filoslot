@@ -1,60 +1,15 @@
 <section class="flex flex-col gap-4">
   @if (resources().length > 0) {
   <section class="flex flex-col gap-1">
-    <p
-      class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest mb-2"
-    >
-      Personal registrado
-    </p>
-
     <div class="grid md:grid-cols-2 gap-3">
       @for (resource of resources(); track resource.id) {
-      <div
-        class="relative flex items-center gap-2 p-4 bg-slate-800/60 border border-white/7 rounded-xl text-center transition-colors duration-150 hover:border-indigo-500/30"
-      >
-        <section
-          class="w-8 h-8 md:w-12 md:h-12 rounded-full grid place-items-center self-start bg-linear-to-br font-bold text-base text-white shrink-0"
-          [class]="resource.id | avatarColor"
-        >
-          {{ resource.name | initials }}
-        </section>
+      <app-resource-card
+        [resource]="resource"
+        [services]="catalogService.services()"
+        (editResourceEvent)="editResource($event)"
+        (deleteResourceEvent)="deleteResource($event)"
+      />
 
-        <section class="flex flex-col items-start gap-0.5 w-full min-w-0">
-          <p class="text-sm font-bold truncate">{{ resource.name }}</p>
-          <p class="text-[0.68rem] text-white/45 truncate">
-            {{ resource.role }}
-          </p>
-
-          <div>
-            @for (service of catalogService.services(); track service.id) { @if
-            (resource.serviceIds?.includes(service.id)) {
-            <span
-              class="inline-block px-2 py-0.5 mr-1 mb-1 text-[0.65rem] font-medium text-white/45 bg-slate-700/50 rounded"
-            >
-              {{ service.name }}
-            </span>
-            } }
-          </div>
-        </section>
-
-        <section class="flex gap-2">
-          <button
-            type="button"
-            (click)="editResource(resource)"
-            class="w-8 h-8 rounded-lg border border-white/10 grid place-items-center text-white/45 text-xs hover:border-indigo-500/60 hover:text-indigo-400 hover:bg-indigo-500/10 transition-all duration-150 min-h-11 min-w-11"
-          >
-            <i class="pi pi-pencil"></i>
-          </button>
-
-          <button
-            type="button"
-            (click)="deleteResource(resource.id)"
-            class="w-8 h-8 rounded-lg border border-white/10 grid place-items-center text-white/45 text-xs hover:border-red-500/50 hover:text-red-400 hover:bg-red-500/10 transition-all duration-150 min-h-11 min-w-11"
-          >
-            <i class="pi pi-trash"></i>
-          </button>
-        </section>
-      </div>
       } @if (!showForm()) {
       <button
         type="button"

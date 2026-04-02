@@ -16,20 +16,13 @@ import { Notification } from '../../../../../core/services/ui/notification';
 import { CreateResourceDTO, IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
-import { AvatarColorPipe } from '../../../../../shared/pipes/avatar-color.pipe';
-import { InitialsPipe } from '../../../../../shared/pipes/initials.pipe';
 import { AvatarColorService } from '../../../../../shared/services/avatar-color.service';
 import { Section } from '../../setup.d';
+import { ResourceCard } from '../resource-card/resource-card';
 
 @Component({
   selector: 'app-resources',
-  imports: [
-    ReactiveFormsModule,
-    AppInput,
-    AppButton,
-    InitialsPipe,
-    AvatarColorPipe,
-  ],
+  imports: [ReactiveFormsModule, AppInput, AppButton, ResourceCard],
   templateUrl: './resources.html',
   styleUrl: './resources.css',
 })
