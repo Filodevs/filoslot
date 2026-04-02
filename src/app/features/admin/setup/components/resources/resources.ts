@@ -11,6 +11,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ResourceService } from '../../../../../core/services/resource.service';
 import { ConfirmDialog } from '../../../../../core/services/ui/confirm-dialog';
+import { Notification } from '../../../../../core/services/ui/notification';
 import { CreateResourceDTO, IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
@@ -32,11 +33,12 @@ import { Section } from '../../setup.d';
   styleUrl: './resources.css',
 })
 export class Resources implements OnInit {
-  private readonly fb = inject(FormBuilder);
-  private readonly destroyRef = inject(DestroyRef);
+  readonly fb = inject(FormBuilder);
+  readonly destroyRef = inject(DestroyRef);
   readonly confirmDialog = inject(ConfirmDialog);
-  private readonly resourceService = inject(ResourceService);
-  private readonly avatarColorService = inject(AvatarColorService);
+  readonly notifications = inject(Notification);
+  readonly resourceService = inject(ResourceService);
+  readonly avatarColorService = inject(AvatarColorService);
 
   resources = signal<IResource[]>([]);
 
@@ -122,8 +124,10 @@ export class Resources implements OnInit {
           this.resources.update((list) => [...list, data]);
           this.cancelForm();
           this.completed.emit('resources');
+          this.notifications.showSuccess('Recurso agregado exitosamente');
         },
         error: (error) => {
+          this.notifications.showError('Error al crear el recurso');
           console.error('Error al crear el recurso:', error);
         },
       });
@@ -147,9 +151,11 @@ export class Resources implements OnInit {
           );
           this.cancelForm();
           this.completed.emit('resources');
+          this.notifications.showSuccess('Recurso actualizado exitosamente');
         },
         error: (error) => {
           console.error('Error al actualizar el recurso:', error);
+          this.notifications.showError('Error al actualizar el recurso');
         },
       });
   }
@@ -182,9 +188,11 @@ export class Resources implements OnInit {
         next: () => {
           this.avatarColorService.removeColor(id);
           this.resources.update((list) => list.filter((r) => r.id !== id));
+          this.notifications.showSuccess('Recurso eliminado exitosamente');
         },
         error: (error) => {
           console.error('Error al eliminar el recurso:', error);
+          this.notifications.showError('Error al eliminar el recurso');
         },
       });
   }
