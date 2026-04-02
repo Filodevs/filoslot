@@ -44,6 +44,7 @@ export class Resources implements OnInit {
 
   showForm = signal(false);
   editingId = signal<string | null>(null);
+  loading = signal(false);
 
   form = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -111,12 +112,15 @@ export class Resources implements OnInit {
   }
 
   private _createResource(resource: CreateResourceDTO): void {
+    this.loading.set(true);
+
     this.resourceService
       .create(resource)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (data) => {
           if (!data) {
+            this.loading.set(false);
             console.warn('No se pudo crear el recurso');
             return;
           }
@@ -125,8 +129,10 @@ export class Resources implements OnInit {
           this.cancelForm();
           this.completed.emit('resources');
           this.notifications.showSuccess('Recurso agregado exitosamente');
+          this.loading.set(false);
         },
         error: (error) => {
+          this.loading.set(false);
           this.notifications.showError('Error al crear el recurso');
           console.error('Error al crear el recurso:', error);
         },
@@ -134,6 +140,7 @@ export class Resources implements OnInit {
   }
 
   private _updateResource(resource: IResource): void {
+    this.loading.set(true);
     const { id, name, role } = resource;
 
     const updateDTO = {
@@ -152,10 +159,12 @@ export class Resources implements OnInit {
           this.cancelForm();
           this.completed.emit('resources');
           this.notifications.showSuccess('Recurso actualizado exitosamente');
+          this.loading.set(false);
         },
         error: (error) => {
           console.error('Error al actualizar el recurso:', error);
           this.notifications.showError('Error al actualizar el recurso');
+          this.loading.set(false);
         },
       });
   }

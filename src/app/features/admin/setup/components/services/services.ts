@@ -55,7 +55,6 @@ export class Services implements OnInit {
       return;
     }
 
-    this.loading.set(true);
     const { name, price, duration } = this.form.value;
 
     if (this.editingId()) {
