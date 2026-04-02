@@ -84,11 +84,11 @@ export class Resources implements OnInit {
     const { name, role } = this.form.value;
 
     if (this.editingId()) {
-      this.resources.update((list) =>
-        list.map((r) =>
-          r.id === this.editingId() ? { ...r, name: name!, role: role! } : r,
-        ),
-      );
+      this._updateResource({
+        id: this.editingId()!,
+        name: name!,
+        role: role!,
+      });
 
       return;
     }
@@ -118,6 +118,31 @@ export class Resources implements OnInit {
         },
         error: (error) => {
           console.error('Error al crear el recurso:', error);
+        },
+      });
+  }
+
+  private _updateResource(resource: IResource): void {
+    const { id, name, role } = resource;
+
+    const updateDTO = {
+      name,
+      role,
+    };
+
+    this.resourceService
+      .update(id, updateDTO)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.resources.update((list) =>
+            list.map((r) => (r.id === id ? { ...r, ...updateDTO } : r)),
+          );
+          this.cancelForm();
+          this.completed.emit('resources');
+        },
+        error: (error) => {
+          console.error('Error al actualizar el recurso:', error);
         },
       });
   }

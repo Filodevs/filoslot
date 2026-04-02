@@ -11,3 +11,5 @@ export interface CreateResourceDTO {
   name: string;
   role: string;
 }
+
+export type UpdateResourceDTO = Partial<CreateResourceDTO>;

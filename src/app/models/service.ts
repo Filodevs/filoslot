@@ -11,8 +11,4 @@ export interface CreateServiceDTO {
   duration: number;
 }
 
-export interface UpdateServiceDTO {
-  name?: string;
-  price?: number;
-  duration?: number;
-}
+export type UpdateServiceDTO = Partial<CreateServiceDTO>;

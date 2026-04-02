@@ -4,7 +4,11 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, delay, map, Observable, of, throwError } from 'rxjs';
 
 import { RESOURCE_MOCK } from '../../models/__mocks__/resource.mock';
-import { CreateResourceDTO, IResource } from '../../models/resource';
+import {
+  CreateResourceDTO,
+  IResource,
+  UpdateResourceDTO,
+} from '../../models/resource';
 import { EnvironmentService } from './environment.service';
 
 interface ApiResponse<T> {
@@ -52,6 +56,29 @@ export class ResourceService {
       catchError((error) => {
         const errorMessage =
           error.error?.data?.message || 'Error al crear el recurso';
+        return throwError(() => new Error(errorMessage));
+      }),
+    );
+  }
+
+  update(id: string, resource: UpdateResourceDTO): Observable<IResource> {
+    if (this.env.isMockingEnabled()) {
+      return of({
+        id,
+        name: resource.name || 'Recurso Actualizado',
+        role: resource.role || 'Rol Actualizado',
+      });
+    }
+
+    const url = this.env.buildApiUrl(
+      this.env.config().api.resources.update.replace(':id', id),
+    );
+
+    return this.http.patch<ApiResponse<IResource>>(url, resource).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        const errorMessage =
+          error.error?.data?.message || 'Error al actualizar el recurso';
         return throwError(() => new Error(errorMessage));
       }),
     );
