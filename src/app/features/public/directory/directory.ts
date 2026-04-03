@@ -43,8 +43,8 @@ export class Directory implements OnInit {
     this._loadBusinesses();
   }
 
-  navigateTo(id: string): void {
-    this.router.navigate(['/business', id]);
+  navigateTo(slug: string): void {
+    this.router.navigate(['/business', slug]);
   }
 
   private _loadBusinesses(): void {

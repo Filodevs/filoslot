@@ -81,14 +81,9 @@
   </section>
 </article>
 
-<footer
-  class="px-4 py-4 bg-[#030712]/85 backdrop-blur-xl border-t border-white/7 z-90"
->
-  <button
-    (click)="goToBooking()"
-    class="w-full max-w-120 mx-auto block py-3.5 bg-linear-to-r from-indigo-500 to-violet-500 rounded-xl text-white font-extrabold text-sm tracking-tight shadow-[0_8px_24px_rgba(99,102,241,0.3)] active:scale-[0.99] transition-all duration-150"
-  >
+<footer class="bg-[#030712]/85 backdrop-blur-xl border-t border-white/7 z-90">
+  <app-button variant="primary" (click)="goToBooking()" class="w-full">
     Reservar ahora
-  </button>
+  </app-button>
 </footer>
 }

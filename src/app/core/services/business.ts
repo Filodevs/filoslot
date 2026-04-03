@@ -35,6 +35,30 @@ export class BusinessService {
     );
   }
 
+  getBusinessBySlug(slug: string): Observable<IBusiness> {
+    if (this.env.isMockingEnabled()) {
+      const business = BUSINESS_MOCK.find((b) => b.slug === slug);
+      if (business) {
+        return of(business).pipe(delay(500));
+      } else {
+        return throwError(() => new Error('Negocio no encontrado'));
+      }
+    }
+
+    const url = this.env.buildApiUrl(
+      this.env.config().api.business.slug.replace(':slug', slug),
+    );
+
+    return this.http.get<ApiResponse<IBusiness>>(url).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        const errorMessage =
+          error.error?.data?.message || 'Error al obtener el negocio';
+        return throwError(() => new Error(errorMessage));
+      }),
+    );
+  }
+
   getMyBusiness(): Observable<IBusiness> {
     if (this.env.isMockingEnabled()) {
       return of(BUSINESS_MOCK[0]).pipe(delay(500));

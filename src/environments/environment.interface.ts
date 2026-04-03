@@ -11,6 +11,7 @@ export interface IEnvironment {
     };
     business: {
       me: string;
+      slug: string;
       list: string;
       detail: string;
       create: string;

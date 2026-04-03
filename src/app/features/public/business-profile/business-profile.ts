@@ -1,51 +1,51 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { IService } from '../../../models/service';
+import { BusinessService } from '../../../core/services/business';
+import { IBusiness } from '../../../models/business';
+import { AppButton } from '../../../shared/components/app-button/app-button';
 import { InitialsPipe } from '../../../shared/pipes/initials.pipe';
-
-interface IBusinessDetail {
-  id: string;
-  name: string;
-  address: string;
-  phone: string;
-  services: IService[];
-}
 
 @Component({
   selector: 'app-business-profile',
-  imports: [InitialsPipe],
+  imports: [InitialsPipe, AppButton],
   templateUrl: './business-profile.html',
   styleUrl: './business-profile.css',
 })
 export class BusinessProfile implements OnInit {
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  readonly route = inject(ActivatedRoute);
+  readonly router = inject(Router);
+  readonly businessService = inject(BusinessService);
 
-  business = signal<IBusinessDetail | null>(null);
+  business = signal<IBusiness | null>(null);
 
   ngOnInit(): void {
-    const uuid = this.route.snapshot.paramMap.get('businessUuid');
+    const slug = this.route.snapshot.paramMap.get('businessSlug');
+    if (!slug) {
+      console.error('No se proporcionó el slug del negocio');
+      return;
+    }
 
-    this.business.set({
-      id: uuid ?? '',
-      name: 'FiloSlot Barber',
-      address: '123 Razor Street, Downtown',
-      phone: '+57 300 000 0000',
-      services: [
-        { id: 's1', name: 'Corte Premium', price: 25, duration: 30 },
-        { id: 's2', name: 'Barba & Ritual', price: 15, duration: 45 },
-        { id: 's3', name: 'Combo FiloSlot', price: 35, duration: 60 },
-      ],
-    });
+    this._loadBusiness(slug);
   }
 
   goToBooking(): void {
-    const uuid = this.route.snapshot.paramMap.get('businessUuid');
-    this.router.navigate(['/business', uuid, 'booking']);
+    const slug = this.route.snapshot.paramMap.get('businessSlug');
+    this.router.navigate(['/business', slug, 'booking']);
   }
 
   goBack(): void {
     this.router.navigate(['/']);
+  }
+
+  private _loadBusiness(slug: string): void {
+    this.businessService.getBusinessBySlug(slug).subscribe({
+      next: (data) => {
+        this.business.set(data);
+      },
+      error: (error) => {
+        console.error(error);
+      },
+    });
   }
 }

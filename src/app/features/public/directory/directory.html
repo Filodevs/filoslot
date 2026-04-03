@@ -34,7 +34,7 @@
     } } @else { @for (business of filteredBusinesses(); track business.id) {
     <app-business-card
       [business]="business"
-      (cardSelect)="navigateTo($event.id)"
+      (cardSelect)="navigateTo($event.slug)"
     />
     } @if (filteredBusinesses().length === 0) {
     <article class="flex flex-col items-center gap-3 py-16 text-center">

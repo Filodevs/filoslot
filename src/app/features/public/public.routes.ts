@@ -13,7 +13,7 @@ export const PUBLIC_ROUTES: Routes = [
           import('./directory/directory').then((c) => c.Directory),
       },
       {
-        path: 'business/:businessUuid',
+        path: 'business/:businessSlug',
         children: [
           {
             path: '',
