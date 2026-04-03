@@ -41,6 +41,7 @@ export const environment: IEnvironment = {
       create: '/resources',
       update: '/resources/:id',
       delete: '/resources/:id',
+      updateAvailability: '/availability/:resourcedId',
     },
     slots: {
       available: '/slots/available',

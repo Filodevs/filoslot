@@ -1,103 +1,97 @@
-import { Component, computed, output, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  linkedSignal,
+  output,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 
+import { TabsModule } from 'primeng/tabs';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
-import { IResource } from '../../../../../models/resource';
+import { ResourceService } from '../../../../../core/services/resource.service';
+import { DaySchedule, IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { Section } from '../../setup.d';
-
-export interface TimeRange {
-  start: string;
-  end: string;
-}
-
-export interface DaySchedule {
-  key: string;
-  label: string;
-  enabled: boolean;
-  ranges: TimeRange[];
-}
+import { AvailabilityResourceCard } from '../availability-resource-card/availability-resource-card';
+import { DAYS_OF_WEEK } from './constants';
 
 @Component({
   selector: 'app-availability',
-  imports: [FormsModule, ToggleSwitchModule, AppButton],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ToggleSwitchModule,
+    TabsModule,
+    AppButton,
+    AvailabilityResourceCard,
+  ],
   templateUrl: './availability.html',
   styleUrl: './availability.css',
 })
 export class Availability {
-  readonly defaultDays: DaySchedule[] = [
-    {
-      key: 'mon',
-      label: 'LUN',
-      enabled: true,
-      ranges: [{ start: '09:00', end: '18:00' }],
-    },
-    {
-      key: 'tue',
-      label: 'MAR',
-      enabled: true,
-      ranges: [{ start: '09:00', end: '18:00' }],
-    },
-    {
-      key: 'wed',
-      label: 'MIÉ',
-      enabled: true,
-      ranges: [{ start: '09:00', end: '18:00' }],
-    },
-    {
-      key: 'thu',
-      label: 'JUE',
-      enabled: true,
-      ranges: [{ start: '09:00', end: '18:00' }],
-    },
-    {
-      key: 'fri',
-      label: 'VIE',
-      enabled: true,
-      ranges: [{ start: '09:00', end: '20:00' }],
-    },
-    {
-      key: 'sat',
-      label: 'SÁB',
-      enabled: false,
-      ranges: [{ start: '09:00', end: '14:00' }],
-    },
-    {
-      key: 'sun',
-      label: 'DOM',
-      enabled: false,
-      ranges: [{ start: '09:00', end: '14:00' }],
-    },
-  ];
+  readonly destroyRef = inject(DestroyRef);
+  readonly resourceService = inject(ResourceService);
 
-  readonly resources = signal<IResource[]>([
-    { id: '1', name: 'Jorge Beltrán', role: 'Barbero' },
-    { id: '2', name: 'Carlos M.', role: 'Barbero' },
-  ]);
+  readonly defaultDays: DaySchedule[] = DAYS_OF_WEEK;
 
-  selectedResource = signal<IResource>(this.resources()[0]);
+  readonly resources = computed(() => this.resourceService.resources());
 
-  scheduleMap = signal<Map<string, DaySchedule[]>>(
-    new Map(
-      this.resources().map((r) => [
-        r.id,
-        this.defaultDays.map((d) => ({
-          ...d,
-          ranges: d.ranges.map((r) => ({ ...r })),
-        })),
-      ]),
-    ),
+  currentSchedule = computed<DaySchedule[]>(
+    () => this.scheduleMap().get(this.selectedResource()?.id ?? '') ?? [],
   );
 
-  currentSchedule = computed(
-    () => this.scheduleMap().get(this.selectedResource().id) ?? [],
-  );
+  selectedResource = linkedSignal<IResource[], IResource | null>({
+    source: () => this.resources(),
+    computation: (resources, previous) => {
+      if (
+        previous?.value &&
+        resources.some((r) => r.id === previous.value?.id)
+      ) {
+        return previous.value;
+      }
+      return resources[0] ?? null;
+    },
+  });
+
+  scheduleMap = linkedSignal<IResource[], Map<string, DaySchedule[]>>({
+    source: () => this.resources(),
+    computation: (resources, previous) => {
+      const existing = previous?.value ?? new Map<string, DaySchedule[]>();
+      const newMap = new Map(existing);
+
+      for (const r of resources) {
+        const availability = r?.availability?.length
+          ? r.availability
+          : this.defaultDays;
+
+        if (!newMap.has(r.id)) {
+          newMap.set(
+            r.id,
+            availability.map((d) => ({
+              ...d,
+              ranges: d.ranges.map((range) => ({ ...range })),
+            })),
+          );
+        }
+      }
+      return newMap;
+    },
+  });
 
   completed = output<Section>();
 
   selectResource(resource: IResource): void {
     this.selectedResource.set(resource);
+  }
+
+  selectResourceById(id: string | number | undefined): void {
+    const resource = this.resources().find((r) => r.id === String(id));
+    if (resource) this.selectedResource.set(resource);
   }
 
   toggleDay(key: string): void {
@@ -133,7 +127,9 @@ export class Availability {
   }
 
   private updateDay(key: string, fn: (d: DaySchedule) => DaySchedule): void {
-    const resourceId = this.selectedResource().id;
+    const resourceId = this.selectedResource()?.id;
+    if (!resourceId) return;
+
     this.scheduleMap.update((map) => {
       const newMap = new Map(map);
       newMap.set(
@@ -145,7 +141,32 @@ export class Availability {
   }
 
   save(): void {
-    // TODO: llamar al servicio HTTP
-    this.completed.emit('availability');
+    const resourceId = this.selectedResource()?.id;
+    if (!resourceId) return;
+
+    const availability = this.scheduleMap().get(resourceId);
+    if (!availability) return;
+
+    this._updateAvailability(resourceId, availability);
+  }
+
+  private _updateAvailability(
+    resourceId: string,
+    availability: DaySchedule[],
+  ): void {
+    this.resourceService
+      .updateAvailability(resourceId, availability)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          if (
+            this.resources().every(
+              (r) => r.availability && r.availability.length > 0,
+            )
+          ) {
+            this.completed.emit('availability');
+          }
+        },
+      });
   }
 }

@@ -6,6 +6,7 @@ export interface IResource {
   role: string;
   serviceIds?: string[];
   appointments?: IAppointment[];
+  availability?: DaySchedule[];
 }
 
 export interface CreateResourceDTO {
@@ -15,3 +16,15 @@ export interface CreateResourceDTO {
 }
 
 export type UpdateResourceDTO = Partial<CreateResourceDTO>;
+
+export interface TimeRange {
+  start: string;
+  end: string;
+}
+
+export interface DaySchedule {
+  key: string;
+  label: string;
+  enabled: boolean;
+  ranges: TimeRange[];
+}

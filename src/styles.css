@@ -97,3 +97,51 @@ body {
 .custom-toast .p-toast-icon-close {
   color: #52525b !important;
 }
+
+/* TABS */
+.p-tabs {
+  background: transparent;
+}
+
+.p-tablist {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.p-tablist-tab-list {
+  background: transparent;
+  gap: 0.25rem;
+}
+
+.p-tab {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  border: none;
+  padding: 0.5rem 0.75rem 0.5rem 0;
+  transition: color 0.15s ease;
+}
+
+.p-tab:hover {
+  color: rgba(255, 255, 255, 0.75);
+  background: transparent;
+}
+
+.p-tab.p-tab-active {
+  color: white;
+  background: transparent;
+}
+
+.p-tablist-active-bar {
+  background: var(--color-primary);
+}
+
+.p-tablist-nav-button {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: rgba(255, 255, 255, 1) !important;
+}
+
+.p-tablist-nav-button:hover {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+}

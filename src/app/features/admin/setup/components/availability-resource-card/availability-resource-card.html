@@ -1,0 +1,12 @@
+<button
+  type="button"
+  (click)="resourceSelectedEvent.emit(resource())"
+  class="px-4 py-2 min-h-11 flex gap-2 justify-center items-center"
+>
+  <div
+    class="w-3 h-3 rounded-full"
+    [class.bg-accent]="isSaved()"
+    [class.bg-white/30]="!isSaved()"
+  ></div>
+  <span class="text-sm font-bold truncate"> {{ resource().name }}</span>
+</button>

@@ -35,6 +35,7 @@ export interface IEnvironment {
       create: string;
       update: string;
       delete: string;
+      updateAvailability: string;
     };
     slots: {
       available: string;
