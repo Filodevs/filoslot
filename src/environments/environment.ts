@@ -17,7 +17,7 @@ export const environment: IEnvironment = {
     },
     business: {
       me: '/businesses/me',
-      list: '/business',
+      list: '/businesses',
       detail: '/business/:id',
       create: '/business',
       update: '/business/:id',

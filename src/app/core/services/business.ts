@@ -3,41 +3,46 @@ import { inject, Injectable } from '@angular/core';
 
 import { catchError, delay, map, Observable, of, throwError } from 'rxjs';
 
-import { IBusinessData, IBusinessUpdateDTO } from '../../models/businessData';
+import { BUSINESS_MOCK } from '../../models/__mocks__/business.mock';
+import { IBusiness, IBusinessUpdateDTO } from '../../models/business';
 import { EnvironmentService } from './environment.service';
 
 interface ApiResponse<T> {
   data: T;
 }
 
-const BUSINESS_DATA_MOCK: IBusinessData = {
-  name: 'FiloSlot Barber',
-  address: '123 Razor Street, Downtown',
-  phone: '+1 234 567 890',
-  services: [
-    { name: 'Corte Premium', price: 25 },
-    { name: 'Barba & Ritual', price: 15 },
-    { name: 'Combo FiloSlot', price: 35 },
-  ],
-};
-
 @Injectable({ providedIn: 'root' })
-export class Business {
+export class BusinessService {
   private readonly http = inject(HttpClient);
   private readonly env = inject(EnvironmentService);
 
-  getBusinessData(): Observable<IBusinessData> {
-    return of(BUSINESS_DATA_MOCK).pipe(delay(500));
+  getBusiness(): Observable<IBusiness[]> {
+    this.env.isMockingEnabled();
+
+    if (this.env.isMockingEnabled()) {
+      return of(BUSINESS_MOCK).pipe(delay(500));
+    }
+
+    const url = this.env.buildApiUrl(this.env.config().api.business.list);
+
+    return this.http.get<ApiResponse<IBusiness[]>>(url).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        const errorMessage =
+          error.error?.data?.message || 'Error al obtener los negocios';
+        return throwError(() => new Error(errorMessage));
+      }),
+    );
   }
 
-  getMyBusiness(): Observable<IBusinessData> {
+  getMyBusiness(): Observable<IBusiness> {
     if (this.env.isMockingEnabled()) {
-      return of(BUSINESS_DATA_MOCK).pipe(delay(500));
+      return of(BUSINESS_MOCK[0]).pipe(delay(500));
     }
 
     const url = this.env.buildApiUrl(this.env.config().api.business.me);
 
-    return this.http.get<ApiResponse<IBusinessData>>(url).pipe(
+    return this.http.get<ApiResponse<IBusiness>>(url).pipe(
       map((response) => response.data),
       catchError((error) => {
         const errorMessage =
@@ -47,10 +52,10 @@ export class Business {
     );
   }
 
-  updateBusinessData(data: IBusinessUpdateDTO): Observable<IBusinessData> {
+  updateBusiness(data: IBusinessUpdateDTO): Observable<IBusiness> {
     if (this.env.isMockingEnabled()) {
-      const updatedData: IBusinessData = {
-        ...BUSINESS_DATA_MOCK,
+      const updatedData: IBusiness = {
+        ...BUSINESS_MOCK[0],
         ...data,
       };
 
@@ -59,7 +64,7 @@ export class Business {
 
     const url = this.env.buildApiUrl(this.env.config().api.business.me);
 
-    return this.http.patch<ApiResponse<IBusinessData>>(url, data).pipe(
+    return this.http.patch<ApiResponse<IBusiness>>(url, data).pipe(
       map((response) => response.data),
       catchError((error) => {
         const errorMessage =

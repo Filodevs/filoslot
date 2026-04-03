@@ -1,4 +1,6 @@
-export interface IBusinessData {
+export interface IBusiness {
+  id: string;
+  slug: string;
   name: string;
   address: string;
   phone: string;

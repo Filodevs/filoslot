@@ -10,8 +10,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { DirectoryService } from '../../../core/services/directory.service';
-import { IBusinessCard } from '../../../models/businessCard';
+import { BusinessService } from '../../../core/services/business';
+import { IBusiness } from '../../../models/business';
 import { AppSkeleton } from '../../../shared/components/app-skeleton/app-skeleton';
 import { BusinessCard } from './components/business-card/business-card';
 
@@ -24,10 +24,10 @@ import { BusinessCard } from './components/business-card/business-card';
 export class Directory implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly directoryService = inject(DirectoryService);
+  private readonly businessService = inject(BusinessService);
 
   searchQuery = signal('');
-  businesses = signal<IBusinessCard[]>([]);
+  businesses = signal<IBusiness[]>([]);
   loading = signal(true);
 
   filteredBusinesses = computed(() => {
@@ -40,16 +40,28 @@ export class Directory implements OnInit {
   });
 
   ngOnInit(): void {
-    this.directoryService
-      .getBusinesses()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((data) => {
-        this.businesses.set(data);
-        this.loading.set(false);
-      });
+    this._loadBusinesses();
   }
 
   navigateTo(id: string): void {
     this.router.navigate(['/business', id]);
+  }
+
+  private _loadBusinesses(): void {
+    this.loading.set(true);
+
+    this.businessService
+      .getBusiness()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.businesses.set(data);
+          this.loading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading businesses:', error);
+          this.loading.set(false);
+        },
+      });
   }
 }

@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 
-import { IBusinessCard } from '../../../../../models/businessCard';
+import { IBusiness } from '../../../../../models/business';
 import { InitialsPipe } from '../../../../../shared/pipes/initials.pipe';
 
 @Component({
@@ -9,9 +9,9 @@ import { InitialsPipe } from '../../../../../shared/pipes/initials.pipe';
   templateUrl: './business-card.html',
 })
 export class BusinessCard {
-  business = input.required<IBusinessCard>();
+  business = input.required<IBusiness>();
 
-  cardSelect = output<IBusinessCard>();
+  cardSelect = output<IBusiness>();
 
   onSelect(): void {
     this.cardSelect.emit(this.business());

@@ -1,13 +1,12 @@
-import { IBusinessCard } from '../businessCard';
+import { IBusiness } from '../business';
 
-export const BUSINESS_MOCK: IBusinessCard[] = [
+export const BUSINESS_MOCK: IBusiness[] = [
   {
     id: '1',
     slug: 'filoslot-barber',
     name: 'FiloSlot Barber',
     address: '123 Razor Street, Downtown',
     phone: '',
-    services: ['Corte Premium', 'Barba & Ritual', 'Combo FiloSlot'],
   },
   {
     id: '2',
@@ -15,7 +14,6 @@ export const BUSINESS_MOCK: IBusinessCard[] = [
     name: 'Estudio Corte Fino',
     address: 'Av. Principal 45, Centro',
     phone: '',
-    services: ['Corte Clásico', 'Degradado', 'Afeitado'],
   },
   {
     id: '3',
@@ -23,6 +21,5 @@ export const BUSINESS_MOCK: IBusinessCard[] = [
     name: 'Barber Kings',
     address: 'Calle 80 #12-34, Norte',
     phone: '',
-    services: ['Corte + Barba', 'Diseño de cejas'],
   },
 ];
