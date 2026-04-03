@@ -6,6 +6,7 @@ import {
   inject,
   linkedSignal,
   output,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -14,6 +15,7 @@ import { TabsModule } from 'primeng/tabs';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 import { ResourceService } from '../../../../../core/services/resource.service';
+import { Notification } from '../../../../../core/services/ui/notification';
 import { DaySchedule, IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { Section } from '../../setup.d';
@@ -35,16 +37,17 @@ import { DAYS_OF_WEEK } from './constants';
 })
 export class Availability {
   readonly destroyRef = inject(DestroyRef);
+  readonly notifications = inject(Notification);
   readonly resourceService = inject(ResourceService);
 
   readonly defaultDays: DaySchedule[] = DAYS_OF_WEEK;
+  loading = signal(false);
 
   readonly resources = computed(() => this.resourceService.resources());
 
   currentSchedule = computed<DaySchedule[]>(
     () => this.scheduleMap().get(this.selectedResource()?.id ?? '') ?? [],
   );
-
   selectedResource = linkedSignal<IResource[], IResource | null>({
     source: () => this.resources(),
     computation: (resources, previous) => {
@@ -154,6 +157,8 @@ export class Availability {
     resourceId: string,
     availability: DaySchedule[],
   ): void {
+    this.loading.set(true);
+
     this.resourceService
       .updateAvailability(resourceId, availability)
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -166,6 +171,16 @@ export class Availability {
           ) {
             this.completed.emit('availability');
           }
+
+          this.notifications.showSuccess(
+            'Disponibilidad actualizada exitosamente',
+          );
+          this.loading.set(false);
+        },
+        error: (error) => {
+          this.loading.set(false);
+          console.error('Error al actualizar disponibilidad:', error);
+          this.notifications.showError('Error al actualizar disponibilidad');
         },
       });
   }

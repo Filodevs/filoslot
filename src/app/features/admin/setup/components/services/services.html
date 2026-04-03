@@ -1,9 +1,11 @@
 <div class="flex flex-col gap-4">
   @if (catalogService.services().length > 0) {
   <section class="flex flex-col">
-    <div class="flex flex-col divide-y divide-white/7">
+    <div class="grid md:grid-cols-2 gap-4">
       @for (service of catalogService.services(); track service.id) {
-      <div class="flex items-center gap-3 py-3">
+      <div
+        class="p-4 flex items-center gap-3 bg-slate-800/60 border border-white/7 rounded-sm"
+      >
         <span
           class="hidden sm:block w-2 h-2 rounded-full bg-indigo-500 shrink-0"
         ></span>

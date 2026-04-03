@@ -43,10 +43,11 @@
 
     <div>
       <app-button
+        class="w-full"
         type="button"
         variant="primary"
+        [loading]="loading()"
         (click)="save()"
-        class="w-full"
       >
         Guardar cambios
       </app-button>
