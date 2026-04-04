@@ -15,7 +15,7 @@ import { TabsModule } from 'primeng/tabs';
 import { ToggleSwitchModule } from 'primeng/toggleswitch';
 
 import { ResourceService } from '../../../../../core/services/resource.service';
-import { Notification } from '../../../../../core/services/ui/notification';
+import { NotificationService } from '../../../../../core/services/ui/notification';
 import { DaySchedule, IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { Section } from '../../setup.d';
@@ -37,7 +37,7 @@ import { DAYS_OF_WEEK } from './constants';
 })
 export class Availability {
   readonly destroyRef = inject(DestroyRef);
-  readonly notifications = inject(Notification);
+  readonly notifications = inject(NotificationService);
   readonly resourceService = inject(ResourceService);
 
   readonly defaultDays: DaySchedule[] = DAYS_OF_WEEK;

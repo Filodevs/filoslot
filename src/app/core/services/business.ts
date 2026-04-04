@@ -4,7 +4,9 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, delay, map, Observable, of, throwError } from 'rxjs';
 
 import { BUSINESS_MOCK } from '../../models/__mocks__/business.mock';
+import { RESOURCE_MOCK } from '../../models/__mocks__/resource.mock';
 import { IBusiness, IBusinessUpdateDTO } from '../../models/business';
+import { IResource } from '../../models/resource';
 import { EnvironmentService } from './environment.service';
 
 interface ApiResponse<T> {
@@ -93,6 +95,31 @@ export class BusinessService {
       catchError((error) => {
         const errorMessage =
           error.error?.data?.message || 'Error al actualizar el negocio';
+        return throwError(() => new Error(errorMessage));
+      }),
+    );
+  }
+
+  getResourcesByServiceId(
+    businessId: string,
+    serviceId: string,
+  ): Observable<IResource[]> {
+    if (this.env.isMockingEnabled()) {
+      return of(RESOURCE_MOCK).pipe(delay(500));
+    }
+
+    const url = this.env.buildApiUrl(
+      this.env
+        .config()
+        .api.business.resourcesByServiceId.replace(':businessId', businessId)
+        .replace(':serviceId', serviceId),
+    );
+
+    return this.http.get<ApiResponse<IResource[]>>(url).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        const errorMessage =
+          error.error?.data?.message || 'Error al obtener los recursos';
         return throwError(() => new Error(errorMessage));
       }),
     );

@@ -17,13 +17,24 @@ export class EnvironmentService {
     return environment.api.baseUrl;
   }
 
-  buildApiUrl(endpoint: string, params?: Record<string, string>): string {
+  buildApiUrl(
+    endpoint: string,
+    params?: Record<string, string>,
+    queryParams?: Record<string, string>,
+  ): string {
     let url = `${environment.api.baseUrl}${endpoint}`;
 
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         url = url.replace(`:${key}`, value);
       });
+    }
+
+    if (queryParams) {
+      const queryString = Object.entries(queryParams)
+        .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+        .join('&');
+      url += `?${queryString}`;
     }
 
     return url;

@@ -4,7 +4,7 @@
     class="min-h-11 flex items-center gap-1.5 text-white/45 text-xs font-bold mb-5 hover:text-white transition-colors duration-150"
   >
     <i class="pi pi-arrow-left text-xs"></i>
-    {{ businessName() }}
+    {{ business()?.name }}
   </button>
 
   <h1 class="text-xl font-extrabold tracking-tight mb-1">Reserva tu turno</h1>
@@ -35,7 +35,8 @@
     <div class="flex flex-col gap-2">
       @if (loadingServices()) { @for (i of [1, 2, 3]; track i) {
       <app-skeleton height="64px" radius="4px" />
-      } } @else { @for (service of services(); track service.id) {
+      } } @else { @for (service of business()?.services || []; track service.id)
+      {
       <app-service-card
         [service]="service"
         [selected]="isSelected(service, selectedService())"

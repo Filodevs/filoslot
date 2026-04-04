@@ -12,7 +12,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CatalogService } from '../../../../../core/services/catalog.service';
 import { ResourceService } from '../../../../../core/services/resource.service';
 import { ConfirmDialog } from '../../../../../core/services/ui/confirm-dialog';
-import { Notification } from '../../../../../core/services/ui/notification';
+import { NotificationService } from '../../../../../core/services/ui/notification';
 import { CreateResourceDTO, IResource } from '../../../../../models/resource';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
@@ -30,7 +30,7 @@ export class Resources implements OnInit {
   readonly fb = inject(FormBuilder);
   readonly destroyRef = inject(DestroyRef);
   readonly confirmDialog = inject(ConfirmDialog);
-  readonly notifications = inject(Notification);
+  readonly notifications = inject(NotificationService);
   readonly resourceService = inject(ResourceService);
   readonly catalogService = inject(CatalogService);
   readonly avatarColorService = inject(AvatarColorService);

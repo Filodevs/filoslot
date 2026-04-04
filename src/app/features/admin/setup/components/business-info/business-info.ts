@@ -12,7 +12,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 
 import { BusinessService } from '../../../../../core/services/business';
-import { Notification } from '../../../../../core/services/ui/notification';
+import { NotificationService } from '../../../../../core/services/ui/notification';
 import { IBusinessUpdateDTO } from '../../../../../models/business';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
@@ -27,7 +27,7 @@ import { Section } from '../../setup.d';
 export class BusinessInfo implements OnInit {
   readonly fb = inject(FormBuilder);
   readonly destroyRef = inject(DestroyRef);
-  readonly notifications = inject(Notification);
+  readonly notifications = inject(NotificationService);
   readonly businessService = inject(BusinessService);
 
   isLoading = signal(false);

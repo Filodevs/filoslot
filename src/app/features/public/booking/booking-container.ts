@@ -10,11 +10,14 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { switchMap } from 'rxjs';
+
 import { AppointmentService } from '../../../core/services/appointment.service';
-import { CatalogService } from '../../../core/services/catalog.service';
+import { BusinessService } from '../../../core/services/business';
 import { ResourceService } from '../../../core/services/resource.service';
-import { Notification } from '../../../core/services/ui/notification';
+import { NotificationService } from '../../../core/services/ui/notification';
 import { IBookingDataDTO } from '../../../models/appointment';
+import { IBusiness } from '../../../models/business';
 import { IResource } from '../../../models/resource';
 import { IService } from '../../../models/service';
 import { ISlot, SlotStatus } from '../../../models/slot';
@@ -45,13 +48,12 @@ export class BookingContainer implements OnInit {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly catalogService = inject(CatalogService);
+  private readonly businessService = inject(BusinessService);
   private readonly resourceService = inject(ResourceService);
   private readonly appointmentService = inject(AppointmentService);
-  private readonly notification = inject(Notification);
+  private readonly notification = inject(NotificationService);
 
-  businessName = signal('FiloSlot Barber');
-  services = signal<IService[]>([]);
+  business = signal<IBusiness | null>(null);
   resources = signal<IResource[]>([]);
   slots = signal<ISlot[]>([]);
 
@@ -114,6 +116,8 @@ export class BookingContainer implements OnInit {
   selectService(service: IService): void {
     this.selectedService.set(service);
     this.selectedSlot.set(null);
+
+    this._loadResourcesByService(this.business()!.id, service.id);
   }
 
   selectResource(resource: IResource): void {
@@ -133,8 +137,8 @@ export class BookingContainer implements OnInit {
   }
 
   goBack(): void {
-    const uuid = this.route.snapshot.paramMap.get('businessUuid');
-    this.router.navigate(['/business', uuid]);
+    const slug = this.route.snapshot.paramMap.get('businessSlug');
+    this.router.navigate(['/business', slug]);
   }
 
   onSubmit(): void {
@@ -166,18 +170,51 @@ export class BookingContainer implements OnInit {
   }
 
   private _loadData(): void {
-    this.catalogService
-      .getServices()
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    const slug = this.route.snapshot.paramMap.get('businessSlug');
+
+    if (!slug) {
+      this.notification.showError('Negocio no especificado');
+      this.router.navigate(['/directory']);
+      return;
+    }
+
+    this.businessService
+      .getBusinessBySlug(slug)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap((b) => {
+          this.loadingServices.set(false);
+          this.loadingResources.set(true);
+
+          this.business.set(b);
+          this.selectedService.set(b?.services?.at(0) || null);
+
+          return this.businessService.getResourcesByServiceId(
+            b?.id ?? '',
+            b?.services?.at(2)?.id ?? '',
+          );
+        }),
+      )
       .subscribe({
-        next: (s) => {
-          this.services.set(s);
+        next: (resources) => {
+          this.resources.set(resources);
+          this.loadingResources.set(false);
+        },
+        error: (error) => {
+          this.notification.showError(error.message);
+          this.loadingResources.set(false);
           this.loadingServices.set(false);
         },
       });
+  }
 
-    this.resourceService
-      .getResources()
+  private _loadResourcesByService(businessId: string, serviceId: string): void {
+    if (!serviceId) return;
+
+    this.loadingResources.set(true);
+
+    this.businessService
+      .getResourcesByServiceId(businessId, serviceId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (r) => {
@@ -199,6 +236,10 @@ export class BookingContainer implements OnInit {
       .subscribe({
         next: (s) => {
           this.slots.set(s);
+          this.loadingSlots.set(false);
+        },
+        error: (error) => {
+          this.notification.showError(error.message);
           this.loadingSlots.set(false);
         },
       });

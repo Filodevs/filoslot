@@ -5,7 +5,7 @@ import { MessageService } from 'primeng/api';
 @Injectable({
   providedIn: 'root',
 })
-export class Notification {
+export class NotificationService {
   private readonly messageService = inject(MessageService);
 
   showSuccess(message: string, title = ''): void {

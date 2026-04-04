@@ -11,7 +11,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { CatalogService } from '../../../../../core/services/catalog.service';
 import { ConfirmDialog } from '../../../../../core/services/ui/confirm-dialog';
-import { Notification } from '../../../../../core/services/ui/notification';
+import { NotificationService } from '../../../../../core/services/ui/notification';
 import { CreateServiceDTO, IService } from '../../../../../models/service';
 import { AppButton } from '../../../../../shared/components/app-button/app-button';
 import { AppInput } from '../../../../../shared/components/app-input/app-input';
@@ -28,7 +28,7 @@ import { Section } from '../../setup.d';
 export class Services implements OnInit {
   readonly fb = inject(FormBuilder);
   readonly destroyRef = inject(DestroyRef);
-  readonly notifications = inject(Notification);
+  readonly notifications = inject(NotificationService);
   readonly confirmDialog = inject(ConfirmDialog);
   readonly catalogService = inject(CatalogService);
 
