@@ -109,23 +109,18 @@ export class BookingConfirmation {
   }
 
   shareWhatsApp(): void {
-    // const url = `${window.location.origin}/reserva/${this.token}`;
-    // const appt = this.appointment();
-    // const message =
-    //   '¡Hola! Quería compartir contigo los detalles de mi reserva:\n\n';
-    // window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+    const url = window.location.href;
+    const appt = this.appointment();
+    const message =
+      '¡Hola! Quería compartir contigo los detalles de mi reserva:\n\n';
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
   }
 
   copyLink(): void {
-    // const url = `${window.location.origin}/reserva/${this.token}`;
-    // navigator.clipboard.writeText(url).then(() => {
-    //   this.messageService.add({
-    //     severity: 'success',
-    //     summary: 'Link copiado',
-    //     detail: 'El link de tu reserva fue copiado al portapapeles.',
-    //     life: 2000,
-    //   });
-    // });
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      this.notifications.showSuccess('Enlace copiado al portapapeles');
+    });
   }
 
   goHome(): void {
