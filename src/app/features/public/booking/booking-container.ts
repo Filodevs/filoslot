@@ -171,8 +171,6 @@ export class BookingContainer implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          //TODO: SHOW CONFIRMATION TOKEN AND APPOINTMENT ID
-
           this.notification.showSuccess(
             '¡Reserva confirmada!',
             'Tu turno ha sido agendado exitosamente.',

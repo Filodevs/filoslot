@@ -1,9 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { httpResource } from '@angular/common/http';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { AppointmentService } from '../../../core/services/appointment.service';
 import { EnvironmentService } from '../../../core/services/environment.service';
+import { ConfirmDialog } from '../../../core/services/ui/confirm-dialog';
+import { NotificationService } from '../../../core/services/ui/notification';
 import {
   AppointmentStatus,
   IAppointmentDetails,
@@ -20,9 +24,12 @@ export class BookingConfirmation {
   private readonly env = inject(EnvironmentService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly confirmDialog = inject(ConfirmDialog);
+  private readonly notifications = inject(NotificationService);
+  private readonly appointmentService = inject(AppointmentService);
 
   readonly token = this.route.snapshot.params['token'];
-
   appointmentResource = httpResource<{ data: IAppointmentDetails }>(
     () =>
       `${this.env.buildApiUrl(this.env.config().api.appointments.confirmation).replace(':token', this.token)}`,
@@ -64,11 +71,41 @@ export class BookingConfirmation {
   });
 
   confirmCancel(): void {
-    console.log('Cancelar cita con token:', this.token);
+    this.confirmDialog
+      .confirm(
+        '¿Estás seguro de cancelar esta reserva? Esta acción no se puede deshacer.',
+      )
+      .then((confirmed) => {
+        if (confirmed) {
+          this._cancelAppointment();
+        }
+      });
   }
 
   private _cancelAppointment(): void {
-    console.log('Cita cancelada con token:', this.token);
+    this.appointmentService
+      .cancel(this.token)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const current = this.appointmentResource.value();
+
+          if (current) {
+            this.appointmentResource.set({
+              data: {
+                ...current.data,
+                status: AppointmentStatus.canceled,
+              },
+            });
+          }
+        },
+        error: (error) => {
+          console.error('Error al cancelar la cita:', error);
+          this.notifications.showError(
+            'Error al cancelar la cita. Por favor, intenta nuevamente.',
+          );
+        },
+      });
   }
 
   shareWhatsApp(): void {

@@ -79,4 +79,22 @@ export class AppointmentService {
         }),
       );
   }
+
+  cancel(token: string): Observable<void> {
+    if (this.env.isMockingEnabled()) {
+      return of(undefined).pipe(delay(500));
+    }
+
+    const url = this.env
+      .buildApiUrl(this.env.config().api.appointments.cancel)
+      .replace(':token', token);
+
+    return this.http.delete<void>(url).pipe(
+      catchError((error) => {
+        const errorMessage =
+          error.error?.data?.message || 'Error al cancelar la cita';
+        return throwError(() => new Error(errorMessage));
+      }),
+    );
+  }
 }

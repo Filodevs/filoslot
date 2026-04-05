@@ -29,7 +29,7 @@ export const environment: IEnvironment = {
       list: '/appointments',
       create: '/appointments',
       update: '/appointments/:id',
-      cancel: '/appointments/:id/cancel',
+      cancel: '/appointments/confirmation/:token',
       detail: '/appointments/:id',
       confirmation: '/appointments/confirmation/:token',
     },
