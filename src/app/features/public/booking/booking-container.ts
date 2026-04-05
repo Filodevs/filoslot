@@ -6,21 +6,20 @@ import {
   OnInit,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { switchMap } from 'rxjs';
+import { startWith, switchMap } from 'rxjs';
 
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { BusinessService } from '../../../core/services/business';
-import { ResourceService } from '../../../core/services/resource.service';
 import { NotificationService } from '../../../core/services/ui/notification';
 import { IBookingDataDTO } from '../../../models/appointment';
 import { IBusiness } from '../../../models/business';
 import { IResource } from '../../../models/resource';
 import { IService } from '../../../models/service';
-import { ISlot, SlotStatus } from '../../../models/slot';
+import { ISlot } from '../../../models/slot';
 import { AppButton } from '../../../shared/components/app-button/app-button';
 import { AppDateSelector } from '../../../shared/components/app-date-selector/app-date-selector';
 import { AppInput } from '../../../shared/components/app-input/app-input';
@@ -49,7 +48,6 @@ export class BookingContainer implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
   private readonly businessService = inject(BusinessService);
-  private readonly resourceService = inject(ResourceService);
   private readonly appointmentService = inject(AppointmentService);
   private readonly notification = inject(NotificationService);
 
@@ -66,15 +64,6 @@ export class BookingContainer implements OnInit {
   selectedSlot = signal<ISlot | null>(null);
   selectedDate = signal<Date>(new Date());
 
-  availableSlots = computed(() => {
-    const resource = this.selectedResource();
-    if (!resource) return [];
-
-    return this.slots().filter(
-      (s) => s.resourceId === resource.id && s.status === SlotStatus.available,
-    );
-  });
-
   progress = computed(() => {
     let steps = 0;
     if (this.selectedService()) steps++;
@@ -89,7 +78,7 @@ export class BookingContainer implements OnInit {
       this.selectedService() !== null &&
       this.selectedResource() !== null &&
       this.selectedSlot() !== null &&
-      this.form.valid,
+      this.formStatus() === 'VALID',
   );
 
   form = this.fb.group({
@@ -97,20 +86,34 @@ export class BookingContainer implements OnInit {
     userPhone: ['', [Validators.required]],
   });
 
+  formStatus = toSignal(
+    this.form.statusChanges.pipe(startWith(this.form.status)),
+  );
+
   ngOnInit(): void {
     this._loadData();
   }
 
-  isSelected<T extends { id: string }>(item: T, selected: T | null): boolean {
-    return selected?.id === item.id;
-  }
+  isSelected<T extends { id?: string; start?: string }>(
+    item: T,
+    selected: T | null,
+  ): boolean {
+    if (!selected) return false;
 
-  formatTime(date: Date): string {
-    return date.toLocaleTimeString('es', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
+    if ('id' in item && item.id && 'id' in selected && selected.id) {
+      return item.id === selected.id;
+    }
+
+    if (
+      'start' in item &&
+      item.start &&
+      'start' in selected &&
+      selected.start
+    ) {
+      return item.start === selected.start;
+    }
+
+    return false;
   }
 
   selectService(service: IService): void {
@@ -150,7 +153,7 @@ export class BookingContainer implements OnInit {
     const payload: IBookingDataDTO = {
       resourceId: this.selectedResource()!.id,
       date: this.selectedDate(),
-      slotId: this.selectedSlot()!.id,
+      slotId: '', //TODO: generate slot ID based on selected slot
       userName: this.form.value.userName!,
       phone: this.form.value.userPhone!,
     };
@@ -191,19 +194,32 @@ export class BookingContainer implements OnInit {
 
           return this.businessService.getResourcesByServiceId(
             b?.id ?? '',
-            b?.services?.at(2)?.id ?? '',
+            b?.services?.at(0)?.id ?? '',
+          );
+        }),
+        switchMap((resources) => {
+          this.resources.set(resources);
+          this.selectedResource.set(resources[0] || null);
+          this.loadingResources.set(false);
+          this.loadingSlots.set(true);
+
+          return this.appointmentService.getAvailableSlots(
+            resources[0].id,
+            this.selectedService()!.id,
+            this.selectedDate(),
           );
         }),
       )
       .subscribe({
-        next: (resources) => {
-          this.resources.set(resources);
-          this.loadingResources.set(false);
+        next: (slots) => {
+          this.slots.set(slots);
+          this.loadingSlots.set(false);
         },
         error: (error) => {
           this.notification.showError(error.message);
           this.loadingResources.set(false);
           this.loadingServices.set(false);
+          this.loadingSlots.set(false);
         },
       });
   }
@@ -226,12 +242,14 @@ export class BookingContainer implements OnInit {
 
   private _loadSlots(): void {
     const resource = this.selectedResource();
+    const service = this.selectedService();
+    const date = this.selectedDate();
 
-    if (!resource) return;
+    if (!resource || !service || !date) return;
+
     this.loadingSlots.set(true);
-
     this.appointmentService
-      .getAvailableSlots(resource.id, this.selectedDate())
+      .getAvailableSlots(resource.id, service.id, date)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (s) => {

@@ -1,6 +1,10 @@
 import { ISlot, SlotStatus } from '../slot';
 
-export const generateSlotsMock = (resourceId: string, date: Date): ISlot[] => {
+export const generateSlotsMock = (
+  resourceId: string,
+  serviceId: string,
+  date: Date,
+): ISlot[] => {
   const slots: ISlot[] = [];
   const startHour = 8;
 
@@ -9,11 +13,18 @@ export const generateSlotsMock = (resourceId: string, date: Date): ISlot[] => {
     slotDate.setHours(startHour + i, 0, 0, 0);
 
     slots.push({
-      id: `${resourceId}-${slotDate.getTime()}`,
-      startTime: slotDate,
-      endTime: new Date(slotDate.getTime() + 60 * 60 * 1000),
+      start:
+        slotDate.getHours() +
+        ':' +
+        slotDate.getMinutes().toString().padStart(2, '0'),
+      end:
+        new Date(slotDate.getTime() + 60 * 60 * 1000).getHours() +
+        ':' +
+        new Date(slotDate.getTime() + 60 * 60 * 1000)
+          .getMinutes()
+          .toString()
+          .padStart(2, '0'),
       status: startHour + i !== 12 ? SlotStatus.available : SlotStatus.booked,
-      resourceId,
     });
   }
 

@@ -14,11 +14,11 @@ export class BookingSummary {
   resource = input.required<IResource>();
   slot = input.required<ISlot>();
 
-  formatTime(date: Date): string {
-    return date.toLocaleTimeString('es', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
-  }
+  // formatTime(date: Date): string {
+  //   return date.toLocaleTimeString('es', {
+  //     hour: '2-digit',
+  //     minute: '2-digit',
+  //     hour12: false,
+  //   });
+  // }
 }

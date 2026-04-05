@@ -1,9 +1,7 @@
 export interface ISlot {
-  id: string;
-  startTime: Date;
-  endTime: Date;
+  start: string;
+  end: string;
   status: SlotStatus;
-  resourceId: string;
 }
 
 export enum SlotStatus {

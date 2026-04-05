@@ -107,7 +107,7 @@
       <app-skeleton height="44px" radius="4px" />
       }
     </article>
-    } @else if (availableSlots().length === 0) {
+    } @else if (slots().length === 0) {
     <article class="py-6 text-center">
       <p class="text-xs text-white/25 font-semibold">
         Sin horarios disponibles para este día
@@ -115,7 +115,7 @@
     </article>
     } @else {
     <article class="grid grid-cols-3 gap-2">
-      @for (slot of availableSlots(); track slot.id) {
+      @for (slot of slots(); track slot.start) {
       <button
         (click)="selectSlot(slot)"
         class="py-3 rounded-sm border text-sm font-bold transition-all duration-150 min-h-11"
@@ -123,7 +123,7 @@
                     ? 'bg-indigo-500 border-indigo-500 text-white'
                     : 'bg-slate-900/60 border-white/10 text-white/70 hover:border-indigo-500/40'"
       >
-        {{ formatTime(slot.startTime) }}
+        {{ slot.start }}
       </button>
       }
     </article>
