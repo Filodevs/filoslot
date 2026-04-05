@@ -84,12 +84,10 @@
       </div>
     </div>
 
-    <!-- DETALLES -->
     <div
       class="px-4 py-4 flex flex-col gap-3.5"
       [class.opacity-50]="isCanceled()"
     >
-      <!-- Fecha -->
       <div class="flex items-center gap-3">
         <div
           class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0"
@@ -109,7 +107,6 @@
         </div>
       </div>
 
-      <!-- Servicio -->
       <div class="flex items-center gap-3">
         <div
           class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0 text-sm"
@@ -129,7 +126,6 @@
         </div>
       </div>
 
-      <!-- Profesional -->
       <div class="flex items-center gap-3">
         <div
           class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0"
@@ -148,7 +144,6 @@
         </div>
       </div>
 
-      <!-- Precio -->
       <div class="flex items-center gap-3">
         <div
           class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0"
@@ -172,7 +167,6 @@
       </div>
     </div>
 
-    <!-- TOKEN -->
     @if (!isCanceled()) {
     <div
       class="flex items-center gap-2.5 mx-4 mb-4 px-3 py-2.5 bg-slate-800/80 border border-white/7 rounded-xl"
@@ -194,8 +188,8 @@
   </div>
 
   <div class="w-full flex flex-col gap-2.5">
-    <!-- Compartir WhatsApp — solo si pendiente -->
-    @if (isPending()) {
+    @if (isPending()) { @if (isMobile) {
+
     <button
       (click)="shareWhatsApp()"
       class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-extrabold text-sm bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] hover:bg-[#25D366]/15 transition-all duration-150 min-h-11"
@@ -203,10 +197,25 @@
       <i class="pi pi-whatsapp text-base"></i>
       Compartir por WhatsApp
     </button>
-    }
+    } @else {
 
-    <!-- Cancelar — solo si pendiente -->
-    @if (canCancel()) {
+    <div class="grid grid-cols-2 gap-2">
+      <button
+        (click)="shareWhatsApp()"
+        class="flex items-center justify-center gap-2 py-3.5 rounded-xl font-extrabold text-sm bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] hover:bg-[#25D366]/15 transition-all duration-150 min-h-11"
+      >
+        <i class="pi pi-whatsapp text-base"></i>
+        WhatsApp Web
+      </button>
+      <button
+        (click)="copyLink()"
+        class="flex items-center justify-center gap-2 py-3.5 rounded-xl font-extrabold text-sm border border-white/10 text-white/60 hover:border-white/20 hover:text-white transition-all duration-150 min-h-11"
+      >
+        <i class="pi pi-copy text-base"></i>
+        Copiar link
+      </button>
+    </div>
+    } } @if (canCancel()) {
     <button
       (click)="confirmCancel()"
       class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-extrabold text-sm bg-red-500/8 border border-red-500/25 text-red-400 hover:bg-red-500/15 transition-all duration-150 min-h-11"
@@ -214,10 +223,7 @@
       <i class="pi pi-times-circle text-base"></i>
       Cancelar mi reserva
     </button>
-    }
-
-    <!-- Ya cancelada o completada — deshabilitado -->
-    @if (!canCancel()) {
+    } @if (!canCancel()) {
     <button
       disabled
       class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-extrabold text-sm bg-white/4 border border-white/7 text-white/20 cursor-not-allowed min-h-11"
@@ -228,7 +234,6 @@
     </button>
     }
 
-    <!-- Volver -->
     <button
       (click)="goHome()"
       class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-extrabold text-sm border border-white/10 text-white/45 hover:border-white/20 hover:text-white/70 transition-all duration-150 min-h-11"

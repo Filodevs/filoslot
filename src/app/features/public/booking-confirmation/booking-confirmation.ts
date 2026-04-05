@@ -29,7 +29,9 @@ export class BookingConfirmation {
   private readonly notifications = inject(NotificationService);
   private readonly appointmentService = inject(AppointmentService);
 
+  readonly isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
   readonly token = this.route.snapshot.params['token'];
+
   appointmentResource = httpResource<{ data: IAppointmentDetails }>(
     () =>
       `${this.env.buildApiUrl(this.env.config().api.appointments.confirmation).replace(':token', this.token)}`,
@@ -111,9 +113,24 @@ export class BookingConfirmation {
   shareWhatsApp(): void {
     const url = window.location.href;
     const appt = this.appointment();
+    const formatedDate = new Date(appt?.startTime || '').toLocaleString(
+      'es-AR',
+      {
+        dateStyle: 'long',
+        timeStyle: 'short',
+        timeZone: 'UTC',
+      },
+    );
     const message =
-      '¡Hola! Quería compartir contigo los detalles de mi reserva:\n\n';
-    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+      `📅 *Reserva agendada en ${appt?.business?.name}*\n` +
+      `Servicio: ${appt?.service?.name}\n` +
+      `Fecha: ${formatedDate}\n\n` +
+      `Guarda este link para ver o cancelar tu cita:\n` +
+      `${url}`;
+
+    // wa.me falla en localhost, api.whatsapp.com funciona en ambos
+    const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+    window.open(waUrl, '_blank');
   }
 
   copyLink(): void {
