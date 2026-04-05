@@ -19,7 +19,7 @@ import { IBookingDataDTO } from '../../../models/appointment';
 import { IBusiness } from '../../../models/business';
 import { IResource } from '../../../models/resource';
 import { IService } from '../../../models/service';
-import { ISlot } from '../../../models/slot';
+import { ISlot, SlotStatus } from '../../../models/slot';
 import { AppButton } from '../../../shared/components/app-button/app-button';
 import { AppDateSelector } from '../../../shared/components/app-date-selector/app-date-selector';
 import { AppInput } from '../../../shared/components/app-input/app-input';
@@ -51,6 +51,8 @@ export class BookingContainer implements OnInit {
   private readonly appointmentService = inject(AppointmentService);
   private readonly notification = inject(NotificationService);
 
+  readonly slotsStatus = SlotStatus;
+
   business = signal<IBusiness | null>(null);
   resources = signal<IResource[]>([]);
   slots = signal<ISlot[]>([]);
@@ -79,6 +81,10 @@ export class BookingContainer implements OnInit {
       this.selectedResource() !== null &&
       this.selectedSlot() !== null &&
       this.formStatus() === 'VALID',
+  );
+
+  availableSlots = computed(() =>
+    this.slots().filter((s) => s.status === SlotStatus.available),
   );
 
   form = this.fb.group({
@@ -119,6 +125,7 @@ export class BookingContainer implements OnInit {
   selectService(service: IService): void {
     this.selectedService.set(service);
     this.selectedSlot.set(null);
+    this.slots.set([]);
 
     this._loadResourcesByService(this.business()!.id, service.id);
   }
@@ -152,17 +159,20 @@ export class BookingContainer implements OnInit {
 
     const payload: IBookingDataDTO = {
       resourceId: this.selectedResource()!.id,
-      date: this.selectedDate(),
-      slotId: '', //TODO: generate slot ID based on selected slot
-      userName: this.form.value.userName!,
-      phone: this.form.value.userPhone!,
+      serviceId: this.selectedService()!.id,
+      date: this.selectedDate()?.toISOString().split('T')[0] || '',
+      slotStart: this.selectedSlot()?.start || '',
+      customerName: this.form.value.userName!,
+      customerPhone: this.form.value.userPhone!,
     };
 
     this.appointmentService
       .createAppointment(payload)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
+        next: (response) => {
+          //TODO: SHOW CONFIRMATION TOKEN AND APPOINTMENT ID
+
           this.notification.showSuccess(
             '¡Reserva confirmada!',
             'Tu turno ha sido agendado exitosamente.',

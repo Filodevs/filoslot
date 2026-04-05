@@ -115,7 +115,7 @@
     </article>
     } @else {
     <article class="grid grid-cols-3 gap-2">
-      @for (slot of slots(); track slot.start) {
+      @for (slot of availableSlots(); track slot.start) {
       <button
         (click)="selectSlot(slot)"
         class="py-3 rounded-sm border text-sm font-bold transition-all duration-150 min-h-11"

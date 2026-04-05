@@ -4,7 +4,11 @@ import { inject, Injectable } from '@angular/core';
 import { catchError, delay, map, Observable, of, throwError } from 'rxjs';
 
 import { generateSlotsMock } from '../../models/__mocks__/appointment.mock';
-import { IBookingDataDTO } from '../../models/appointment';
+import {
+  AppointmentStatus,
+  IAppointmentResponseDTO,
+  IBookingDataDTO,
+} from '../../models/appointment';
 import { ISlot } from '../../models/slot';
 import { EnvironmentService } from './environment.service';
 
@@ -46,11 +50,33 @@ export class AppointmentService {
 
   createAppointment(
     bookingData: IBookingDataDTO,
-  ): Observable<{ success: boolean; id: string }> {
-    void bookingData;
-    return of({
-      success: true,
-      id: Math.random().toString(36).substr(2, 9),
-    }).pipe(delay(1200));
+  ): Observable<IAppointmentResponseDTO> {
+    if (this.env.isMockingEnabled()) {
+      const mockResponse: ApiResponse<IAppointmentResponseDTO> = {
+        data: {
+          appointmentId: 'mock-appointment-id',
+          confirmationToken: 'mock-confirmation-token',
+          resourceId: bookingData.resourceId,
+          serviceId: bookingData.serviceId,
+          startTime: new Date(`${bookingData.date}T${bookingData.slotStart}`),
+          endTime: new Date(`${bookingData.date}T${bookingData.slotStart}`),
+          status: AppointmentStatus.pending,
+        },
+      };
+      return of(mockResponse.data).pipe(delay(1000));
+    }
+
+    const url = this.env.buildApiUrl(this.env.config().api.appointments.create);
+
+    return this.http
+      .post<ApiResponse<IAppointmentResponseDTO>>(url, bookingData)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          const errorMessage =
+            error.error?.data?.message || 'Error al crear la cita';
+          return throwError(() => new Error(errorMessage));
+        }),
+      );
   }
 }
