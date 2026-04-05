@@ -1,7 +1,10 @@
+import { registerLocaleData } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import localeEs from '@angular/common/locales/es';
 import {
   ApplicationConfig,
   isDevMode,
+  LOCALE_ID,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -14,6 +17,8 @@ import { DialogService } from 'primeng/dynamicdialog';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+
+registerLocaleData(localeEs);
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -32,5 +37,6 @@ export const appConfig: ApplicationConfig = {
     DialogService,
     MessageService,
     ConfirmationService,
+    { provide: LOCALE_ID, useValue: 'es' },
   ],
 };

@@ -25,6 +25,7 @@ export interface IEnvironment {
       update: string;
       cancel: string;
       detail: string;
+      confirmation: string;
     };
     services: {
       list: string;

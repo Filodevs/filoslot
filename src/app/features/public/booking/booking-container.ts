@@ -177,7 +177,12 @@ export class BookingContainer implements OnInit {
             '¡Reserva confirmada!',
             'Tu turno ha sido agendado exitosamente.',
           );
-          this.router.navigate(['/directory']);
+          this.router.navigate([
+            '/business',
+            this.business()!.slug,
+            'booking',
+            response.confirmationToken,
+          ]);
         },
       });
   }

@@ -1,0 +1,242 @@
+<div class="flex flex-col gap-4">
+  @if (appointmentResource.isLoading()) {
+  <div class="flex flex-col items-center gap-3 mt-16">
+    <i class="pi pi-spinner pi-spin text-indigo-400 text-3xl"></i>
+    <p class="text-sm text-white/45">Cargando tu reserva...</p>
+  </div>
+  } @if (appointmentResource.error()) {
+  <div class="flex flex-col items-center gap-4 mt-16 text-center">
+    <div
+      class="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/25 grid place-items-center text-3xl"
+    >
+      ❌
+    </div>
+    <h2 class="text-lg font-extrabold">Reserva no encontrada</h2>
+    <p class="text-sm text-white/45">
+      El código de confirmación no es válido o la reserva ya no existe.
+    </p>
+    <button
+      (click)="goHome()"
+      class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/10 text-sm font-bold text-white/60 hover:text-white hover:border-white/20 transition-all duration-150 min-h-11"
+    >
+      <i class="pi pi-arrow-left text-xs"></i>
+      Volver al directorio
+    </button>
+  </div>
+  } @if (appointmentResource.hasValue() && appointment()) {
+
+  <div class="flex flex-col items-center gap-3 py-6 text-center w-full">
+    <div
+      class="w-16 h-16 rounded-full grid place-items-center text-3xl"
+      [class]="{
+             'bg-amber-400/10 border-2 border-amber-400/30 shadow-[0_0_32px_rgba(251,191,36,0.15)]': isPending(),
+             'bg-green-500/10 border-2 border-green-500/30 shadow-[0_0_32px_rgba(34,197,94,0.15)]':  isCompleted(),
+             'bg-red-500/10 border-2 border-red-500/30 shadow-[0_0_32px_rgba(248,113,113,0.15)]':    isCanceled()
+           }"
+    >
+      {{ statusIcon() }}
+    </div>
+
+    <div>
+      <h1 class="text-xl font-extrabold tracking-tight mb-1">
+        {{ statusTitle() }}
+      </h1>
+      <p class="text-sm text-white/45">
+        @if (isPending()) { El negocio revisará tu cita. ¡Te esperamos! } @if
+        (isCompleted()) { Gracias por tu visita. ¡Nos vemos pronto! } @if
+        (isCanceled()) { Tu cita ha sido cancelada exitosamente. }
+      </p>
+    </div>
+
+    <span
+      class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[0.62rem] font-extrabold uppercase tracking-wider"
+      [class]="{
+              'bg-amber-400/10 border border-amber-400/30 text-amber-400': isPending(),
+              'bg-green-500/10 border border-green-500/30 text-green-400':  isCompleted(),
+              'bg-red-500/10 border border-red-500/30 text-red-400':        isCanceled()
+            }"
+    >
+      @if (isPending()) { <i class="pi pi-clock text-[0.55rem]"></i> Pendiente }
+      @if (isCompleted()) {
+      <i class="pi pi-check text-[0.55rem]"></i> Completada } @if (isCanceled())
+      { <i class="pi pi-times text-[0.55rem]"></i> Cancelada }
+    </span>
+  </div>
+
+  <div
+    class="w-full bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-2xl overflow-hidden mb-4"
+  >
+    <div
+      class="flex items-center gap-3 px-4 py-3.5 border-b border-white/7 bg-indigo-500/5"
+    >
+      <div
+        class="w-10 h-10 rounded-xl shrink-0 bg-linear-to-br from-indigo-500 to-violet-500 grid place-items-center font-extrabold text-sm"
+      >
+        {{ appointment()?.business?.name ?? '' | initials }}
+      </div>
+      <div>
+        <p class="text-sm font-extrabold">
+          {{ appointment()?.business?.name }}
+        </p>
+        <p class="text-[0.65rem] text-white/45">
+          {{ appointment()?.business?.address }}
+        </p>
+      </div>
+    </div>
+
+    <!-- DETALLES -->
+    <div
+      class="px-4 py-4 flex flex-col gap-3.5"
+      [class.opacity-50]="isCanceled()"
+    >
+      <!-- Fecha -->
+      <div class="flex items-center gap-3">
+        <div
+          class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0"
+        >
+          <i class="pi pi-calendar text-white/40 text-xs"></i>
+        </div>
+        <div>
+          <p
+            class="text-[0.58rem] text-white/35 uppercase tracking-wider font-bold"
+          >
+            Fecha y hora
+          </p>
+          <p class="text-sm font-bold" [class.line-through]="isCanceled()">
+            {{ appointment()?.startTime | date: 'EEEE, d MMMM y, h:mm a' : 'UTC'
+            }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Servicio -->
+      <div class="flex items-center gap-3">
+        <div
+          class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0 text-sm"
+        >
+          ✂️
+        </div>
+        <div>
+          <p
+            class="text-[0.58rem] text-white/35 uppercase tracking-wider font-bold"
+          >
+            Servicio
+          </p>
+          <p class="text-sm font-bold" [class.line-through]="isCanceled()">
+            {{ appointment()?.service?.name }} · {{
+            appointment()?.service?.duration }} min
+          </p>
+        </div>
+      </div>
+
+      <!-- Profesional -->
+      <div class="flex items-center gap-3">
+        <div
+          class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0"
+        >
+          <i class="pi pi-user text-white/40 text-xs"></i>
+        </div>
+        <div>
+          <p
+            class="text-[0.58rem] text-white/35 uppercase tracking-wider font-bold"
+          >
+            Profesional
+          </p>
+          <p class="text-sm font-bold" [class.line-through]="isCanceled()">
+            {{ appointment()?.resource?.name }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Precio -->
+      <div class="flex items-center gap-3">
+        <div
+          class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0"
+        >
+          <i class="pi pi-tag text-white/40 text-xs"></i>
+        </div>
+        <div>
+          <p
+            class="text-[0.58rem] text-white/35 uppercase tracking-wider font-bold"
+          >
+            Precio
+          </p>
+          <p
+            class="text-sm font-bold text-green-400"
+            [class.line-through]="isCanceled()"
+            [class.text-white]="isCanceled()"
+          >
+            ${{ appointment()?.service?.price }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOKEN -->
+    @if (!isCanceled()) {
+    <div
+      class="flex items-center gap-2.5 mx-4 mb-4 px-3 py-2.5 bg-slate-800/80 border border-white/7 rounded-xl"
+    >
+      <i class="pi pi-key text-white/30 text-xs shrink-0"></i>
+      <span
+        class="text-[0.6rem] text-white/35 font-mono flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
+      >
+        Código: {{ token }}
+      </span>
+      <button
+        (click)="copyLink()"
+        class="w-7 h-7 rounded-lg border border-white/10 grid place-items-center text-white/35 hover:border-indigo-500/40 hover:text-indigo-400 transition-all duration-150 shrink-0"
+      >
+        <i class="pi pi-copy text-[0.6rem]"></i>
+      </button>
+    </div>
+    }
+  </div>
+
+  <div class="w-full flex flex-col gap-2.5">
+    <!-- Compartir WhatsApp — solo si pendiente -->
+    @if (isPending()) {
+    <button
+      (click)="shareWhatsApp()"
+      class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-extrabold text-sm bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] hover:bg-[#25D366]/15 transition-all duration-150 min-h-11"
+    >
+      <i class="pi pi-whatsapp text-base"></i>
+      Compartir por WhatsApp
+    </button>
+    }
+
+    <!-- Cancelar — solo si pendiente -->
+    @if (canCancel()) {
+    <button
+      (click)="confirmCancel()"
+      class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-extrabold text-sm bg-red-500/8 border border-red-500/25 text-red-400 hover:bg-red-500/15 transition-all duration-150 min-h-11"
+    >
+      <i class="pi pi-times-circle text-base"></i>
+      Cancelar mi reserva
+    </button>
+    }
+
+    <!-- Ya cancelada o completada — deshabilitado -->
+    @if (!canCancel()) {
+    <button
+      disabled
+      class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-extrabold text-sm bg-white/4 border border-white/7 text-white/20 cursor-not-allowed min-h-11"
+    >
+      <i class="pi pi-times-circle text-base"></i>
+      @if (isCanceled()) { Reserva ya cancelada } @if (isCompleted()) { No se
+      puede cancelar }
+    </button>
+    }
+
+    <!-- Volver -->
+    <button
+      (click)="goHome()"
+      class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-extrabold text-sm border border-white/10 text-white/45 hover:border-white/20 hover:text-white/70 transition-all duration-150 min-h-11"
+    >
+      <i class="pi pi-arrow-left text-base"></i>
+      Volver al directorio
+    </button>
+  </div>
+
+  }
+</div>

@@ -29,6 +29,13 @@ export const PUBLIC_ROUTES: Routes = [
                 (c) => c.BookingContainer,
               ),
           },
+          {
+            path: 'booking/:token',
+            loadComponent: () =>
+              import('./booking-confirmation/booking-confirmation').then(
+                (c) => c.BookingConfirmation,
+              ),
+          },
         ],
       },
     ],
