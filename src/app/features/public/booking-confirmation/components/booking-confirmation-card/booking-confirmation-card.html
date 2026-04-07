@@ -1,0 +1,127 @@
+<div
+  class="w-full bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-2xl overflow-hidden mb-4"
+>
+  <header
+    class="flex items-center gap-3 px-4 py-3.5 border-b border-white/7 bg-indigo-500/5"
+  >
+    <section
+      class="w-10 h-10 rounded-xl shrink-0 bg-linear-to-br from-indigo-500 to-violet-500 grid place-items-center font-extrabold text-sm"
+    >
+      {{ appointment()?.business?.name ?? '' | initials }}
+    </section>
+
+    <section>
+      <p class="text-sm font-extrabold">{{ appointment()?.business?.name }}</p>
+      <p class="text-[0.65rem] text-white/45">
+        {{ appointment()?.business?.address }}
+      </p>
+    </section>
+  </header>
+
+  <section
+    class="px-4 py-4 flex flex-col gap-3.5"
+    [class.opacity-50]="isCanceled()"
+  >
+    <article class="flex items-center gap-3">
+      <div
+        class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0"
+      >
+        <i class="pi pi-calendar text-white/40 text-xs"></i>
+      </div>
+
+      <div>
+        <p
+          class="text-[0.58rem] text-white/35 uppercase tracking-wider font-bold"
+        >
+          Fecha y hora
+        </p>
+        <p class="text-sm font-bold" [class.line-through]="isCanceled()">
+          {{ appointment()?.startTime | date: 'EEEE, d MMMM y, h:mm a' : 'UTC'
+          }}
+        </p>
+      </div>
+    </article>
+
+    <article class="flex items-center gap-3">
+      <div
+        class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0 text-sm"
+      >
+        ✂️
+      </div>
+      <div>
+        <p
+          class="text-[0.58rem] text-white/35 uppercase tracking-wider font-bold"
+        >
+          Servicio
+        </p>
+        <p class="text-sm font-bold" [class.line-through]="isCanceled()">
+          {{ appointment()?.service?.name }} · {{
+          appointment()?.service?.duration }} min
+        </p>
+      </div>
+    </article>
+
+    <article class="flex items-center gap-3">
+      <div
+        class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0"
+      >
+        <i class="pi pi-user text-white/40 text-xs"></i>
+      </div>
+
+      <div>
+        <p
+          class="text-[0.58rem] text-white/35 uppercase tracking-wider font-bold"
+        >
+          Profesional
+        </p>
+        <p class="text-sm font-bold" [class.line-through]="isCanceled()">
+          {{ appointment()?.resource?.name }}
+        </p>
+      </div>
+    </article>
+
+    <article class="flex items-center gap-3">
+      <div
+        class="w-8 h-8 rounded-lg bg-slate-800 border border-white/7 grid place-items-center shrink-0"
+      >
+        <i class="pi pi-tag text-white/40 text-xs"></i>
+      </div>
+
+      <div>
+        <p
+          class="text-[0.58rem] text-white/35 uppercase tracking-wider font-bold"
+        >
+          Precio
+        </p>
+        <p
+          class="text-sm font-bold text-green-400"
+          [class.line-through]="isCanceled()"
+          [class.text-white]="isCanceled()"
+        >
+          ${{ appointment()?.service?.price }}
+        </p>
+      </div>
+    </article>
+  </section>
+
+  @if (!isCanceled()) {
+  <article
+    class="flex items-center gap-2.5 mx-4 mb-4 px-3 py-2.5 bg-slate-800/80 border border-white/7 rounded-xl"
+  >
+    <i class="pi pi-key text-white/30 text-xs shrink-0"></i>
+
+    <span
+      class="text-[0.6rem] text-white/35 font-mono flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
+    >
+      Código: {{ token() }}
+    </span>
+
+    <button
+      (click)="copyLink()"
+      class="w-7 h-7 rounded-lg border border-white/10 grid place-items-center text-white/35 hover:border-indigo-500/40 hover:text-indigo-400 transition-all duration-150 shrink-0"
+    >
+      <i class="pi pi-copy text-[0.6rem]"></i>
+    </button>
+  </article>
+  }
+</div>

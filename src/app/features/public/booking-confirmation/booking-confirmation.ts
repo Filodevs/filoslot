@@ -12,11 +12,12 @@ import {
   AppointmentStatus,
   IAppointmentDetails,
 } from '../../../models/appointment';
-import { InitialsPipe } from '../../../shared/pipes/initials.pipe';
+import { BookingConfirmationActions } from './components/booking-confirmation-actions/booking-confirmation-actions';
+import { BookingConfirmationCard } from './components/booking-confirmation-card/booking-confirmation-card';
 
 @Component({
   selector: 'app-booking-confirmation',
-  imports: [CommonModule, InitialsPipe],
+  imports: [CommonModule, BookingConfirmationCard, BookingConfirmationActions],
   templateUrl: './booking-confirmation.html',
   styleUrl: './booking-confirmation.css',
 })
@@ -29,7 +30,6 @@ export class BookingConfirmation {
   private readonly notifications = inject(NotificationService);
   private readonly appointmentService = inject(AppointmentService);
 
-  readonly isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
   readonly token = this.route.snapshot.params['token'];
 
   appointmentResource = httpResource<{ data: IAppointmentDetails }>(
@@ -131,13 +131,6 @@ export class BookingConfirmation {
     // wa.me falla en localhost, api.whatsapp.com funciona en ambos
     const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank');
-  }
-
-  copyLink(): void {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
-      this.notifications.showSuccess('Enlace copiado al portapapeles');
-    });
   }
 
   goHome(): void {

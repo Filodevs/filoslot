@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 
 import { ButtonModule } from 'primeng/button';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'info';
 
 @Component({
   selector: 'app-button',
