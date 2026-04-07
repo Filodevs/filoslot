@@ -1,8 +1,59 @@
 <div class="flex flex-col gap-4">
   @if (appointmentResource.isLoading()) {
-  <div class="flex flex-col items-center gap-3 mt-16">
-    <i class="pi pi-spinner pi-spin text-indigo-400 text-3xl"></i>
-    <p class="text-sm text-white/45">Cargando tu reserva...</p>
+
+  <div class="flex flex-col items-center gap-3 py-6 w-full">
+    <app-skeleton shape="circle" width="4rem" height="4rem" />
+
+    <div class="flex flex-col items-center gap-2 w-full">
+      <app-skeleton width="55%" height="1.5rem" radius="8px" />
+      <app-skeleton width="70%" height="0.875rem" radius="6px" />
+    </div>
+
+    <app-skeleton width="6rem" height="1.5rem" radius="9999px" />
+  </div>
+
+  <div
+    class="w-full bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-2xl overflow-hidden mb-4"
+  >
+    <div class="flex items-center gap-3 px-4 py-3.5 border-b border-white/7">
+      <app-skeleton
+        width="2.5rem"
+        height="2.5rem"
+        radius="12px"
+        customClass="shrink-0"
+      />
+      <div class="flex flex-col gap-1.5 flex-1">
+        <app-skeleton width="45%" height="0.875rem" radius="6px" />
+        <app-skeleton width="35%" height="0.75rem" radius="6px" />
+      </div>
+    </div>
+
+    <div class="px-4 py-4 flex flex-col gap-3.5">
+      @for (row of [0, 1, 2, 3]; track row) {
+      <div class="flex items-center gap-3">
+        <app-skeleton
+          width="2rem"
+          height="2rem"
+          radius="8px"
+          customClass="shrink-0"
+        />
+        <div class="flex flex-col gap-1.5 flex-1">
+          <app-skeleton width="30%" height="0.6rem" radius="4px" />
+          <app-skeleton width="55%" height="0.875rem" radius="6px" />
+        </div>
+      </div>
+      }
+    </div>
+
+    <div class="mx-4 mb-4">
+      <app-skeleton width="100%" height="2.25rem" radius="12px" />
+    </div>
+  </div>
+
+  <div class="w-full flex flex-col gap-2.5">
+    @for (btn of [0, 1, 2]; track btn) {
+    <app-skeleton width="100%" height="2.75rem" radius="12px" />
+    }
   </div>
   } @if (appointmentResource.error()) {
   <article class="flex flex-col items-center gap-4 mt-16 text-center">

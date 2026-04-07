@@ -12,12 +12,13 @@ import {
   AppointmentStatus,
   IAppointmentDetails,
 } from '../../../models/appointment';
+import { AppSkeleton } from '../../../shared/components/app-skeleton/app-skeleton';
 import { BookingConfirmationActions } from './components/booking-confirmation-actions/booking-confirmation-actions';
 import { BookingConfirmationCard } from './components/booking-confirmation-card/booking-confirmation-card';
 
 @Component({
   selector: 'app-booking-confirmation',
-  imports: [CommonModule, BookingConfirmationCard, BookingConfirmationActions],
+  imports: [CommonModule, BookingConfirmationCard, BookingConfirmationActions, AppSkeleton],
   templateUrl: './booking-confirmation.html',
   styleUrl: './booking-confirmation.css',
 })
