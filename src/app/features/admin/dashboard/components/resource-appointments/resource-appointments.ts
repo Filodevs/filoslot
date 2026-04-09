@@ -1,8 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 
-import { AppointmentStatus } from '../../../../../models/appointment';
+import {
+  AppointmentStatus,
+  IAppointmentsByResourceResponseDTO,
+} from '../../../../../models/appointment';
 import { IResource } from '../../../../../models/resource';
+import { AppSkeleton } from '../../../../../shared/components/app-skeleton/app-skeleton';
 import { AvatarColorPipe } from '../../../../../shared/pipes/avatar-color.pipe';
 import { InitialsPipe } from '../../../../../shared/pipes/initials.pipe';
 
@@ -13,12 +17,15 @@ export interface AppointmentAction {
 
 @Component({
   selector: 'app-resource-appointments',
-  imports: [CommonModule, InitialsPipe, AvatarColorPipe],
+  imports: [CommonModule, InitialsPipe, AvatarColorPipe, AppSkeleton],
   templateUrl: './resource-appointments.html',
 })
 export class ResourceAppointments {
   resource = input.required<IResource>();
-  servicesByResource = input.required<Map<string, string>>();
+  appointments = input.required<
+    IAppointmentsByResourceResponseDTO[] | undefined
+  >();
+  loading = input(false);
 
   completed = output<AppointmentAction>();
   canceled = output<AppointmentAction>();

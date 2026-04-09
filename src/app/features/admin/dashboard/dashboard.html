@@ -21,7 +21,8 @@
     } } @else { @for (resource of resources(); track resource.id) {
     <app-resource-appointments
       [resource]="resource"
-      [servicesByResource]="servicesByResource()"
+      [appointments]="appointmentsByResourceMap().get(resource.id)"
+      [loading]="loadingAppointments()"
       (completed)="markCompleted($event)"
       (canceled)="cancelAppointment($event)"
     />

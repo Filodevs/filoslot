@@ -8,11 +8,13 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { CatalogService } from '../../../core/services/catalog.service';
+import { AppointmentService } from '../../../core/services/appointment.service';
 import { ResourceService } from '../../../core/services/resource.service';
-import { AppointmentStatus } from '../../../models/appointment';
+import {
+  AppointmentStatus,
+  IAppointmentsByResourceResponseDTO,
+} from '../../../models/appointment';
 import { IResource } from '../../../models/resource';
-import { IService } from '../../../models/service';
 import { AppDateSelector } from '../../../shared/components/app-date-selector/app-date-selector';
 import { AppSkeleton } from '../../../shared/components/app-skeleton/app-skeleton';
 import { AppStatsCard } from '../../../shared/components/app-stats-card/app-stats-card';
@@ -28,22 +30,16 @@ import {
   styleUrl: './dashboard.css',
 })
 export class Dashboard implements OnInit {
-  private readonly resourceService = inject(ResourceService);
-  private readonly catalogService = inject(CatalogService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly resourceService = inject(ResourceService);
+  private readonly appointmentService = inject(AppointmentService);
 
   selectedDate = signal<Date>(new Date());
   resources = signal<IResource[]>([]);
-  services = signal<IService[]>([]);
-
+  appointmentsByResource = signal<IAppointmentsByResourceResponseDTO[]>([]);
   loadingResources = signal(true);
-  loadingServices = signal(true);
+  loadingAppointments = signal(true);
 
-  servicesByResource = computed(() => {
-    const map = new Map<string, string>();
-    this.services().forEach((s) => map.set(s.id, s.name));
-    return map;
-  });
   stats = computed(() => {
     const all = this.resources().flatMap((r) => r.appointments);
     return {
@@ -55,30 +51,25 @@ export class Dashboard implements OnInit {
     };
   });
 
-  ngOnInit(): void {
-    this.resourceService
-      .getResources()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data) => {
-          this.resources.set(data);
-          this.loadingResources.set(false);
-        },
-      });
+  appointmentsByResourceMap = computed(() => {
+    const map = new Map<string, IAppointmentsByResourceResponseDTO[]>();
+    this.appointmentsByResource().forEach((item) =>
+      map.set(item.resource.id, [...(map.get(item.resource.id) || []), item]),
+    );
+    return map;
+  });
 
-    this.catalogService
-      .getServices()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data) => {
-          this.services.set(data);
-          this.loadingServices.set(false);
-        },
-      });
+  ngOnInit(): void {
+    this._loadAppointmentsForResource();
+    this._loadResources();
   }
 
   onDateSelected(date: Date): void {
+    if (this.loadingAppointments()) return;
+
     this.selectedDate.set(date);
+
+    this._loadAppointmentsForResource();
   }
 
   markCompleted({ resourceId, appointmentId }: AppointmentAction): void {
@@ -113,5 +104,50 @@ export class Dashboard implements OnInit {
             },
       ),
     );
+  }
+
+  private _loadAppointmentsForResource(): void {
+    this.loadingAppointments.set(true);
+
+    this.appointmentService
+      .getByDate(this.selectedDate())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (appointments) => {
+          this.appointmentsByResource.set(appointments);
+          this.loadingAppointments.set(false);
+        },
+        error: (error) => {
+          console.error(
+            `Error al cargar citas para recurso en ${this.selectedDate()}:`,
+            error,
+          );
+          this.loadingAppointments.set(false);
+        },
+      });
+  }
+
+  private _loadResources(): void {
+    this.loadingResources.set(true);
+
+    this.resourceService
+      .getMyResources()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          if (!data) {
+            console.warn('No se encontraron recursos');
+            this.loadingResources.set(false);
+            return;
+          }
+
+          this.resources.set(data);
+          this.loadingResources.set(false);
+        },
+        error: (error) => {
+          console.error('Error al cargar recursos:', error);
+          this.loadingResources.set(false);
+        },
+      });
   }
 }

@@ -17,7 +17,11 @@
   <div
     class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-xl overflow-hidden"
   >
-    @for (appt of resource().appointments; track appt.id; let last = $last) {
+    @if(loading()) {
+    <div>
+      <app-skeleton height="120px" />
+    </div>
+    } @else { @for (appt of appointments(); track appt.id; let last = $last) {
     <div
       class="flex items-center gap-3 px-4 py-3 border-l-[3px] transition-all duration-150"
       [class]="[
@@ -30,7 +34,7 @@
         <p class="text-[0.7rem] font-extrabold text-white/80">
           {{ appt.startTime | date: 'HH:mm' }}
         </p>
-        <p class="text-[0.55rem] text-white/30">{{ appt.duration }}m</p>
+        <p class="text-[0.55rem] text-white/30">{{ appt.service.duration }}m</p>
       </section>
 
       <section class="flex-1 min-w-0">
@@ -38,10 +42,11 @@
           class="text-sm font-bold truncate"
           [class]="isCanceled(appt.status) ? 'line-through text-white/50' : ''"
         >
-          {{ appt.clientName }}
+          {{ appt.customerName }}
         </p>
+
         <p class="text-[0.65rem] text-white/45 truncate">
-          {{ servicesByResource().get(appt.serviceId) }}
+          {{ appt.service.name }}
         </p>
       </section>
 
@@ -74,11 +79,11 @@
         }
       </section>
     </div>
-    } @if (resource().appointments?.length === 0) {
+    } @empty {
     <article class="flex flex-col items-center gap-1.5 py-6 text-center">
       <i class="pi pi-calendar text-white/20 text-2xl"></i>
       <p class="text-xs text-white/35 font-semibold">Sin citas para este día</p>
     </article>
-    }
+    } }
   </div>
 </div>

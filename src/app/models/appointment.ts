@@ -56,3 +56,21 @@ export interface IAppointmentResponseDTO {
   endTime: Date;
   status: AppointmentStatus;
 }
+
+export interface IAppointmentsByResourceResponseDTO {
+  readonly id: string;
+  readonly status: AppointmentStatus;
+  readonly startTime: Date;
+  readonly endTime: Date;
+  readonly customerName: string;
+  readonly customerPhone: string;
+  readonly resource: {
+    readonly id: string;
+    readonly name: string;
+    readonly role: string;
+  };
+  readonly service: {
+    readonly name: string;
+    readonly duration: number;
+  };
+}

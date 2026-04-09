@@ -24,10 +24,6 @@ export class ResourceService {
   private readonly _resources = signal<IResource[]>([]);
   readonly resources = this._resources.asReadonly();
 
-  getResources(): Observable<IResource[]> {
-    return of(RESOURCE_MOCK).pipe(delay(500));
-  }
-
   getMyResources(): Observable<IResource[]> {
     if (this.env.isMockingEnabled()) {
       return of(RESOURCE_MOCK).pipe(

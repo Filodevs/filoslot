@@ -7,6 +7,7 @@ import { generateSlotsMock } from '../../models/__mocks__/appointment.mock';
 import {
   AppointmentStatus,
   IAppointmentResponseDTO,
+  IAppointmentsByResourceResponseDTO,
   IBookingDataDTO,
 } from '../../models/appointment';
 import { ISlot } from '../../models/slot';
@@ -20,6 +21,24 @@ interface ApiResponse<T> {
 export class AppointmentService {
   private readonly http = inject(HttpClient);
   private readonly env = inject(EnvironmentService);
+
+  getByDate(date: Date): Observable<IAppointmentsByResourceResponseDTO[]> {
+    const url = this.env
+      .buildApiUrl(this.env.config().api.appointments.byDate)
+      .replace(':date', date.toISOString().split('T')[0]);
+
+    return this.http
+      .get<ApiResponse<IAppointmentsByResourceResponseDTO[]>>(url)
+      .pipe(
+        map((response) => response.data),
+        catchError((error) => {
+          const errorMessage =
+            error.error?.data?.message ||
+            'Error al obtener las citas por fecha';
+          return throwError(() => new Error(errorMessage));
+        }),
+      );
+  }
 
   getAvailableSlots(
     resourceId: string,
