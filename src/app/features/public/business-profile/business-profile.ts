@@ -4,11 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { BusinessService } from '../../../core/services/business';
 import { IBusiness } from '../../../models/business';
 import { AppButton } from '../../../shared/components/app-button/app-button';
+import { AppSkeleton } from '../../../shared/components/app-skeleton/app-skeleton';
 import { InitialsPipe } from '../../../shared/pipes/initials.pipe';
 
 @Component({
   selector: 'app-business-profile',
-  imports: [InitialsPipe, AppButton],
+  imports: [InitialsPipe, AppButton, AppSkeleton],
   templateUrl: './business-profile.html',
   styleUrl: './business-profile.css',
 })
@@ -18,6 +19,7 @@ export class BusinessProfile implements OnInit {
   readonly businessService = inject(BusinessService);
 
   business = signal<IBusiness | null>(null);
+  loading = signal(true);
 
   ngOnInit(): void {
     const slug = this.route.snapshot.paramMap.get('businessSlug');
@@ -39,12 +41,16 @@ export class BusinessProfile implements OnInit {
   }
 
   private _loadBusiness(slug: string): void {
+    this.loading.set(true);
+
     this.businessService.getBusinessBySlug(slug).subscribe({
       next: (data) => {
         this.business.set(data);
+        this.loading.set(false);
       },
       error: (error) => {
         console.error(error);
+        this.loading.set(false);
       },
     });
   }
