@@ -59,4 +59,8 @@ export interface IEnvironment {
     level: 'debug' | 'info' | 'warn' | 'error';
     enableConsole: boolean;
   };
+  supabase: {
+    url: string;
+    anonKey: string;
+  };
 }

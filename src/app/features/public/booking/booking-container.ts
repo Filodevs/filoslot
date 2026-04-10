@@ -10,10 +10,11 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { startWith, switchMap } from 'rxjs';
+import { startWith, Subject, switchMap } from 'rxjs';
 
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { BusinessService } from '../../../core/services/business';
+import { SupabaseService } from '../../../core/services/supabase';
 import { NotificationService } from '../../../core/services/ui/notification';
 import { IBookingDataDTO } from '../../../models/appointment';
 import { IBusiness } from '../../../models/business';
@@ -50,7 +51,9 @@ export class BookingContainer implements OnInit {
   private readonly businessService = inject(BusinessService);
   private readonly appointmentService = inject(AppointmentService);
   private readonly notification = inject(NotificationService);
+  private readonly supabaseService = inject(SupabaseService);
 
+  private readonly _channelTrigger$ = new Subject<string>();
   readonly slotsStatus = SlotStatus;
 
   business = signal<IBusiness | null>(null);
@@ -97,6 +100,7 @@ export class BookingContainer implements OnInit {
   );
 
   ngOnInit(): void {
+    this._listenResourceChanges();
     this._loadData();
   }
 
@@ -125,6 +129,7 @@ export class BookingContainer implements OnInit {
   selectService(service: IService): void {
     this.selectedService.set(service);
     this.selectedSlot.set(null);
+    this.selectedResource.set(null);
     this.slots.set([]);
 
     this._loadResourcesByService(this.business()!.id, service.id);
@@ -134,12 +139,16 @@ export class BookingContainer implements OnInit {
     this.selectedResource.set(resource);
     this.selectedSlot.set(null);
     this._loadSlots();
+
+    this._emitToResourceChanges(resource.id);
   }
 
   selectDate(date: Date): void {
     this.selectedDate.set(date);
     this.selectedSlot.set(null);
     this._loadSlots();
+
+    this._emitToResourceChanges(this.selectedResource()!.id);
   }
 
   selectSlot(slot: ISlot): void {
@@ -216,6 +225,10 @@ export class BookingContainer implements OnInit {
           this.loadingResources.set(false);
           this.loadingSlots.set(true);
 
+          if (resources[0]) {
+            this._emitToResourceChanges(resources[0].id);
+          }
+
           return this.appointmentService.getAvailableSlots(
             resources[0].id,
             this.selectedService()!.id,
@@ -248,7 +261,13 @@ export class BookingContainer implements OnInit {
       .subscribe({
         next: (r) => {
           this.resources.set(r);
+          this.selectedResource.set(r[0] || null);
           this.loadingResources.set(false);
+
+          if (r[0]) {
+            this._loadSlots();
+            this._emitToResourceChanges(r[0].id);
+          }
         },
       });
   }
@@ -274,5 +293,37 @@ export class BookingContainer implements OnInit {
           this.loadingSlots.set(false);
         },
       });
+  }
+
+  private _listenResourceChanges(): void {
+    this._channelTrigger$
+      .pipe(
+        switchMap((channel) =>
+          this.supabaseService.listenToBroadcast<{ slotStart: string }>(
+            channel,
+            'SLOT_BOOKED',
+          ),
+        ),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(({ slotStart }) => this._markSlotAsBooked(slotStart));
+  }
+
+  private _emitToResourceChanges(resourceId: string): void {
+    const date = this.selectedDate().toISOString().split('T')[0];
+    const channel = `slots:${resourceId}:${date}`;
+
+    this._channelTrigger$.next(channel);
+  }
+
+  private _markSlotAsBooked(slotStart: string): void {
+    const updatedSlots = this.slots().map((slot) => {
+      if (slot.start === slotStart) {
+        return { ...slot, status: SlotStatus.booked };
+      }
+      return slot;
+    });
+
+    this.slots.set(updatedSlots);
   }
 }

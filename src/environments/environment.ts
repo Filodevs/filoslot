@@ -65,4 +65,8 @@ export const environment: IEnvironment = {
     level: 'debug',
     enableConsole: true,
   },
+  supabase: {
+    url: 'https://hodfnemtgfnsozhwqntn.supabase.co',
+    anonKey: 'sb_publishable_cwv7-IsLt1NNZBZ_cY9vpQ_7RDUaePn',
+  },
 };

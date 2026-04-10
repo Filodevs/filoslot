@@ -3,7 +3,7 @@ import { IEnvironment } from './environment.interface';
 export const environment: IEnvironment = {
   production: true,
   api: {
-    baseUrl: 'https://api.filoslot.com/v1',
+    baseUrl: '##API_BASE_URL##',
     timeout: 30000,
     auth: {
       login: '/auth/login',
@@ -60,5 +60,10 @@ export const environment: IEnvironment = {
   logging: {
     level: 'error',
     enableConsole: false,
+  },
+  // TODO: INJECT THESE VALUES FROM ENV VARIABLES DURING BUILD TIME
+  supabase: {
+    url: '##SUPABASE_URL##',
+    anonKey: '##SUPABASE_ANON_KEY##',
   },
 };
