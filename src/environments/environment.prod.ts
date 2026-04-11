@@ -44,7 +44,7 @@ export const environment: IEnvironment = {
       updateAvailability: '/availability/:resourcedId',
     },
     slots: {
-      available: '/slots/?resourceId=:resourceId&serviceId=:serviceId&date=:date',
+      available: '/slots?resourceId=:resourceId&serviceId=:serviceId&date=:date',
       book: '/slots/book',
     },
     directory: {
