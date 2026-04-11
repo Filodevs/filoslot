@@ -1,15 +1,19 @@
-:host ::ng-deep .p-dialog-header {
-  background: var(--color-surface) !important;
-  color: white !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 1.5rem !important;
+.slot-booked {
+  animation: slot-booked 0.5s ease forwards;
+  pointer-events: none;
 }
 
-:host ::ng-deep .p-dialog-content {
-  background: var(--color-surface) !important;
-  padding: 0 1.5rem 1.5rem 1.5rem !important;
-}
-
-:host ::ng-deep .p-dialog-header-icons .p-dialog-header-icon {
-  color: white !important;
+@keyframes slot-booked {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  40% {
+    background: rgba(239, 68, 68, 0.15);
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
 }

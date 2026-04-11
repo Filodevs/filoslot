@@ -17,6 +17,15 @@ export class NotificationService {
     });
   }
 
+  showInfo(message: string, title = ''): void {
+    this.messageService.add({
+      severity: 'info',
+      summary: title,
+      detail: message,
+      life: 3000,
+    });
+  }
+
   showError(message: string, title = ''): void {
     this.messageService.add({
       severity: 'error',

@@ -117,11 +117,12 @@
     <article class="grid grid-cols-3 gap-2">
       @for (slot of availableSlots(); track slot.start) {
       <button
-        (click)="selectSlot(slot)"
         class="py-3 rounded-sm border text-sm font-bold transition-all duration-150 min-h-11"
+        animate.leave="slot-booked"
         [class]="isSelected(slot, selectedSlot())
-                    ? 'bg-indigo-500 border-indigo-500 text-white'
-                    : 'bg-slate-900/60 border-white/10 text-white/70 hover:border-indigo-500/40'"
+      ? 'bg-indigo-500 border-indigo-500 text-white'
+      : 'bg-slate-900/60 border-white/10 text-white/70 hover:border-indigo-500/40'"
+        (click)="selectSlot(slot)"
       >
         {{ slot.start }}
       </button>

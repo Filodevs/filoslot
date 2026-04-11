@@ -42,6 +42,7 @@ import { ServiceCard } from './components/service-card/service-card';
     BookingSummary,
   ],
   templateUrl: './booking-container.html',
+  styleUrl: './booking-container.css',
 })
 export class BookingContainer implements OnInit {
   private readonly route = inject(ActivatedRoute);
@@ -184,6 +185,7 @@ export class BookingContainer implements OnInit {
             '¡Reserva confirmada!',
             'Tu turno ha sido agendado exitosamente.',
           );
+
           this.router.navigate([
             '/business',
             this.business()!.slug,
@@ -306,7 +308,23 @@ export class BookingContainer implements OnInit {
         ),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(({ slotStart }) => this._markSlotAsBooked(slotStart));
+      .subscribe(({ slotStart }) => {
+        console.log('Slot booked:', slotStart);
+        this._markSlotAsBooked(slotStart);
+
+        if (this.selectedSlot()?.start === slotStart) {
+          this.selectedSlot.set(null);
+          this.notification.showInfo(
+            'El turno seleccionado acaba de ser reservado por otra persona. Por favor, selecciona otro turno disponible.',
+          );
+
+          return;
+        }
+
+        this.notification.showInfo(
+          'Un nuevo turno ha sido reservado. Los horarios disponibles se han actualizado.',
+        );
+      });
   }
 
   private _emitToResourceChanges(resourceId: string): void {
