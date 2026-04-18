@@ -3,7 +3,7 @@ import { IEnvironment } from './environment.interface';
 export const environment: IEnvironment = {
   production: true,
   api: {
-    baseUrl: 'https://filoslot-api.onrender.com/api/v1',
+    baseUrl: '##API_BASE_URL##',
     timeout: 30000,
     auth: {
       login: '/auth/login',
@@ -62,7 +62,7 @@ export const environment: IEnvironment = {
     enableConsole: false,
   },
   supabase: {
-    url: 'https://hodfnemtgfnsozhwqntn.supabase.co',
-    anonKey: 'sb_publishable_cwv7-IsLt1NNZBZ_cY9vpQ_7RDUaePn',
+    url: '##SUPABASE_URL##',
+    anonKey: '##SUPABASE_ANON_KEY##',
   },
 };
