@@ -1,0 +1,133 @@
+<div class="w-full flex flex-col gap-4">
+  <section class="flex flex-col md:flex-row gap-4">
+    <article class="p-4 flex-1 flex flex-col gap-4 bg-primary/10 rounded-md">
+      <header class="flex items-center gap-4 font-semibold">
+        <span
+          class="w-9 h-9 grid rounded-sm place-items-center text-base shrink-0"
+          >🏪</span
+        >
+
+        <p>Información del Negocio</p>
+      </header>
+
+      <section class="flex items-center gap-x-4">
+        <div
+          class="w-12 h-12 rounded-lg bg-indigo-500 grid place-items-center font-extrabold text-sm text-white shrink-0"
+        >
+          {{ business()?.name ?? '' | initials }}
+        </div>
+
+        <p class="text-lg font-semibold">{{ business()?.name ?? '' }}</p>
+      </section>
+
+      <section class="flex flex-col gap-2">
+        <article class="flex items-center gap-x-2">
+          <div
+            class="w-8 h-8 flex justify-center items-center bg-primary/25 text-primary-200 rounded-full"
+          >
+            <i class="pi pi-map-marker"></i>
+          </div>
+
+          <div>
+            <span class="text-xs">Dirección</span>
+            <p class="text-sm">{{ business()?.address }}</p>
+          </div>
+        </article>
+
+        <article class="flex items-center gap-x-2">
+          <div
+            class="w-8 h-8 flex justify-center items-center bg-primary/25 text-primary-200 rounded-full"
+          >
+            <i class="pi pi-mobile"></i>
+          </div>
+
+          <div>
+            <span class="text-xs">Telefono</span>
+            <p class="text-sm">{{ business()?.phone }}</p>
+          </div>
+        </article>
+
+        <article class="flex items-center gap-x-2">
+          <div
+            class="w-8 h-8 flex justify-center items-center bg-primary/25 text-primary-200 rounded-full"
+          >
+            <i class="pi pi-link"></i>
+          </div>
+
+          <div>
+            <span class="text-xs">URL pública</span>
+            <p class="text-sm">{{ bookingUrl() }}</p>
+          </div>
+        </article>
+      </section>
+    </article>
+
+    <article class="flex-2 p-4 flex flex-col gap-4 bg-primary/10 rounded-md">
+      <header class="flex flex-col">
+        <p class="font-semibold">Comparte tu Negocio</p>
+        <p class="text-xs">Comparte tu perfil y recibe mas reservas</p>
+      </header>
+
+      <div class="flex flex-col md:flex-row gap-8">
+        <section class="flex-1">
+          <p class="py-2 text-xs">Codigo QR</p>
+
+          <div
+            class="relative w-full flex justify-center items-center rounded-xl p-2"
+          >
+            <qrcode
+              #qrCode
+              [qrdata]="bookingUrl()"
+              [errorCorrectionLevel]="'H'"
+              [colorDark]="'#030712'"
+              [colorLight]="'#ffffff'"
+              [margin]="0"
+              (qrCodeURL)="qrDownloadLink.set($event)"
+            />
+
+            <div class="absolute inset-0 flex items-center justify-center">
+              <div
+                class="w-10 h-10 rounded-lg bg-indigo-500 flex items-center justify-center text-white font-bold"
+              >
+                {{ business()?.name ?? '' | initials }}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="flex-2 flex flex-col gap-4">
+          <p class="text-xs">URL pública</p>
+
+          <div
+            class="p-2 flex justify-between items-center border border-primary rounded-md"
+          >
+            <span class="text-sm">{{ bookingUrl() }}</span>
+
+            <button (click)="copyLink()" class="cursor-pointer">
+              <i class="pi pi-copy text-primary"></i>
+            </button>
+          </div>
+
+          <button
+            class="p-2 flex gap-2 items-center justify-center bg-green-700 rounded-md cursor-pointer"
+            (click)="shareWhatsApp()"
+          >
+            <i class="pi pi-whatsapp"></i>
+            <p class="text-sm">Compartir por Whatsapp</p>
+          </button>
+
+          <a
+            class="w-full p-2 flex gap-2 items-center justify-center border border-primary rounded-md"
+            [href]="qrDownloadLink()"
+            [download]="'qr-' + business()?.slug + '.png'"
+          >
+            <i class="pi pi-download"></i>
+            <p class="text-sm">Descargar QR</p>
+          </a>
+        </section>
+      </div>
+    </article>
+  </section>
+
+  <section>services</section>
+</div>
