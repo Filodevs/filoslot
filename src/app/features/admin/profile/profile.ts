@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import {
   Component,
   computed,
@@ -12,13 +13,18 @@ import { SafeUrl } from '@angular/platform-browser';
 import { QRCodeComponent } from 'angularx-qrcode';
 
 import { BusinessService } from '../../../core/services/business';
+import { CatalogService } from '../../../core/services/catalog.service';
+import { ResourceService } from '../../../core/services/resource.service';
 import { NotificationService } from '../../../core/services/ui/notification';
 import { IBusiness } from '../../../models/business';
+import { IResource } from '../../../models/resource';
+import { IService } from '../../../models/service';
+import { AvatarColorPipe } from '../../../shared/pipes/avatar-color.pipe';
 import { InitialsPipe } from '../../../shared/pipes/initials.pipe';
 
 @Component({
   selector: 'app-profile',
-  imports: [QRCodeComponent, InitialsPipe],
+  imports: [CommonModule, QRCodeComponent, InitialsPipe, AvatarColorPipe],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
 })
@@ -26,8 +32,12 @@ export class Profile implements OnInit {
   private readonly _destroyed = inject(DestroyRef);
   private readonly _notifications = inject(NotificationService);
   private readonly _bisinessService = inject(BusinessService);
+  private readonly _catalogService = inject(CatalogService);
+  private readonly resourceService = inject(ResourceService);
 
   business = signal<IBusiness | null>(null);
+  services = signal<IService[]>([]);
+  resources = signal<IResource[]>([]);
   qrDownloadLink = signal<SafeUrl>('');
 
   bookingUrl = computed(() => {
@@ -37,6 +47,8 @@ export class Profile implements OnInit {
 
   ngOnInit(): void {
     this._getBusiness();
+    this._getMyServices();
+    this._getResources();
   }
 
   copyLink(): void {
@@ -69,6 +81,34 @@ export class Profile implements OnInit {
         },
         error: (error) => {
           console.error('Error fetching business:', error);
+        },
+      });
+  }
+
+  private _getMyServices(): void {
+    this._catalogService
+      .getMyServices()
+      .pipe(takeUntilDestroyed(this._destroyed))
+      .subscribe({
+        next: (data) => {
+          this.services.set(data);
+        },
+        error: (error) => {
+          console.error('Error al cargar servicios:', error);
+        },
+      });
+  }
+
+  private _getResources(): void {
+    this.resourceService
+      .getMyResources()
+      .pipe(takeUntilDestroyed(this._destroyed))
+      .subscribe({
+        next: (data) => {
+          this.resources.set(data);
+        },
+        error: (error) => {
+          console.error('Error al cargar recursos:', error);
         },
       });
   }
