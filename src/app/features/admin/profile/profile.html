@@ -1,70 +1,31 @@
 <div class="w-full flex flex-col gap-4">
   <section class="flex flex-col md:flex-row gap-4">
-    <article class="flex-1 flex flex-col gap-4 bg-primary/10 rounded-xl">
-      <header
-        class="p-4 flex items-center gap-x-4 border-b-[0.5px] border-primary/25 pb-4"
-      >
-        <div
-          class="w-20 h-20 rounded-lg bg-indigo-500 grid place-items-center font-extrabold text-sm text-white shrink-0"
-        >
-          {{ business()?.name ?? '' | initials }}
-        </div>
-
-        <p class="text-xl font-semibold">{{ business()?.name ?? '' }}</p>
-      </header>
-
-      <section class="p-4 flex flex-col gap-2">
-        <article class="flex items-center gap-x-2">
-          <div
-            class="w-8 h-8 flex justify-center items-center bg-primary/25 text-primary-200 rounded-full"
-          >
-            <i class="pi pi-map-marker"></i>
-          </div>
-
-          <div>
-            <span class="text-[10px]">DIRECCIÓN</span>
-            <p class="text-sm">{{ business()?.address }}</p>
-          </div>
-        </article>
-
-        <article class="flex items-center gap-x-2">
-          <div
-            class="w-8 h-8 flex justify-center items-center bg-primary/25 text-primary-200 rounded-full"
-          >
-            <i class="pi pi-mobile"></i>
-          </div>
-
-          <div>
-            <span class="text-[10px]">TELÉFONO</span>
-            <p class="text-sm">{{ business()?.phone }}</p>
-          </div>
-        </article>
-
-        <article class="flex items-center gap-x-2">
-          <div
-            class="w-8 h-8 flex justify-center items-center bg-primary/25 text-primary-200 rounded-full"
-          >
-            <i class="pi pi-link"></i>
-          </div>
-
-          <div>
-            <span class="text-[10px]">URL PÚBLICA</span>
-            <p class="text-xs text-primary">{{ bookingUrl() }}</p>
-          </div>
-        </article>
-      </section>
-    </article>
+    <app-business-info
+      class="w-full"
+      [business]="business()"
+      [bookingUrl]="bookingUrl()"
+      [loading]="businessLoading()"
+    />
 
     <app-profile-share
       class="w-full"
       [bookingUrl]="bookingUrl()"
       [business]="business()"
+      [loading]="businessLoading()"
     />
   </section>
 
   <section class="flex flex-col md:flex-row gap-4">
-    <app-services-list class="w-full" [services]="services()" />
+    <app-services-list
+      class="w-full"
+      [services]="services()"
+      [loading]="servicesLoading()"
+    />
 
-    <app-resources-list class="w-full" [resources]="resources()" />
+    <app-resources-list
+      class="w-full"
+      [resources]="resources()"
+      [loading]="resourcesLoading()"
+    />
   </section>
 </div>

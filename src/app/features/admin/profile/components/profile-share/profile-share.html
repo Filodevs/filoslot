@@ -1,11 +1,28 @@
-<article class="flex-2 flex flex-col bg-primary/10 rounded-xl">
+@if (loading()) {
+<article class="flex-1 flex flex-col bg-primary/10 rounded-xl">
+  <header class="p-4 h-20 flex flex-col border-b border-primary/25">
+    <app-skeleton width="150px" height="20px" />
+    <app-skeleton width="200px" height="16px" class="mt-2" />
+  </header>
+  <div class="p-4 flex flex-col gap-2">
+    <app-skeleton width="180px" height="180px" shape="rectangle" />
+    <div class="flex flex-col gap-4">
+      <app-skeleton width="100px" height="16px" />
+      <app-skeleton width="100%" height="40px" />
+      <app-skeleton width="100%" height="40px" />
+      <app-skeleton width="100%" height="40px" />
+    </div>
+  </div>
+</article>
+} @else {
+<article class="flex-1 flex flex-col bg-primary/10 rounded-xl">
   <header class="p-4 h-20 flex flex-col border-b border-primary/25">
     <p class="font-semibold">Comparte tu Negocio</p>
     <p class="text-xs">Comparte tu perfil y recibe mas reservas</p>
   </header>
 
-  <div class="p-4 flex flex-col md:flex-row gap-8">
-    <section class="flex-1">
+  <div class="p-4 flex flex-col gap-2">
+    <section>
       <div
         class="relative w-full flex justify-center items-center rounded-xl p-2 bg-white"
       >
@@ -30,7 +47,7 @@
       </div>
     </section>
 
-    <section class="flex-2 flex flex-col gap-4">
+    <section class="w-full flex flex-col gap-4">
       <p class="text-xs">URL pública</p>
 
       <div
@@ -62,3 +79,4 @@
     </section>
   </div>
 </article>
+}

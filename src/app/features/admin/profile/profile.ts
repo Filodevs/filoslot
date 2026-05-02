@@ -15,19 +15,19 @@ import { ResourceService } from '../../../core/services/resource.service';
 import { IBusiness } from '../../../models/business';
 import { IResource } from '../../../models/resource';
 import { IService } from '../../../models/service';
+import { AppBusinessInfo } from '../../../shared/components/app-business-info/app-business-info';
 import { ResourcesList } from '../../../shared/components/resources-list/resources-list';
 import { ServicesList } from '../../../shared/components/services-list/services-list';
-import { InitialsPipe } from '../../../shared/pipes/initials.pipe';
 import { ProfileShare } from './components/profile-share/profile-share';
 
 @Component({
   selector: 'app-profile',
   imports: [
     CommonModule,
-    InitialsPipe,
     ServicesList,
     ResourcesList,
     ProfileShare,
+    AppBusinessInfo,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.css',
@@ -41,6 +41,10 @@ export class Profile implements OnInit {
   business = signal<IBusiness | null>(null);
   services = signal<IService[]>([]);
   resources = signal<IResource[]>([]);
+
+  businessLoading = signal(true);
+  servicesLoading = signal(true);
+  resourcesLoading = signal(true);
 
   bookingUrl = computed(() => {
     const url = window.location.origin;
@@ -60,9 +64,11 @@ export class Profile implements OnInit {
       .subscribe({
         next: (business) => {
           this.business.set(business);
+          this.businessLoading.set(false);
         },
         error: (error) => {
           console.error('Error fetching business:', error);
+          this.businessLoading.set(false);
         },
       });
   }
@@ -74,9 +80,11 @@ export class Profile implements OnInit {
       .subscribe({
         next: (data) => {
           this.services.set(data);
+          this.servicesLoading.set(false);
         },
         error: (error) => {
           console.error('Error al cargar servicios:', error);
+          this.servicesLoading.set(false);
         },
       });
   }
@@ -88,9 +96,11 @@ export class Profile implements OnInit {
       .subscribe({
         next: (data) => {
           this.resources.set(data);
+          this.resourcesLoading.set(false);
         },
         error: (error) => {
           console.error('Error al cargar recursos:', error);
+          this.resourcesLoading.set(false);
         },
       });
   }

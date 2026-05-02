@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject, input, signal } from '@angular/core';
 import { SafeUrl } from '@angular/platform-browser';
 
@@ -5,11 +6,12 @@ import { QRCodeComponent } from 'angularx-qrcode';
 
 import { NotificationService } from '../../../../../core/services/ui/notification';
 import { IBusiness } from '../../../../../models/business';
+import { AppSkeleton } from '../../../../../shared/components/app-skeleton/app-skeleton';
 import { InitialsPipe } from '../../../../../shared/pipes/initials.pipe';
 
 @Component({
   selector: 'app-profile-share',
-  imports: [QRCodeComponent, InitialsPipe],
+  imports: [CommonModule, QRCodeComponent, InitialsPipe, AppSkeleton],
   templateUrl: './profile-share.html',
 })
 export class ProfileShare {
@@ -17,6 +19,7 @@ export class ProfileShare {
 
   bookingUrl = input.required<string>();
   business = input.required<IBusiness | null>();
+  loading = input<boolean>(false);
 
   qrDownloadLink = signal<SafeUrl>('');
 
