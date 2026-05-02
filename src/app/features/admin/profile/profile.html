@@ -1,6 +1,3 @@
-<!-- TOOD: ADD SKELETON LOADER -->
-<!-- TODO: REFACTOR SERVICES AND RESOURCES INTO SEPARATE COMPONENTS -->
-
 <div class="w-full flex flex-col gap-4">
   <section class="flex flex-col md:flex-row gap-4">
     <article class="flex-1 flex flex-col gap-4 bg-primary/10 rounded-xl">
@@ -8,12 +5,12 @@
         class="p-4 flex items-center gap-x-4 border-b-[0.5px] border-primary/25 pb-4"
       >
         <div
-          class="w-12 h-12 rounded-lg bg-indigo-500 grid place-items-center font-extrabold text-sm text-white shrink-0"
+          class="w-20 h-20 rounded-lg bg-indigo-500 grid place-items-center font-extrabold text-sm text-white shrink-0"
         >
           {{ business()?.name ?? '' | initials }}
         </div>
 
-        <p class="text-lg font-semibold">{{ business()?.name ?? '' }}</p>
+        <p class="text-xl font-semibold">{{ business()?.name ?? '' }}</p>
       </header>
 
       <section class="p-4 flex flex-col gap-2">
@@ -58,181 +55,16 @@
       </section>
     </article>
 
-    <article class="flex-2 flex flex-col bg-primary/10 rounded-xl">
-      <header class="p-4 h-20 flex flex-col border-b border-primary/25">
-        <p class="font-semibold">Comparte tu Negocio</p>
-        <p class="text-xs">Comparte tu perfil y recibe mas reservas</p>
-      </header>
-
-      <div class="p-4 flex flex-col md:flex-row gap-8">
-        <section class="flex-1">
-          <div
-            class="relative w-full flex justify-center items-center rounded-xl p-2 bg-white"
-          >
-            <qrcode
-              #qrCode
-              [qrdata]="bookingUrl()"
-              [width]="180"
-              [errorCorrectionLevel]="'H'"
-              [colorDark]="'#030712'"
-              [colorLight]="'#ffffff'"
-              [margin]="0"
-              (qrCodeURL)="qrDownloadLink.set($event)"
-            />
-
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div
-                class="w-10 h-10 rounded-lg bg-indigo-500 flex items-center justify-center text-white font-bold"
-              >
-                {{ business()?.name ?? '' | initials }}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section class="flex-2 flex flex-col gap-4">
-          <p class="text-xs">URL pública</p>
-
-          <div
-            class="p-2 flex justify-between items-center border border-primary rounded-md"
-          >
-            <span class="text-xs">{{ bookingUrl() }}</span>
-
-            <button (click)="copyLink()" class="cursor-pointer">
-              <i class="pi pi-copy text-primary"></i>
-            </button>
-          </div>
-
-          <button
-            class="p-2 flex gap-2 items-center justify-center bg-green-700 rounded-md cursor-pointer"
-            (click)="shareWhatsApp()"
-          >
-            <i class="pi pi-whatsapp"></i>
-            <p class="text-sm">Compartir por Whatsapp</p>
-          </button>
-
-          <a
-            class="w-full p-2 flex gap-2 items-center justify-center border border-primary rounded-md"
-            [href]="qrDownloadLink()"
-            [download]="'qr-' + business()?.slug + '.png'"
-          >
-            <i class="pi pi-download"></i>
-            <p class="text-sm">Descargar QR</p>
-          </a>
-        </section>
-      </div>
-    </article>
+    <app-profile-share
+      class="w-full"
+      [bookingUrl]="bookingUrl()"
+      [business]="business()"
+    />
   </section>
 
   <section class="flex flex-col md:flex-row gap-4">
-    <article class="flex-2 flex flex-col gap-4 bg-primary/10 rounded-xl">
-      <header
-        class="p-4 flex items-center gap-x-4 border-b-[0.5px] border-primary/25"
-      >
-        <section>
-          <span
-            class="w-9 h-9 grid rounded-sm place-items-center text-base shrink-0 bg-cyan-400/10"
-            >✂️</span
-          >
-        </section>
+    <app-services-list class="w-full" [services]="services()" />
 
-        <section class="flex-1">
-          <p class="font-semibold">Servicios</p>
-          <p class="text-xs text-muted-foreground">Catálogo activo</p>
-        </section>
-
-        <section>
-          <span
-            class="p-2 rouned-full bg-primary/25 text-primary-200 text-xs rounded-full"
-          >
-            {{ services().length }} {{ services().length === 1 ? 'servicio' :
-            'servicios' }}
-          </span>
-        </section>
-      </header>
-
-      <div class="flex flex-col gap-2">
-        @for (service of services(); track service.id) {
-        <article
-          class="p-4 flex items-center gap-x-4 border-b border-primary/25 pb-4"
-        >
-          <div
-            class="w-1 h-12 flex justify-center items-center bg-accent text-primary-200 rounded-full"
-          ></div>
-
-          <section>
-            <p class="text-sm font-semibold">{{ service.name }}</p>
-          </section>
-
-          <section class="flex-1 flex gap-4 justify-end items-center">
-            <div class="flex items-center gap-2">
-              <i class="pi pi-clock"></i>
-
-              <span class="text-xs text-white/45"
-                >{{ service.duration }} min</span
-              >
-            </div>
-
-            <div>
-              <span class="text-sm font-bold text-accent"
-                >${{ service.price | number:'1.2-2' }}</span
-              >
-            </div>
-          </section>
-        </article>
-        }
-      </div>
-    </article>
-
-    <article class="flex-2 flex flex-col gap-4 bg-primary/10 rounded-xl">
-      <header
-        class="p-4 flex items-center gap-x-4 border-b-[0.5px] border-primary/25"
-      >
-        <section>
-          <span
-            class="w-9 h-9 grid rounded-sm place-items-center text-base shrink-0 bg-violet-500/15"
-            >👤</span
-          >
-        </section>
-
-        <section class="flex-1">
-          <p class="font-semibold">Recursos</p>
-          <p class="text-xs">Catálogo activo</p>
-        </section>
-
-        <section>
-          <span
-            class="p-2 rouned-full bg-primary/25 text-primary-200 text-xs rounded-full"
-          >
-            {{ resources().length }} {{ resources().length === 1 ? 'recurso' :
-            'recursos' }}
-          </span>
-        </section>
-      </header>
-
-      <div class="flex flex-col gap-2">
-        @for (resource of resources(); track resource.id) {
-        <article
-          class="p-4 flex flex-col gap-2 text-center border-b border-primary/25"
-        >
-          <div class="flex gap-2">
-            <section
-              class="w-12 h-12 rounded-full grid place-items-center self-start bg-linear-to-br font-bold text-base text-white shrink-0"
-              [class]="resource.id | avatarColor"
-            >
-              {{ resource.name | initials }}
-            </section>
-
-            <section class="flex flex-col items-start gap-0.5 w-full min-w-0">
-              <p class="text-sm font-bold truncate">{{ resource.name }}</p>
-              <p class="text-[0.68rem] text-white/45 truncate">
-                {{ resource.role }}
-              </p>
-            </section>
-          </div>
-        </article>
-        }
-      </div>
-    </article>
+    <app-resources-list class="w-full" [resources]="resources()" />
   </section>
 </div>

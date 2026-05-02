@@ -1,0 +1,56 @@
+<article class="flex-1 flex flex-col gap-4 bg-primary/10 rounded-xl">
+  <header
+    class="p-4 flex items-center gap-x-4 border-b-[0.5px] border-primary/25"
+  >
+    <section>
+      <span
+        class="w-9 h-9 grid rounded-sm place-items-center text-base shrink-0 bg-cyan-400/10"
+        >✂️</span
+      >
+    </section>
+
+    <section class="flex-1">
+      <p class="font-semibold">Servicios</p>
+      <p class="text-xs text-muted-foreground">Catálogo activo</p>
+    </section>
+
+    <section>
+      <span
+        class="p-2 rouned-full bg-primary/25 text-primary-200 text-xs rounded-full"
+      >
+        {{ services().length }} {{ services().length === 1 ? 'servicio' :
+        'servicios' }}
+      </span>
+    </section>
+  </header>
+
+  <div class="flex flex-col gap-2">
+    @for (service of services(); track service.id) {
+    <article
+      class="p-4 flex items-center gap-x-4 border-b border-primary/25 pb-4"
+    >
+      <div
+        class="w-1 h-12 flex justify-center items-center bg-accent text-primary-200 rounded-full"
+      ></div>
+
+      <section>
+        <p class="text-sm font-semibold">{{ service.name }}</p>
+      </section>
+
+      <section class="flex-1 flex gap-4 justify-end items-center">
+        <div class="flex items-center gap-2">
+          <i class="pi pi-clock"></i>
+
+          <span class="text-xs text-white/45">{{ service.duration }} min</span>
+        </div>
+
+        <div>
+          <span class="text-sm font-bold text-accent"
+            >${{ service.price | number:'1.2-2' }}</span
+          >
+        </div>
+      </section>
+    </article>
+    }
+  </div>
+</article>
