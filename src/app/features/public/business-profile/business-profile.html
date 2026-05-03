@@ -1,97 +1,26 @@
-@if(loading()) {
-<div class="flex flex-col gap-4">
-  <app-skeleton height="44px" width="120px" />
-  <app-skeleton height="80px" />
-  <app-skeleton height="300px" />
-  <app-skeleton height="80px" />
-  <app-skeleton height="43px" />
+<div class="w-full flex flex-col gap-2">
+  <section class="flex flex-col gap-2">
+    <app-business-info
+      class="w-full"
+      [business]="business()"
+      [bookingUrl]="bookingUrl()"
+      [loading]="businessLoading()"
+    />
+
+    <app-book-card class="w-full" (goToBooking)="goToBooking()" />
+  </section>
+
+  <section class="flex flex-col gap-2">
+    <app-services-list
+      class="w-full"
+      [services]="business()?.services || []"
+      [loading]="businessLoading()"
+    />
+
+    <app-resources-list
+      class="w-full"
+      [resources]="resources()"
+      [loading]="resourcesLoading() || businessLoading()"
+    />
+  </section>
 </div>
-} @else { @let b = business(); @if (b) {
-<article>
-  <button
-    (click)="goBack()"
-    class="flex items-center gap-1.5 text-white/45 text-xs font-bold mb-5 hover:text-white transition-colors duration-150 min-h-11"
-  >
-    <i class="pi pi-arrow-left text-xs"></i>
-    Directorio
-  </button>
-
-  <section class="flex items-center gap-4 mb-6">
-    <div
-      class="w-20 h-20 rounded-2xl grid place-items-center shrink-0 bg-linear-to-br from-indigo-500/30 to-violet-500/30 border border-indigo-500/20"
-    >
-      <span class="text-2xl font-extrabold text-indigo-300">
-        {{ b.name | initials }}
-      </span>
-    </div>
-
-    <article class="flex-1 min-w-0">
-      <h1 class="text-xl font-extrabold tracking-tight leading-tight mb-1">
-        {{ b.name }}
-      </h1>
-
-      <div class="flex items-center gap-1 mb-1.5">
-        <i class="pi pi-map-marker text-[0.65rem] text-white/35"></i>
-        <p class="text-xs text-white/45 truncate">{{ b.address }}</p>
-      </div>
-    </article>
-  </section>
-
-  <section
-    class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-2xl overflow-hidden mb-4"
-  >
-    <article class="px-4 py-3 border-b border-white/7">
-      <p
-        class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest"
-      >
-        Servicios destacados
-      </p>
-    </article>
-
-    @for (service of b.services; track service.id; let last = $last) {
-    <article
-      class="flex items-center gap-3 px-4 py-3"
-      [class]="!last ? 'border-b border-white/5' : ''"
-    >
-      <div
-        class="w-8 h-8 rounded-lg bg-indigo-500/15 grid place-items-center shrink-0"
-      >
-        <i class="pi pi-cog text-indigo-400 text-xs"></i>
-      </div>
-
-      <div class="flex-1 min-w-0">
-        <p class="text-sm font-bold">{{ service.name }}</p>
-        <p class="text-[0.65rem] text-white/45">
-          <i class="pi pi-clock text-[0.6rem] mr-0.5"></i>
-          {{ service.duration }} min
-        </p>
-      </div>
-
-      <span class="text-sm font-extrabold text-cyan-400"
-        >${{ service.price }}</span
-      >
-    </article>
-    }
-  </section>
-
-  <section
-    class="bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-2xl p-4 mb-4"
-  >
-    <p
-      class="text-[0.65rem] font-bold text-white/45 uppercase tracking-widest mb-3"
-    >
-      Contacto
-    </p>
-    <div class="flex items-center gap-2">
-      <i class="pi pi-phone text-indigo-400 text-sm"></i>
-      <span class="text-sm font-semibold">{{ b.phone }}</span>
-    </div>
-  </section>
-</article>
-
-<footer class="bg-[#030712]/85 backdrop-blur-xl border-t border-white/7 z-90">
-  <app-button variant="primary" (click)="goToBooking()" class="w-full">
-    Reservar ahora
-  </app-button>
-</footer>
-} }

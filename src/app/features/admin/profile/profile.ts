@@ -30,7 +30,6 @@ import { ProfileShare } from './components/profile-share/profile-share';
     AppBusinessInfo,
   ],
   templateUrl: './profile.html',
-  styleUrl: './profile.css',
 })
 export class Profile implements OnInit {
   private readonly _destroyed = inject(DestroyRef);

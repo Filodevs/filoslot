@@ -1,5 +1,5 @@
 @if (loading()) {
-<article class="flex-1 flex flex-col gap-4 bg-primary/10 rounded-xl">
+<article class="flex-1 flex flex-col gap-2 bg-primary/10 rounded-xl">
   <header
     class="p-4 flex items-center gap-x-4 border-b-[0.5px] border-primary/25 pb-4"
   >
@@ -17,7 +17,7 @@
   </section>
 </article>
 } @else { @let b = business(); @if (b) {
-<article class="flex-1 flex flex-col gap-4 bg-primary/10 rounded-xl">
+<article class="flex-1 flex flex-col gap-2 bg-primary/10 rounded-xl">
   <header
     class="p-4 flex items-center gap-x-4 border-b-[0.5px] border-primary/25 pb-4"
   >
@@ -27,7 +27,7 @@
       {{ b.name | initials }}
     </div>
 
-    <p class="text-xl font-semibold">{{ b.name }}</p>
+    <p class="text-2xl font-semibold truncate">{{ b.name }}</p>
   </header>
 
   <section class="p-4 flex flex-col gap-2">

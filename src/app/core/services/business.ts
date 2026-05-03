@@ -100,6 +100,27 @@ export class BusinessService {
     );
   }
 
+  getResourcesByBusinessId(businessId: string): Observable<IResource[]> {
+    if (this.env.isMockingEnabled()) {
+      return of(RESOURCE_MOCK).pipe(delay(500));
+    }
+
+    const url = this.env.buildApiUrl(
+      this.env
+        .config()
+        .api.business.resourcesByBusinessId.replace(':businessId', businessId),
+    );
+
+    return this.http.get<ApiResponse<IResource[]>>(url).pipe(
+      map((response) => response.data),
+      catchError((error) => {
+        const errorMessage =
+          error.error?.data?.message || 'Error al obtener los recursos';
+        return throwError(() => new Error(errorMessage));
+      }),
+    );
+  }
+
   getResourcesByServiceId(
     businessId: string,
     serviceId: string,
