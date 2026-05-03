@@ -24,7 +24,7 @@ export const environment: IEnvironment = {
       update: '/business/:id',
       delete: '/business/:id',
       resourcesByBusinessId: '/businesses/:businessId/resources',
-      resourcesByServiceId: '/businesses/:businessId/resources/by-service?serviceId=:serviceId',
+      resourcesByServiceId: '/businesses/:businessId/resources/by-service/:serviceId',
     },
     appointments: {
       list: '/appointments',
