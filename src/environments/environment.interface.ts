@@ -17,6 +17,7 @@ export interface IEnvironment {
       create: string;
       update: string;
       delete: string;
+      resourcesByBusinessId: string;
       resourcesByServiceId: string;
     };
     appointments: {

@@ -23,10 +23,6 @@ export class CatalogService {
   private readonly _services = signal<IService[]>([]);
   readonly services = this._services.asReadonly();
 
-  getServices(): Observable<IService[]> {
-    return of(CATALOG_MOCK).pipe(delay(500));
-  }
-
   getMyServices(): Observable<IService[]> {
     if (this.env.isMockingEnabled()) {
       return of(CATALOG_MOCK).pipe(

@@ -1,17 +1,18 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { BusinessService } from '../../../core/services/business';
 import { IBusiness } from '../../../models/business';
-import { AppButton } from '../../../shared/components/app-button/app-button';
-import { AppSkeleton } from '../../../shared/components/app-skeleton/app-skeleton';
-import { InitialsPipe } from '../../../shared/pipes/initials.pipe';
+import { IResource } from '../../../models/resource';
+import { AppBusinessInfo } from '../../../shared/components/app-business-info/app-business-info';
+import { ResourcesList } from '../../../shared/components/resources-list/resources-list';
+import { ServicesList } from '../../../shared/components/services-list/services-list';
+import { BookCard } from './components/book-card/book-card';
 
 @Component({
   selector: 'app-business-profile',
-  imports: [InitialsPipe, AppButton, AppSkeleton],
+  imports: [AppBusinessInfo, ServicesList, ResourcesList, BookCard],
   templateUrl: './business-profile.html',
-  styleUrl: './business-profile.css',
 })
 export class BusinessProfile implements OnInit {
   readonly route = inject(ActivatedRoute);
@@ -19,7 +20,15 @@ export class BusinessProfile implements OnInit {
   readonly businessService = inject(BusinessService);
 
   business = signal<IBusiness | null>(null);
-  loading = signal(true);
+  businessLoading = signal(false);
+
+  resources = signal<IResource[]>([]);
+  resourcesLoading = signal(false);
+
+  bookingUrl = computed(() => {
+    const url = window.location.origin;
+    return `${url}/business/${this.business()?.slug}`;
+  });
 
   ngOnInit(): void {
     const slug = this.route.snapshot.paramMap.get('businessSlug');
@@ -41,16 +50,39 @@ export class BusinessProfile implements OnInit {
   }
 
   private _loadBusiness(slug: string): void {
-    this.loading.set(true);
+    this.businessLoading.set(true);
 
     this.businessService.getBusinessBySlug(slug).subscribe({
       next: (data) => {
+        if (!data) {
+          console.error('Negocio no encontrado');
+          this.router.navigate(['/']);
+          return;
+        }
+
         this.business.set(data);
-        this.loading.set(false);
+        this.businessLoading.set(false);
+
+        this._getResourcesByBusinessId(data.id);
       },
       error: (error) => {
         console.error(error);
-        this.loading.set(false);
+        this.businessLoading.set(false);
+      },
+    });
+  }
+
+  private _getResourcesByBusinessId(businessId: string): void {
+    this.resourcesLoading.set(true);
+
+    this.businessService.getResourcesByBusinessId(businessId).subscribe({
+      next: (resources) => {
+        this.resources.set(resources);
+        this.resourcesLoading.set(false);
+      },
+      error: (error) => {
+        console.error('Error al obtener los recursos del negocio:', error);
+        this.resourcesLoading.set(false);
       },
     });
   }

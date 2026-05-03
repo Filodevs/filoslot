@@ -30,7 +30,7 @@
   @for (day of days(); track day.fullDate.toDateString()) {
   <button
     (click)="select(day.fullDate)"
-    class="px-3 py-2 min-w-12 md:w-20 md:h-14 flex flex-col items-center gap-0.5 rounded-sm border cursor-pointer transition-all duration-150 min-h-11"
+    class="px-3 py-2 min-w-12 md:w-20 md:h-14 flex flex-col items-center justify-center gap-0.5 rounded-sm border cursor-pointer transition-all duration-150 min-h-11"
     [class]="
       isSelected(day.fullDate)
         ? 'bg-indigo-500 border-indigo-500 text-white'

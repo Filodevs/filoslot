@@ -7,20 +7,25 @@
       [loading]="businessLoading()"
     />
 
-    <app-book-card class="w-full" (goToBooking)="goToBooking()" />
+    <app-profile-share
+      class="w-full"
+      [bookingUrl]="bookingUrl()"
+      [business]="business()"
+      [loading]="businessLoading()"
+    />
   </section>
 
   <section class="flex flex-col gap-2">
     <app-services-list
       class="w-full"
-      [services]="business()?.services || []"
-      [loading]="businessLoading()"
+      [services]="services()"
+      [loading]="servicesLoading()"
     />
 
     <app-resources-list
       class="w-full"
       [resources]="resources()"
-      [loading]="resourcesLoading() || businessLoading()"
+      [loading]="resourcesLoading()"
     />
   </section>
 </div>

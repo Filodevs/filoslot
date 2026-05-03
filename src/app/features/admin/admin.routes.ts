@@ -21,6 +21,10 @@ export const ADMIN_ROUTES: Routes = [
         path: 'setup',
         loadComponent: () => import('./setup/setup').then((c) => c.Setup),
       },
+      {
+        path: 'profile',
+        loadComponent: () => import('./profile/profile').then((c) => c.Profile),
+      },
     ],
   },
 ];

@@ -97,10 +97,13 @@
     </section>
 
     <section class="grid grid-cols-2 gap-3">
-      <app-button variant="secondary" label="Cancelar" (click)="cancelForm()" />
+      <app-button
+        severity="secondary"
+        label="Cancelar"
+        (click)="cancelForm()"
+      />
       <app-button
         type="submit"
-        variant="primary"
         [loading]="loading()"
         [label]="editingId() ? 'Actualizar' : 'Agregar'"
         (click)="saveResource()"
@@ -109,7 +112,6 @@
   </form>
   } @if (resources().length === 0 && !showForm()) {
   <app-button
-    variant="primary"
     label="+ Agregar recurso"
     [loading]="loading()"
     (click)="openForm()"

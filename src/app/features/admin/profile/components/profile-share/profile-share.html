@@ -1,0 +1,82 @@
+@if (loading()) {
+<article class="flex-1 flex flex-col bg-primary/10 rounded-xl">
+  <header class="p-4 h-20 flex flex-col border-b border-primary/25">
+    <app-skeleton width="150px" height="20px" />
+    <app-skeleton width="200px" height="16px" class="mt-2" />
+  </header>
+  <div class="p-4 flex flex-col gap-2">
+    <app-skeleton width="180px" height="180px" shape="rectangle" />
+    <div class="flex flex-col gap-4">
+      <app-skeleton width="100px" height="16px" />
+      <app-skeleton width="100%" height="40px" />
+      <app-skeleton width="100%" height="40px" />
+      <app-skeleton width="100%" height="40px" />
+    </div>
+  </div>
+</article>
+} @else {
+<article class="flex-1 flex flex-col bg-primary/10 rounded-xl">
+  <header class="p-4 h-20 flex flex-col border-b border-primary/25">
+    <p class="font-semibold">Comparte tu Negocio</p>
+    <p class="text-xs">Comparte tu perfil y recibe mas reservas</p>
+  </header>
+
+  <div class="p-4 grid md:grid-cols-2 gap-2">
+    <section>
+      <div
+        class="relative w-full flex justify-center items-center rounded-xl p-2 bg-white"
+      >
+        <qrcode
+          #qrCode
+          [qrdata]="bookingUrl()"
+          [width]="180"
+          [errorCorrectionLevel]="'H'"
+          [colorDark]="'#030712'"
+          [colorLight]="'#ffffff'"
+          [margin]="0"
+          (qrCodeURL)="qrDownloadLink.set($event)"
+        />
+
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div
+            class="w-10 h-10 rounded-lg bg-indigo-500 flex items-center justify-center text-white font-bold"
+          >
+            {{ business()?.name ?? '' | initials }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="w-full flex flex-col gap-4">
+      <p class="text-xs">URL pública</p>
+
+      <div
+        class="p-2 flex justify-between items-center border border-primary rounded-md"
+      >
+        <span class="text-xs">{{ bookingUrl() }}</span>
+
+        <button (click)="copyLink()" class="cursor-pointer">
+          <i class="pi pi-copy text-primary"></i>
+        </button>
+      </div>
+
+      <button
+        class="p-2 flex gap-2 items-center justify-center bg-green-700 rounded-md cursor-pointer"
+        (click)="shareWhatsApp()"
+      >
+        <i class="pi pi-whatsapp"></i>
+        <p class="text-sm">Compartir por Whatsapp</p>
+      </button>
+
+      <a
+        class="w-full p-2 flex gap-2 items-center justify-center border border-primary rounded-md"
+        [href]="qrDownloadLink()"
+        [download]="'qr-' + business()?.slug + '.png'"
+      >
+        <i class="pi pi-download"></i>
+        <p class="text-sm">Descargar QR</p>
+      </a>
+    </section>
+  </div>
+</article>
+}

@@ -1,0 +1,70 @@
+@if (loading()) {
+<article
+  class="flex-1 flex flex-col gap-4 bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-xl"
+>
+  <header
+    class="p-4 flex items-center gap-x-4 border-b-[0.5px] border-primary/25"
+  >
+    <app-skeleton width="36px" height="36px" shape="rectangle" />
+    <app-skeleton width="100px" height="20px" />
+  </header>
+  <div class="flex flex-col gap-3 px-4 pb-4">
+    @for (i of [1, 2, 3]; track i) {
+    <app-skeleton width="100%" height="60px" />
+    }
+  </div>
+</article>
+} @else {
+<article
+  class="flex-1 flex flex-col gap-4 bg-slate-900/60 backdrop-blur-xl border border-white/7 rounded-xl"
+>
+  <header
+    class="p-4 flex items-center gap-x-4 border-b-[0.5px] border-primary/25"
+  >
+    <section>
+      <span
+        class="w-9 h-9 grid rounded-sm place-items-center text-base shrink-0 bg-violet-500/15"
+        >👤</span
+      >
+    </section>
+
+    <section class="flex-1">
+      <p class="font-semibold">Recursos</p>
+      <p class="text-xs">Catálogo activo</p>
+    </section>
+
+    <section>
+      <span
+        class="p-2 rouned-full bg-primary/25 text-primary-200 text-xs rounded-full"
+      >
+        {{ resources().length }} {{ resources().length === 1 ? 'recurso' :
+        'recursos' }}
+      </span>
+    </section>
+  </header>
+
+  <div class="flex flex-col gap-2">
+    @for (resource of resources(); track resource.id) {
+    <article
+      class="p-4 flex flex-col gap-2 text-center border-b border-primary/25"
+    >
+      <div class="flex gap-2">
+        <section
+          class="w-12 h-12 rounded-full grid place-items-center self-start bg-linear-to-br font-bold text-base text-white shrink-0"
+          [class]="resource.id | avatarColor"
+        >
+          {{ resource.name | initials }}
+        </section>
+
+        <section class="flex flex-col items-start gap-0.5 w-full min-w-0">
+          <p class="text-sm font-bold truncate">{{ resource.name }}</p>
+          <p class="text-[0.68rem] text-white/45 truncate">
+            {{ resource.role }}
+          </p>
+        </section>
+      </div>
+    </article>
+    }
+  </div>
+</article>
+}

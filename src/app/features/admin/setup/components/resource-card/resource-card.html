@@ -1,20 +1,24 @@
 <article
-  class="relative flex flex-col gap-2 p-4 bg-slate-800/60 border border-white/7 rounded-xl text-center transition-colors duration-150 hover:border-indigo-500/30"
+  class="flex flex-col gap-2 p-4 bg-slate-800/60 border border-white/7 rounded-xl text-center transition-colors duration-150 hover:border-indigo-500/30"
 >
-  <div class="flex gap-2">
+  <div class="w-full flex justify-between gap-2">
     <section
-      class="w-12 h-12 rounded-full grid place-items-center self-start bg-linear-to-br font-bold text-base text-white shrink-0"
+      class="w-10 h-10 rounded-full grid place-items-center self-start bg-linear-to-br font-bold text-base text-white shrink-0"
       [class]="resource().id | avatarColor"
     >
       {{ resource().name | initials }}
     </section>
 
-    <section class="flex flex-col items-start gap-0.5 w-full min-w-0">
-      <p class="text-sm font-bold truncate">{{ resource().name }}</p>
-      <p class="text-[0.68rem] text-white/45 truncate">{{ resource().role }}</p>
+    <section class="w-1/2 flex flex-col items-start gap-0.5">
+      <p class="w-full text-left text-sm font-bold truncate">
+        {{ resource().name }}
+      </p>
+      <p class="w-full text-left text-[0.68rem] text-white/45 truncate">
+        {{ resource().role }}
+      </p>
     </section>
 
-    <section class="flex gap-2">
+    <section class="w-fit flex gap-1">
       <button
         type="button"
         (click)="editResourceEvent.emit(resource())"

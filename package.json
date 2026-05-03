@@ -34,6 +34,7 @@
     "@primeuix/themes": "^2.0.3",
     "@supabase/supabase-js": "^2.103.0",
     "@tailwindcss/postcss": "^4.1.18",
+    "angularx-qrcode": "^21.0.5",
     "postcss": "^8.5.6",
     "primeicons": "^7.0.0",
     "primeng": "^21.1.1",
