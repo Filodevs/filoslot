@@ -1,10 +1,11 @@
 <p-button
-  [styleClass]="'w-full flex items-center justify-center gap-2 ' + (variant() === 'primary' ? 'bg-primary text-white hover:bg-primary/90 disabled:bg-primary/50 disabled:text-white/70' : variant() === 'secondary' ? 'bg-white/10 text-white hover:bg-white/20 disabled:bg-white/10 disabled:text-white/50' : 'bg-red-600 text-white hover:bg-red-700 disabled:bg-red-600/50 disabled:text-white/70')"
+  [styleClass]="'w-full flex items-center justify-center gap-2 '"
   [label]="label() || undefined"
   [type]="type()"
   [disabled]="disabled()"
   [loading]="loading()"
-  [severity]="variant()"
+  [severity]="severity()"
+  [variant]="variant()"
 >
   @if (!label()) {
   <ng-content />

@@ -15,7 +15,7 @@
 
     <button
       (click)="copyLink()"
-      class="flex items-center justify-center gap-2 py-3.5 rounded-xl font-extrabold text-sm border border-white/10 text-white/60 hover:border-white/20 hover:text-white transition-all duration-150 min-h-11"
+      class="flex items-center justify-center gap-2 py-3.5 rounded-xl font-extrabold text-sm border border-primary text-white/60 hover:border-white/20 hover:text-white transition-all duration-150 min-h-11"
     >
       <i class="pi pi-copy text-base"></i>
       Copiar link
@@ -23,20 +23,28 @@
   </div>
 
   } } @if (canCancel()) {
-  <app-button (click)="confirmCancelEvent.emit()" variant="danger">
+  <app-button
+    (click)="confirmCancelEvent.emit()"
+    severity="danger"
+    variant="outlined"
+  >
     <i class="pi pi-times-circle text-base"></i>
     Cancelar mi reserva
   </app-button>
 
   } @if (!canCancel()) {
-  <app-button [disabled]="true" variant="danger">
+  <app-button [disabled]="true" severity="danger" variant="outlined">
     <i class="pi pi-times-circle text-base"></i>
     @if (isCanceled()) { Reserva ya cancelada } @if (isCompleted()) { No se
     puede cancelar }
   </app-button>
   }
 
-  <app-button (click)="goHomeEvent.emit()" variant="secondary">
+  <app-button
+    (click)="goHomeEvent.emit()"
+    severity="secondary"
+    variant="outlined"
+  >
     <i class="pi pi-arrow-left text-base"></i>
     Volver al directorio
   </app-button>

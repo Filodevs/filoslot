@@ -2,7 +2,8 @@ import { Component, input } from '@angular/core';
 
 import { ButtonModule } from 'primeng/button';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'info';
+export type ButtonSeverity = 'primary' | 'secondary' | 'danger' | 'info';
+export type ButtonVariant = 'text' | 'outlined';
 
 @Component({
   selector: 'app-button',
@@ -13,7 +14,8 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'info';
 export class AppButton {
   label = input<string>('');
   type = input<'button' | 'submit'>('button');
-  variant = input<ButtonVariant>('primary');
+  severity = input<ButtonSeverity>('primary');
+  variant = input<ButtonVariant>();
   disabled = input<boolean>(false);
   fullWidth = input<boolean>(true);
   loading = input<boolean>(false);
