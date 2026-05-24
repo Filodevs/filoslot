@@ -36,8 +36,8 @@
           Fecha y hora
         </p>
         <p class="text-sm font-bold" [class.line-through]="isCanceled()">
-          {{ appointment()?.startTime | date: 'EEEE, d MMMM y, h:mm a' : 'UTC'
-          }}
+          {{ appointment()?.date | date: 'EEEE, d MMMM y' : 'UTC' }}, {{
+          appointment()?.startTime }}
         </p>
       </div>
     </article>
