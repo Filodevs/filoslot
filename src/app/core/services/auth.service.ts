@@ -9,6 +9,7 @@ import {
 } from '../../models/__mocks__/auth.mock';
 import { ILoginCredentials, ILoginResponse, IUser } from '../../models/user';
 import { EnvironmentService } from './environment.service';
+import { PushNotificationService } from './push-notification.service';
 
 interface ApiResponse<T> {
   data: T;
@@ -18,6 +19,7 @@ interface ApiResponse<T> {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly env = inject(EnvironmentService);
+  private readonly pushNotification = inject(PushNotificationService);
   private readonly _currentUser = signal<IUser | null>(null);
 
   readonly currentUser = this._currentUser.asReadonly();
@@ -30,18 +32,31 @@ export class AuthService {
   login(credentials: ILoginCredentials): Observable<ILoginResponse> {
     if (this.env.isMockingEnabled()) {
       return this._loginMock(credentials).pipe(
-        tap((response) => this._setSession(response)),
+        tap((response) => {
+          this._setSession(response);
+          this.pushNotification.init().subscribe();
+        }),
       );
     }
 
     return this._login(credentials).pipe(
-      tap((response) => this._setSession(response)),
+      tap((response) => {
+        this._setSession(response);
+        this.pushNotification.init().subscribe();
+      }),
     );
   }
 
   logout(): void {
+    const session = localStorage.getItem('session');
+    const token = session
+      ? (JSON.parse(session) as { token: string }).token
+      : null;
+
     this._currentUser.set(null);
     localStorage.removeItem('session');
+
+    this.pushNotification.unsubscribe(token).subscribe();
   }
 
   private _setSession(response: ILoginResponse): void {

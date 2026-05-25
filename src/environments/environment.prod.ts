@@ -52,6 +52,11 @@ export const environment: IEnvironment = {
       search: '/directory/search',
       categories: '/directory/categories',
     },
+    pushSubscriptions: {
+      vapidPublicKey: '/push-subscriptions/vapid-public-key',
+      subscribe: '/push-subscriptions',
+      unsubscribe: '/push-subscriptions',
+    },
   },
   features: {
     enableMocking: false,

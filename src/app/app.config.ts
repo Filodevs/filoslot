@@ -3,7 +3,6 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localeEs from '@angular/common/locales/es';
 import {
   ApplicationConfig,
-  isDevMode,
   LOCALE_ID,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
@@ -25,8 +24,8 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideRouter(routes),
-    provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
+    provideServiceWorker('sw.js', {
+      enabled: true,
       registrationStrategy: 'registerWhenStable:30000',
     }),
     providePrimeNG({
