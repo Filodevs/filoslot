@@ -1,0 +1,42 @@
+@if (permission() === 'default') {
+<article
+  class="flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3"
+>
+  <i class="pi pi-bell mt-0.5 text-lg text-amber-500"></i>
+
+  <section class="flex flex-1 flex-col gap-0.5">
+    <p class="text-sm font-semibold text-amber-900">
+      Activa las notificaciones
+    </p>
+
+    <p class="text-xs text-amber-700">
+      Recibe alertas instantáneas cuando lleguen nuevas reservas o se cancele
+      una cita.
+    </p>
+  </section>
+
+  <app-button
+    label="Activar"
+    severity="primary"
+    [fullWidth]="false"
+    [loading]="activating()"
+    (click)="activate()"
+  />
+</article>
+} @else if (permission() === 'denied') {
+<article
+  class="flex items-start gap-3 rounded-lg border border-red-300 bg-red-50 px-4 py-3"
+>
+  <i class="pi pi-ban mt-0.5 text-lg text-red-500"></i>
+
+  <section class="flex flex-col gap-0.5">
+    <p class="text-sm font-semibold text-red-900">Notificaciones bloqueadas</p>
+
+    <p class="text-xs text-red-700">
+      Para recibirlas, abre la configuración del navegador, busca este sitio en
+      la sección de permisos y cambia las notificaciones a
+      <strong>Permitir</strong>.
+    </p>
+  </section>
+</article>
+}

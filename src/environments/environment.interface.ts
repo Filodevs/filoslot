@@ -50,6 +50,11 @@ export interface IEnvironment {
       search: string;
       categories: string;
     };
+    pushSubscriptions: {
+      vapidPublicKey: string;
+      subscribe: string;
+      unsubscribe: string;
+    };
   };
   features: {
     enableMocking: boolean;

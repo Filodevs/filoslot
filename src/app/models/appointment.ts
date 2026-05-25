@@ -2,8 +2,9 @@ export interface IAppointment {
   id: string;
   clientName: string;
   clientPhone: string;
-  startTime: Date;
-  endTime: Date;
+  date: string;
+  startTime: string;
+  endTime: string;
   duration: number;
   status: AppointmentStatus;
   resourceId: string;
@@ -14,8 +15,9 @@ export interface IAppointmentDetails {
   id: string;
   clientName: string;
   clientPhone: string;
-  startTime: Date;
-  endTime: Date;
+  date: string;
+  startTime: string;
+  endTime: string;
   duration: number;
   status: AppointmentStatus;
   business: {
@@ -52,16 +54,18 @@ export interface IAppointmentResponseDTO {
   confirmationToken: string;
   resourceId: string;
   serviceId: string;
-  startTime: Date;
-  endTime: Date;
+  date: string;
+  startTime: string;
+  endTime: string;
   status: AppointmentStatus;
 }
 
 export interface IAppointmentsByResourceResponseDTO {
   readonly id: string;
   readonly status: AppointmentStatus;
-  readonly startTime: Date;
-  readonly endTime: Date;
+  readonly date: string;
+  readonly startTime: string;
+  readonly endTime: string;
   readonly customerName: string;
   readonly customerPhone: string;
   readonly resource: {

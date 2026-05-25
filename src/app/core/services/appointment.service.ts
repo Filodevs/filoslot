@@ -77,8 +77,9 @@ export class AppointmentService {
           confirmationToken: 'mock-confirmation-token',
           resourceId: bookingData.resourceId,
           serviceId: bookingData.serviceId,
-          startTime: new Date(`${bookingData.date}T${bookingData.slotStart}`),
-          endTime: new Date(`${bookingData.date}T${bookingData.slotStart}`),
+          date: bookingData.date,
+          startTime: bookingData.slotStart,
+          endTime: bookingData.slotStart,
           status: AppointmentStatus.pending,
         },
       };

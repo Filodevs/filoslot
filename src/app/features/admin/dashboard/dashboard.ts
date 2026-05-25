@@ -18,6 +18,7 @@ import { IResource } from '../../../models/resource';
 import { AppDateSelector } from '../../../shared/components/app-date-selector/app-date-selector';
 import { AppSkeleton } from '../../../shared/components/app-skeleton/app-skeleton';
 import { AppStatsCard } from '../../../shared/components/app-stats-card/app-stats-card';
+import { NotificationBanner } from './components/notification-banner/notification-banner';
 import {
   AppointmentAction,
   ResourceAppointments,
@@ -25,7 +26,13 @@ import {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [AppDateSelector, AppSkeleton, AppStatsCard, ResourceAppointments],
+  imports: [
+    AppDateSelector,
+    AppSkeleton,
+    AppStatsCard,
+    ResourceAppointments,
+    NotificationBanner,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

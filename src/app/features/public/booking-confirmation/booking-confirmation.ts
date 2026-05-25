@@ -18,7 +18,12 @@ import { BookingConfirmationCard } from './components/booking-confirmation-card/
 
 @Component({
   selector: 'app-booking-confirmation',
-  imports: [CommonModule, BookingConfirmationCard, BookingConfirmationActions, AppSkeleton],
+  imports: [
+    CommonModule,
+    BookingConfirmationCard,
+    BookingConfirmationActions,
+    AppSkeleton,
+  ],
   templateUrl: './booking-confirmation.html',
   styleUrl: './booking-confirmation.css',
 })
@@ -114,14 +119,7 @@ export class BookingConfirmation {
   shareWhatsApp(): void {
     const url = window.location.href;
     const appt = this.appointment();
-    const formatedDate = new Date(appt?.startTime || '').toLocaleString(
-      'es-AR',
-      {
-        dateStyle: 'long',
-        timeStyle: 'short',
-        timeZone: 'UTC',
-      },
-    );
+    const formatedDate = `${appt?.date ?? ''} ${appt?.startTime ?? ''}`;
     const message =
       `📅 *Reserva agendada en ${appt?.business?.name}*\n` +
       `Servicio: ${appt?.service?.name}\n` +
