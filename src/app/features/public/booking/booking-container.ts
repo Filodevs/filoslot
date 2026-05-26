@@ -317,13 +317,7 @@ export class BookingContainer implements OnInit {
           this.notification.showInfo(
             'El turno seleccionado acaba de ser reservado por otra persona. Por favor, selecciona otro turno disponible.',
           );
-
-          return;
         }
-
-        this.notification.showInfo(
-          'Un nuevo turno ha sido reservado. Los horarios disponibles se han actualizado.',
-        );
       });
   }
 
