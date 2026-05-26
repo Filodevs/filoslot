@@ -155,10 +155,12 @@ Key data flows:
 ## Development Workflows
 
 ```bash
-npm start       # Dev server on localhost:4200
-npm test        # Run Vitest tests (watch mode)
-npm run build   # Production build to dist/
-npm run lint    # ESLint check
+pnpm start              # Dev server on localhost:4200
+pnpm test               # Run Vitest tests (watch mode)
+pnpm run test:run       # Run tests once (no watch)
+pnpm run test:coverage  # Run tests + generate coverage report
+pnpm run build          # Production build to dist/
+pnpm run lint           # ESLint check
 ng generate component feature/comp-name  # Scaffold component
 ```
 
@@ -188,17 +190,28 @@ ng generate component feature/comp-name  # Scaffold component
 
 - **Angular**: 21.1.0 (standalone components, signals, inject())
 - **TypeScript**: 5.9.2 (strict mode + strict templates)
-- **Testing**: Vitest 4.x (not Jasmine)
+- **Testing**: Vitest 4.0.18 + `@angular/build:unit-test` builder (not Jasmine/Karma)
 - **Styling**: Tailwind CSS 4 + PrimeNG 21.1 + PrimeUI Aura theme
 - **Forms**: @angular/forms (ReactiveFormsModule)
 - **HTTP**: HttpClient with RxJS Observable patterns
 - **PWA**: Service Worker enabled (@angular/service-worker)
 
+## Testing Patterns
+
+- **Setup file**: `src/test-setup.ts` — inicializa TestBed y mockea `ResizeObserver`, `IntersectionObserver`, `matchMedia`, `localStorage`
+- **Mock signals**: usar `signal(value).asReadonly()` para mockear propiedades signal de servicios
+- **PrimeNG con TabsModule**: usar `overrideComponent(Comp, { set: { imports: [], schemas: [NO_ERRORS_SCHEMA] } })` para evitar error de `ResizeObserver`
+- **Required inputs**: usar `fixture.componentRef.setInput('name', value)` en lugar de asignación directa
+- **Router en tests**: siempre incluir `provideRouter([{ path: '**', component: class DummyComponent {} }])` si el componente navega
+- **PrimeNG providers**: `ConfirmationService`, `MessageService` y `DialogService` deben proveerse manualmente en TestBed
+- **Cobertura actual**: ~60% statements — objetivo 70%+
+- **Versiones vitest**: `vitest`, `@vitest/coverage-v8` y `@vitest/ui` deben ser la misma versión exacta
+
 ## Linting & Formatting
 
 - **ESLint** enforces `simple-import-sort` for import grouping
 - **Prettier** formats code (100 char width, single quotes)
-- Run `npm run lint` to check compliance
+- Run `pnpm run lint` to check compliance
 
 ---
 

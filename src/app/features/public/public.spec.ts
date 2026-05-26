@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
 import { Public } from './public';
 
@@ -8,13 +9,13 @@ describe('Public', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Public]
-    })
-    .compileComponents();
+      imports: [Public],
+      providers: [provideRouter([])],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Public);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {
