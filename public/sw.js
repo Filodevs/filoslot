@@ -13,8 +13,8 @@ self.addEventListener('push', (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title ?? 'FiloSlot', {
       body: data.body ?? '',
-      icon: '../public/icons/web-app-manifest-192x192.png',
-      badge: '../public/icons/favicon-96x96.png',
+      icon: '/icons/web-app-manifest-192x192.png',
+      badge: '/icons/favicon-96x96.png',
     }),
   );
 });
