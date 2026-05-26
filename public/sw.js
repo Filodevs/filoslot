@@ -10,12 +10,11 @@ try {
 self.addEventListener('push', (event) => {
   const data = event.data?.json() ?? {};
 
-  //TODO: ADD ICON, BADGE, and other options
   event.waitUntil(
     self.registration.showNotification(data.title ?? 'FiloSlot', {
       body: data.body ?? '',
-      icon: '/icons/icon-192x192.png',
-      badge: '/icons/badge-72x72.png',
+      icon: '../public/icons/web-app-manifest-192x192.png',
+      badge: '../public/icons/favicon-96x96.png',
     }),
   );
 });
