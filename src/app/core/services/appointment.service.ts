@@ -117,4 +117,26 @@ export class AppointmentService {
       }),
     );
   }
+
+  updateStatus(
+    appointmentId: string,
+    status: 'completed' | 'canceled',
+  ): Observable<void> {
+    if (this.env.isMockingEnabled()) {
+      return of(undefined).pipe(delay(500));
+    }
+
+    const url = this.env
+      .buildApiUrl(this.env.config().api.appointments.updateStatus)
+      .replace(':id', appointmentId);
+
+    return this.http.patch<void>(url, { status }).pipe(
+      catchError((error) => {
+        const errorMessage =
+          error.error?.data?.message ||
+          'Error al actualizar el estado de la cita';
+        return throwError(() => new Error(errorMessage));
+      }),
+    );
+  }
 }

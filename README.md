@@ -1,59 +1,83 @@
 # Filoslot
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.1.3.
+Aplicación web Angular 21 para gestión de reservas y citas de negocios. Permite a clientes reservar turnos en línea y a administradores gestionar su agenda, servicios y recursos.
 
-## Development server
+## Stack tecnológico
 
-To start a local development server, run:
+| Categoría    | Tecnología                                     |
+| ------------ | ---------------------------------------------- |
+| Framework    | Angular 21.1 (standalone components, signals)  |
+| UI           | PrimeNG 21.1 + Tailwind CSS 4 (tema Aura)      |
+| Estado       | Signals (`signal`, `computed`, `linkedSignal`) |
+| HTTP / Async | HttpClient + RxJS Observable                   |
+| Backend      | Supabase (auth + realtime + database)          |
+| Formularios  | ReactiveFormsModule                            |
+| Testing      | Vitest 4.0.18 + @angular/build:unit-test       |
+| Package mgr  | pnpm                                           |
+| PWA          | @angular/service-worker                        |
 
-```bash
-ng serve
+## Estructura del proyecto
+
+```
+src/app/
+  core/
+    guards/          # authGuard (protege rutas admin)
+    interceptors/    # authInterceptor (agrega token JWT)
+    layout/          # AdminLayout, PublicLayout
+    services/        # auth, business, catalog, resource, appointment…
+  features/
+    admin/           # Dashboard, Setup (servicios/recursos/disponibilidad), Perfil
+    auth/            # Login
+    public/          # Directorio, Booking, BookingConfirmation, BusinessProfile
+  models/            # Interfaces TypeScript + __mocks__/ para tests
+  shared/
+    components/      # AppButton, AppInput, AppSelect, Topbar, Footer…
+    directives/      # BaseInput
+    pipes/           # initials, avatarColor
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Comandos de desarrollo
 
 ```bash
-ng generate component component-name
+pnpm start              # Servidor de desarrollo en http://localhost:4200
+pnpm run build          # Build de producción → dist/
+pnpm run lint           # ESLint
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Comandos de testing
 
 ```bash
-ng generate --help
+pnpm test               # Tests en modo watch
+pnpm run test:run       # Tests una sola vez (sin watch)
+pnpm run test:coverage  # Tests + reporte de cobertura en coverage/
 ```
 
-## Building
+> Cobertura actual: ~60% statements. Objetivo: 70%+.
 
-To build the project run:
+## Arquitectura de rutas
 
-```bash
-ng build
+```
+/                     → PublicLayout
+  /directory          → Directorio de negocios
+  /b/:slug            → Perfil público del negocio
+  /booking/:slug      → Flujo de reserva
+  /booking/confirm    → Confirmación de cita
+/admin                → AdminLayout  (requiere authGuard)
+  /admin/dashboard    → Panel principal
+  /admin/setup        → Configuración (info, servicios, recursos, disponibilidad)
+  /admin/profile      → Perfil del negocio
+/auth/login           → Login (sin layout)
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Variables de entorno
 
-## Running unit tests
+Configura `src/environments/environment.ts` con:
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
+```typescript
+export const environment = {
+  production: false,
+  supabaseUrl: 'https://<project>.supabase.co',
+  supabaseKey: '<anon-key>',
+  apiUrl: 'https://...',
+};
 ```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

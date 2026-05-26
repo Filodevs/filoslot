@@ -34,6 +34,7 @@ export const environment: IEnvironment = {
       detail: '/appointments/:id',
       confirmation: '/appointments/confirmation/:token',
       byDate: '/appointments?date=:date',
+      updateStatus: '/appointments/:id/status',
     },
     services: {
       list: '/services',
