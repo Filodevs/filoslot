@@ -10,6 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { ResourceService } from '../../../core/services/resource.service';
+import { ConfirmDialog } from '../../../core/services/ui/confirm-dialog';
 import { NotificationService } from '../../../core/services/ui/notification';
 import {
   AppointmentStatus,
@@ -42,6 +43,7 @@ export class Dashboard implements OnInit {
   private readonly resourceService = inject(ResourceService);
   private readonly appointmentService = inject(AppointmentService);
   private readonly notificationService = inject(NotificationService);
+  private readonly confirmDialog = inject(ConfirmDialog);
 
   selectedDate = signal<Date>(new Date());
   resources = signal<IResource[]>([]);
@@ -108,7 +110,14 @@ export class Dashboard implements OnInit {
       });
   }
 
-  cancelAppointment({ appointmentId }: AppointmentAction): void {
+  async cancelAppointment({ appointmentId }: AppointmentAction): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm(
+      '¿Estás seguro de que deseas cancelar esta cita? Esta acción no se puede deshacer.',
+      'Cancelar cita',
+    );
+
+    if (!confirmed) return;
+
     this.appointmentService
       .updateStatus(appointmentId, 'canceled')
       .pipe(takeUntilDestroyed(this.destroyRef))
