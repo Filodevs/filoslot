@@ -10,6 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AppointmentService } from '../../../core/services/appointment.service';
 import { ResourceService } from '../../../core/services/resource.service';
+import { NotificationService } from '../../../core/services/ui/notification';
 import {
   AppointmentStatus,
   IAppointmentsByResourceResponseDTO,
@@ -40,6 +41,7 @@ export class Dashboard implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   private readonly resourceService = inject(ResourceService);
   private readonly appointmentService = inject(AppointmentService);
+  private readonly notificationService = inject(NotificationService);
 
   selectedDate = signal<Date>(new Date());
   resources = signal<IResource[]>([]);
@@ -48,13 +50,12 @@ export class Dashboard implements OnInit {
   loadingAppointments = signal(true);
 
   stats = computed(() => {
-    const all = this.resources().flatMap((r) => r.appointments);
+    const all = this.appointmentsByResource();
     return {
       total: all.length,
-      completed: all.filter((a) => a?.status === AppointmentStatus.completed)
+      completed: all.filter((a) => a.status === AppointmentStatus.completed)
         .length,
-      pending: all.filter((a) => a?.status === AppointmentStatus.pending)
-        .length,
+      pending: all.filter((a) => a.status === AppointmentStatus.pending).length,
     };
   });
 
@@ -79,38 +80,60 @@ export class Dashboard implements OnInit {
     this._loadAppointmentsForResource();
   }
 
-  markCompleted({ resourceId, appointmentId }: AppointmentAction): void {
-    this.resources.update((list) =>
-      list.map((r) =>
-        r.id !== resourceId
-          ? r
-          : {
-              ...r,
-              appointments: r?.appointments?.map((a) =>
-                a.id === appointmentId
-                  ? { ...a, status: AppointmentStatus.completed }
-                  : a,
-              ),
-            },
-      ),
-    );
+  markCompleted({ appointmentId }: AppointmentAction): void {
+    this.appointmentService
+      .updateStatus(appointmentId, 'completed')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.appointmentsByResource.update((list) =>
+            list.map((appt) =>
+              appt.id === appointmentId
+                ? { ...appt, status: AppointmentStatus.completed }
+                : appt,
+            ),
+          );
+          this.notificationService.showSuccess(
+            'La cita ha sido marcada como completada',
+            'Cita completada',
+          );
+        },
+        error: (error) => {
+          console.error('Error al completar la cita:', error);
+          this.notificationService.showError(
+            error.message || 'No se pudo completar la cita',
+            'Error',
+          );
+        },
+      });
   }
 
-  cancelAppointment({ resourceId, appointmentId }: AppointmentAction): void {
-    this.resources.update((list) =>
-      list.map((r) =>
-        r.id !== resourceId
-          ? r
-          : {
-              ...r,
-              appointments: r?.appointments?.map((a) =>
-                a.id === appointmentId
-                  ? { ...a, status: AppointmentStatus.canceled }
-                  : a,
-              ),
-            },
-      ),
-    );
+  cancelAppointment({ appointmentId }: AppointmentAction): void {
+    this.appointmentService
+      .updateStatus(appointmentId, 'canceled')
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.appointmentsByResource.update((list) =>
+            list.map((appt) =>
+              appt.id === appointmentId
+                ? { ...appt, status: AppointmentStatus.canceled }
+                : appt,
+            ),
+          );
+          this.notificationService.showSuccess(
+            'La cita ha sido cancelada',
+            'Cita cancelada',
+          );
+        },
+        error: (error) => {
+          console.error('Error al cancelar la cita:', error);
+          this.notificationService.showError(
+            error.message || 'No se pudo cancelar la cita',
+            'Error',
+          );
+        },
+      });
   }
 
   private _loadAppointmentsForResource(): void {

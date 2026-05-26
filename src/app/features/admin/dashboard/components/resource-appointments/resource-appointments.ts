@@ -11,7 +11,6 @@ import { AvatarColorPipe } from '../../../../../shared/pipes/avatar-color.pipe';
 import { InitialsPipe } from '../../../../../shared/pipes/initials.pipe';
 
 export interface AppointmentAction {
-  resourceId: string;
   appointmentId: string;
 }
 
@@ -39,11 +38,11 @@ export class ResourceAppointments {
   }
 
   onMarkCompleted(appointmentId: string): void {
-    this.completed.emit({ resourceId: this.resource().id, appointmentId });
+    this.completed.emit({ appointmentId });
   }
 
   onCancelAppointment(appointmentId: string): void {
-    this.canceled.emit({ resourceId: this.resource().id, appointmentId });
+    this.canceled.emit({ appointmentId });
   }
 
   getAppointmentBorder(status: AppointmentStatus): string {

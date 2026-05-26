@@ -28,6 +28,7 @@ export interface IEnvironment {
       detail: string;
       confirmation: string;
       byDate: string;
+      updateStatus: string;
     };
     services: {
       list: string;
